@@ -1,0 +1,45 @@
+# ==========================================
+# Racine Monorepo - Soutien Rose / Brave_her
+# ==========================================
+
+# Frontend (Node / Vite / React)
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Backend (Java / Spring Boot / Maven)
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+backend/target/
+backend - Brave_her/target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDEs & Éditeurs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.apt_generated/
+.factorypath
+.springBeans
+.sts4-cache
+
+# Système d'exploitation & logs
+.DS_Store
+Thumbs.db
+*.log

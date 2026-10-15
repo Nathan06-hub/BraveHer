@@ -1,0 +1,634 @@
+/* ==========================================================================
+   MODULE AGENT : MES CAMPAGNES & FICHE PATIENTE — BRAVEHER BURKINA FASO
+   ========================================================================== */
+
+.agent-campaigns-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeIn 0.25s ease-out;
+}
+
+/* En-tête de l'espace agent */
+.agent-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line, #D6E8E8);
+}
+
+.agent-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #71888C;
+  font-size: 0.725rem;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.agent-eyebrow i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rose, #F3A2BE);
+}
+
+.agent-header h1 {
+  margin: 0.35rem 0 0.25rem;
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink, #17343B);
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+  letter-spacing: -0.02em;
+}
+
+.agent-header p {
+  margin: 0;
+  color: #536B70;
+  font-size: 0.875rem;
+}
+
+.agent-badge-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #FFFFFF;
+  border: 1px solid var(--line, #D6E8E8);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(23, 52, 59, 0.04);
+}
+
+.agent-avatar-circle {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #E8F3F2;
+  color: var(--teal, #007599);
+  font-weight: 750;
+  font-size: 0.8rem;
+}
+
+.agent-profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-profile-name {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--ink, #17343B);
+}
+
+.agent-profile-role {
+  font-size: 0.725rem;
+  color: #6C8185;
+}
+
+/* Bandeau des statistiques de l'agent */
+.agent-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+@media (max-width: 950px) {
+  .agent-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  .agent-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.agent-stat-mini-card {
+  padding: 1rem 1.15rem;
+  background: #FFFFFF;
+  border: 1px solid var(--line, #D6E8E8);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(23, 52, 59, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agent-stat-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #EBF5F4;
+  color: var(--teal, #007599);
+  flex-shrink: 0;
+}
+
+.agent-stat-icon.rose {
+  background: #FCE5ED;
+  color: #B7617E;
+}
+
+.agent-stat-icon.gold {
+  background: #FFF4DF;
+  color: #AE7716;
+}
+
+.agent-stat-icon.green {
+  background: #EDF7EF;
+  color: #2E7D32;
+}
+
+.agent-stat-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-stat-label {
+  font-size: 0.725rem;
+  color: #6D8285;
+  font-weight: 600;
+}
+
+.agent-stat-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink, #17343B);
+  line-height: 1.1;
+  margin-top: 2px;
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+}
+
+/* Carte FOCUS : Ma Campagne en cours */
+.agent-active-campaign-card {
+  background: #FFFFFF;
+  border: 1.5px solid #A4D2CF;
+  border-radius: 16px;
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 117, 153, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.agent-active-badge-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.agent-status-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  background: #E8F5EE;
+  color: #276A3C;
+  font-size: 0.725rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.agent-status-pulse i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #39A05A;
+  box-shadow: 0 0 0 2px rgba(57, 160, 90, 0.25);
+  animation: pulseLive 2s infinite;
+}
+
+.agent-active-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.agent-active-title-row h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink, #17343B);
+  font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+}
+
+.agent-active-meta-chips {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #5C7377;
+  font-size: 0.775rem;
+  margin-top: 0.35rem;
+}
+
+.agent-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Bouton principal de création de patiente */
+.agent-btn-add-patient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.7rem 1.35rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #007599 0%, #005C75 100%);
+  color: #FFFFFF;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 117, 153, 0.25);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.agent-btn-add-patient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 117, 153, 0.35);
+  background: linear-gradient(135deg, #0087B0 0%, #006B88 100%);
+}
+
+/* Progression et secteurs */
+.agent-campaign-progress-block {
+  margin: 1.15rem 0 1rem;
+  padding: 0.9rem 1.15rem;
+  background: #F8FCFC;
+  border: 1px solid #E0EDED;
+  border-radius: 12px;
+}
+
+.agent-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.775rem;
+  color: #6C8285;
+  margin-bottom: 6px;
+}
+
+.agent-progress-header b {
+  color: var(--ink, #17343B);
+}
+
+.agent-progress-bar-track {
+  height: 7px;
+  border-radius: 6px;
+  background: #E5EFEF;
+  overflow: hidden;
+}
+
+.agent-progress-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #168A8B 0%, #37B3B5 100%);
+  transition: width 0.4s ease;
+}
+
+.agent-sectors-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.agent-sector-badge {
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: #EAF3F2;
+  color: #005C75;
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+/* Mini liste des patientes enregistrées sur cette campagne */
+.agent-recent-patients-section {
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid #EDF3F2;
+}
+
+.agent-recent-patients-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink, #17343B);
+  margin-bottom: 0.65rem;
+}
+
+.agent-recent-patients-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+
+.agent-patient-mini-card {
+  padding: 0.65rem 0.85rem;
+  background: #FFFFFF;
+  border: 1px solid #E5EFEF;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.agent-patient-mini-info h4 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink, #17343B);
+}
+
+.agent-patient-mini-info span {
+  font-size: 0.7rem;
+  color: #748A8D;
+}
+
+.agent-patient-status-pill {
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.675rem;
+  font-weight: 700;
+}
+
+.agent-patient-status-pill.effectue {
+  background: #EDF7EF;
+  color: #2E7D32;
+}
+
+.agent-patient-status-pill.orienter {
+  background: #FCECE9;
+  color: #C62828;
+}
+
+.agent-patient-status-pill.planifie {
+  background: #EAF4F7;
+  color: #007599;
+}
+
+/* Fiche de création de patiente (Vue formulaire in-page) */
+.agent-patient-form-view {
+  background: #FFFFFF;
+  border: 1px solid var(--line, #D6E8E8);
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 4px 16px rgba(23, 52, 59, 0.04);
+}
+
+.agent-form-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #EDF3F2;
+}
+
+.agent-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--line, #D6E8E8);
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: var(--ink, #17343B);
+  font-size: 0.775rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.agent-back-btn:hover {
+  background: #F4F8F8;
+  border-color: #A0C2C3;
+}
+
+.agent-campaign-context-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #E8F5F4;
+  color: #005C75;
+  font-size: 0.725rem;
+  font-weight: 700;
+}
+
+.agent-form-grid-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 820px) {
+  .agent-form-grid-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+.agent-form-card-box {
+  background: #FAFCFC;
+  border: 1px solid #E4EFEF;
+  border-radius: 12px;
+  padding: 1.15rem 1.25rem;
+}
+
+.agent-form-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 750;
+  color: var(--ink, #17343B);
+  border-bottom: 1px solid #EBF1F1;
+  padding-bottom: 0.5rem;
+}
+
+.agent-input-group {
+  margin-bottom: 0.85rem;
+}
+
+.agent-input-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: #556B6F;
+  margin-bottom: 4px;
+}
+
+.agent-input-group input,
+.agent-input-group select,
+.agent-input-group textarea {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid #D5E4E4;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: var(--ink, #17343B);
+  font-size: 0.825rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.agent-input-group input:focus,
+.agent-input-group select:focus,
+.agent-input-group textarea:focus {
+  outline: none;
+  border-color: #007599;
+  box-shadow: 0 0 0 3px rgba(0, 117, 153, 0.12);
+}
+
+.agent-form-actions-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #EDF3F2;
+}
+
+.agent-btn-cancel {
+  padding: 9px 18px;
+  border: 1px solid var(--line, #D6E8E8);
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #556B6F;
+  font-size: 0.8rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.agent-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--teal, #007599);
+  color: #FFFFFF;
+  font-size: 0.825rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.agent-btn-submit:hover {
+  background: var(--teal-dark, #005C75);
+}
+
+/* Section Historique des autres campagnes */
+.agent-history-section {
+  margin-top: 1rem;
+}
+
+.agent-history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.agent-history-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 750;
+  color: var(--ink, #17343B);
+}
+
+.agent-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #EDF5F4;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.agent-filter-tab-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #556B6F;
+  font-size: 0.725rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.agent-filter-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--teal-dark, #005C75);
+  box-shadow: 0 1px 3px rgba(23, 52, 59, 0.08);
+}
+
+.agent-campaigns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1rem;
+}
+
+.agent-campaign-history-card {
+  padding: 1.15rem 1.25rem;
+  background: #FFFFFF;
+  border: 1px solid var(--line, #D6E8E8);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(23, 52, 59, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.agent-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.agent-card-top-row h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: var(--ink, #17343B);
+}
+
+.agent-card-footer-action {
+  margin-top: 0.85rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid #EDF3F2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

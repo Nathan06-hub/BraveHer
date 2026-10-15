@@ -1,0 +1,241 @@
+/* Styles pour le Hub de Messagerie Orange SMS & Automatisation */
+
+.messaging-hub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* En-tête avec branding Orange BF */
+.messaging-header-card {
+  background: linear-gradient(135deg, #17343B 0%, #1e454e 60%, #FF7900 160%);
+  border-radius: 1.25rem;
+  padding: 1.75rem 2rem;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(23, 52, 59, 0.25);
+}
+
+.messaging-header-card::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -5%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(255, 121, 0, 0.25) 0%, rgba(255, 121, 0, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.messaging-header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.messaging-gateway-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #FFB370;
+  margin-bottom: 0.75rem;
+}
+
+.messaging-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.messaging-subtitle {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 680px;
+  line-height: 1.5;
+}
+
+/* Onglets de navigation du Hub */
+.messaging-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid #D6E8E8;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+
+.messaging-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.125rem;
+  border-radius: 0.75rem 0.75rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #536B70;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.messaging-tab-btn:hover {
+  color: #FF7900;
+  background: #FFF9F5;
+}
+
+.messaging-tab-btn.active {
+  color: #FF7900;
+  border-bottom-color: #FF7900;
+  background: #FFFFFF;
+}
+
+/* Cartes de statistiques Gateway */
+.gateway-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.gateway-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #D6E8E8;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.gateway-kpi-card:hover {
+  border-color: #FFD8B8;
+  box-shadow: 0 4px 12px rgba(255, 121, 0, 0.08);
+}
+
+.gateway-kpi-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #536B70;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.gateway-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #17343B;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.gateway-kpi-sub {
+  font-size: 0.6875rem;
+  color: #536B70;
+  margin-top: 0.25rem;
+}
+
+/* Cartes des règles d'automatisation par âge */
+.automation-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.automation-rule-card {
+  background: #FFFFFF;
+  border: 1px solid #D6E8E8;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.automation-rule-card.active {
+  border-color: #FFD8B8;
+  box-shadow: 0 4px 14px rgba(255, 121, 0, 0.06);
+}
+
+.automation-rule-card.inactive {
+  opacity: 0.75;
+  background: #FAFCFC;
+}
+
+.rule-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.rule-age-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #FFF4EB;
+  color: #C2410C;
+  border: 1px solid #FFD8B8;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+}
+
+.rule-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #17343B;
+  margin-top: 0.35rem;
+}
+
+.rule-desc {
+  font-size: 0.75rem;
+  color: #536B70;
+  line-height: 1.45;
+  margin-top: 0.25rem;
+}
+
+.rule-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: #F8FAFB;
+  border-radius: 0.65rem;
+  font-size: 0.6875rem;
+  color: #536B70;
+}
+
+.rule-message-box {
+  background: #FFF9F5;
+  border: 1px solid #FFE1CC;
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+}
+
+/* Modale de relance post-campagne */
+.post-campaign-card {
+  background: #FFFFFF;
+  border: 1px solid #D6E8E8;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

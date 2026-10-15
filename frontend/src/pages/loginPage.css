@@ -1,0 +1,91 @@
+/* Layout shell matching login-maquette.html */
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(420px, 1.02fr) minmax(480px, 0.98fr);
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.main {
+  display: grid;
+  place-items: center;
+  padding: 48px 28px;
+  min-height: 100vh;
+}
+
+.login {
+  width: min(100%, 430px);
+}
+
+.mobile-brand {
+  display: none;
+}
+
+/* Breakpoint 900px */
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: minmax(330px, 0.85fr) minmax(400px, 1.15fr);
+  }
+  .story {
+    padding: 34px !important;
+  }
+  .quote {
+    margin-top: 32px !important;
+  }
+}
+
+/* Breakpoint 700px (Mobile) */
+@media (max-width: 700px) {
+  .shell {
+    display: block;
+    min-height: 100vh;
+  }
+  .story {
+    display: none !important;
+  }
+  .main {
+    min-height: 100vh;
+    padding: 30px 22px 24px;
+  }
+  .login {
+    max-width: 430px;
+  }
+  .mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 43px;
+    color: var(--teal-dark);
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .mobile-brand .brand-mark {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--rose);
+    color: #ffffff;
+    font-family: Georgia, 'Playfair Display', serif;
+    font-size: 23px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .mobile-brand small {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 550;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .login h2 {
+    font-size: 34px !important;
+  }
+  .help {
+    margin-top: 26px !important;
+  }
+}

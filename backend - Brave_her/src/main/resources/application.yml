@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5435}/braveher
+    username: ${DB_USER:braveher_user}
+    password: ${DB_PASSWORD:braveher_pass}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+server:
+  port: 8084
+
+app:
+  security:
+    jwt:
+      # >= 32 caractères (HS256). À surcharger via la variable d'environnement JWT_SECRET.
+      secret: ${JWT_SECRET:SoutienRoseBFK-dev-secret-a-changer-en-prod-2026}
+      expiration: ${JWT_EXPIRATION:8h}
+      issuer: soutien-rose-bfk
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
+  seed:
+    enabled: ${SEED_ENABLED:true}
+    mot-de-passe-demo: ${SEED_PASSWORD:Demo@2026}
+
+logging:
+  level:
+    com.braveher: DEBUG

@@ -1,0 +1,246 @@
+/* ==========================================================================
+   MODULE 2 & BÉNÉFICIAIRES — STYLES & ERGONOMIE SOUTIEN ROSE BFK
+   ========================================================================== */
+
+.beneficiaries-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeIn 0.25s ease-out;
+}
+
+/* En-tête */
+.beneficiaries-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.beneficiaries-title {
+  color: var(--ink, #17343B);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 0.25rem;
+}
+
+.beneficiaries-subtitle {
+  color: #64748B;
+  font-size: 0.925rem;
+  margin-top: 0.35rem;
+  max-width: 720px;
+}
+
+/* Cartes KPI */
+.beneficiaries-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.beneficiaries-kpi-card {
+  background: #FFFFFF;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line, #D6E8E8);
+  box-shadow: 0 2px 8px rgba(23, 52, 59, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.beneficiaries-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(23, 52, 59, 0.08);
+}
+
+.beneficiaries-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.beneficiaries-kpi-card.teal::before {
+  background: var(--teal, #007599);
+}
+
+.beneficiaries-kpi-card.rose::before {
+  background: #E11D48;
+}
+
+.beneficiaries-kpi-card.amber::before {
+  background: #F59E0B;
+}
+
+.beneficiaries-kpi-card.purple::before {
+  background: #9333EA;
+}
+
+/* Carte de Patiente / Tableau */
+.patient-table-wrapper {
+  background: #FFFFFF;
+  border-radius: 1rem;
+  border: 1px solid var(--line, #D6E8E8);
+  box-shadow: 0 2px 8px rgba(23, 52, 59, 0.04);
+  overflow: hidden;
+}
+
+.patient-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.patient-table thead th {
+  background: #F8FAFC;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--line, #D6E8E8);
+}
+
+.patient-table tbody tr {
+  border-bottom: 1px solid #F1F5F9;
+  transition: background-color 0.15s ease;
+}
+
+.patient-table tbody tr:hover {
+  background-color: #F8FCFC;
+}
+
+.patient-table td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+}
+
+.row-high-risk {
+  background-color: #FFF9F9;
+}
+
+/* Bouton Micro Dictée Vocale (Speech-to-Text) */
+.btn-voice-dictation {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.825rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #334155;
+}
+
+.btn-voice-dictation:hover {
+  background: #F1F5F9;
+  border-color: #94A3B8;
+}
+
+.btn-voice-dictation.recording {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  color: #B91C1C;
+  animation: pulseRecording 1.5s infinite;
+}
+
+@keyframes pulseRecording {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Jauge de Score IA */
+.risk-gauge-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.risk-score-pill {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.risk-score-pill.high {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 2px solid #EF4444;
+}
+
+.risk-score-pill.moderate {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 2px solid #F59E0B;
+}
+
+.risk-score-pill.low {
+  background: #ECFDF5;
+  color: #047857;
+  border: 2px solid #10B981;
+}
+
+/* Boutons d'action rapide */
+.btn-triage-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #EEF7F7;
+  color: #007599;
+  border: 1px solid #B2DDDD;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-triage-action:hover {
+  background: #007599;
+  color: #FFFFFF;
+}
+
+.btn-solidarity-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #FFF7ED;
+  color: #C2410C;
+  border: 1px solid #FED7AA;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-solidarity-action:hover {
+  background: #FF7900;
+  color: #FFFFFF;
+  border-color: #FF7900;
+}
