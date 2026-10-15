@@ -4,28 +4,73 @@
  */
 
 import { apiFetch } from './httpClient';
-import type { Campagne, SmsLog } from '../../types/campaign';
+import type { Campagne, SmsLog, StatutCampagne } from '../../types/campaign';
 import { MOCK_CAMPAGNES } from '../../data/mockCampaignData';
+
+function normalizeCampagne(raw: any): Campagne {
+  if (!raw) return raw;
+  const statutMap: Record<string, StatutCampagne> = {
+    'EN_COURS': 'en_cours',
+    'PLANIFIEE': 'PLANIFIEE',
+    'TERMINEE': 'terminee',
+    'CLOTUREE': 'terminee',
+    'ANNULEE': 'terminee',
+    'BROUILLON': 'brouillon',
+    'EN_ATTENTE': 'en_attente',
+  };
+  const statut = (statutMap[raw.statut] || (typeof raw.statut === 'string' ? raw.statut.toLowerCase() : 'en_cours')) as StatutCampagne;
+
+  return {
+    ...raw,
+    id: String(raw.id),
+    titre: raw.titre || raw.nom || 'Campagne de sensibilisation',
+    nom: raw.nom || raw.titre || 'Campagne de sensibilisation',
+    description: raw.description || raw.message || 'Sensibilisation et dépistage précoce du cancer du sein.',
+    message: raw.message || raw.description || '',
+    commune: raw.commune || 'Ouagadougou',
+    secteurCible: raw.secteurCible || raw.region || 'Secteur Central',
+    secteurs: Array.isArray(raw.secteurs) && raw.secteurs.length ? raw.secteurs : [raw.secteurCible || raw.region || 'Secteur Central'],
+    dateDebut: raw.dateDebut || new Date().toISOString().split('T')[0],
+    dateFin: raw.dateFin || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+    horaires: raw.horaires || '08:00 - 15:30',
+    centreId: String(raw.centreId || ''),
+    centreNom: raw.centreNom || 'CSPS de Tanghin',
+    statut,
+    creeParId: String(raw.planifieParId || raw.creeParId || 'agent-1'),
+    creeParNom: raw.planifieParNom || raw.creeParNom || 'Awa Ouédraogo',
+    dateCreation: raw.dateCreation || raw.dateDebut || new Date().toISOString().split('T')[0],
+    agentsMobilisesIds: Array.isArray(raw.agentsMobilisesIds) ? raw.agentsMobilisesIds : ['agent-1', 'agent-2'],
+    historique: Array.isArray(raw.historique) ? raw.historique : [],
+    objectifFemmes: raw.objectifFemmes || 150,
+    personnesSensibiliseesIds: Array.isArray(raw.personnesSensibiliseesIds) ? raw.personnesSensibiliseesIds : [],
+    totalSmsEnvoyes: raw.totalSmsEnvoyes || 0,
+    activerPushSms: raw.activerPushSms ?? true,
+    activerRelancesPostCampagne: raw.activerRelancesPostCampagne ?? true,
+  };
+}
 
 export const campaignApi = {
   /**
    * Récupère la liste de toutes les campagnes de sensibilisation
    */
   async getCampagnes(): Promise<Campagne[]> {
-    return apiFetch<Campagne[]>('/campagnes', {
+    const data = await apiFetch<any>('/campagnes', {
       method: 'GET',
       fallbackData: MOCK_CAMPAGNES,
     });
+    const list = Array.isArray(data) ? data : (data?.content && Array.isArray(data.content) ? data.content : MOCK_CAMPAGNES);
+    return list.map(normalizeCampagne);
   },
 
   /**
    * Récupère une campagne par son identifiant
    */
   async getCampagneById(id: string): Promise<Campagne | undefined> {
-    return apiFetch<Campagne>(`/campagnes/${id}`, {
+    const data = await apiFetch<any>(`/campagnes/${id}`, {
       method: 'GET',
       fallbackData: MOCK_CAMPAGNES.find((c) => c.id === id),
     });
+    return data ? normalizeCampagne(data) : undefined;
   },
 
   /**

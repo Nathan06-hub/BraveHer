@@ -107,7 +107,7 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
 
   // Agents mobilisés pour cette campagne
   const agentsMobilises = allAgents.filter((a) =>
-    campagne.agentsMobilisesIds.includes(a.id)
+    Array.isArray(campagne.agentsMobilisesIds) && campagne.agentsMobilisesIds.includes(a.id)
   );
 
   // Personnes rattachées à cette campagne

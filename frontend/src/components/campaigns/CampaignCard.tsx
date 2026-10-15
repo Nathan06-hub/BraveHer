@@ -31,11 +31,12 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   onValidate,
 }) => {
   // Trouver les agents mobilisés
+  const agentsMobilisesIds = Array.isArray(campagne.agentsMobilisesIds) ? campagne.agentsMobilisesIds : [];
   const agentsMobilises = allAgents.filter((a) =>
-    campagne.agentsMobilisesIds.includes(a.id)
+    agentsMobilisesIds.includes(a.id)
   );
 
-  const totalSensibilisees = campagne.personnesSensibiliseesIds?.length || 0;
+  const totalSensibilisees = Array.isArray(campagne.personnesSensibiliseesIds) ? campagne.personnesSensibiliseesIds.length : (campagne.totalSmsEnvoyes || 0);
   const targetPercent = Math.min(
     100,
     Math.round((totalSensibilisees / (campagne.objectifFemmes || 1)) * 100)
@@ -116,7 +117,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
         <div className="meta-item">
           <MapPin className="w-4 h-4 text-[#007599] shrink-0" />
           <span className="truncate">
-            <strong>{campagne.commune}</strong> · {campagne.secteurCible || campagne.secteurs.join(', ')}
+            <strong>{campagne.commune || 'Burkina Faso'}</strong> · {campagne.secteurCible || (Array.isArray(campagne.secteurs) ? campagne.secteurs.join(', ') : 'Centre')}
           </span>
         </div>
         <div className="meta-item">

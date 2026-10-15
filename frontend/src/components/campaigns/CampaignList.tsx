@@ -81,10 +81,8 @@ export const CampaignList: React.FC<CampaignListProps> = ({
         } else if (currentUser.role === 'responsable') {
           if (camp.centreId !== currentUser.centreId) return false;
         } else if (currentUser.role === 'agent') {
-          if (
-            !camp.agentsMobilisesIds.includes(currentUser.id) &&
-            camp.creeParId !== currentUser.id
-          ) {
+          const agentIds = Array.isArray(camp.agentsMobilisesIds) ? camp.agentsMobilisesIds : [];
+          if (!agentIds.includes(currentUser.id) && camp.creeParId !== currentUser.id) {
             return false;
           }
         }
@@ -93,11 +91,11 @@ export const CampaignList: React.FC<CampaignListProps> = ({
       // Recherche textuelle
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchTitle = camp.nom.toLowerCase().includes(q);
-        const matchDesc = camp.description.toLowerCase().includes(q);
-        const matchCommune = camp.commune.toLowerCase().includes(q);
-        const matchSecteur = camp.secteurs.some((s) => s.toLowerCase().includes(q));
-        const matchCenter = camp.centreNom.toLowerCase().includes(q);
+        const matchTitle = (camp.titre || camp.nom || '').toLowerCase().includes(q);
+        const matchDesc = (camp.description || camp.message || '').toLowerCase().includes(q);
+        const matchCommune = (camp.commune || '').toLowerCase().includes(q);
+        const matchSecteur = Array.isArray(camp.secteurs) && camp.secteurs.some((s) => s && s.toLowerCase().includes(q));
+        const matchCenter = (camp.centreNom || '').toLowerCase().includes(q);
 
         if (!matchTitle && !matchDesc && !matchCommune && !matchSecteur && !matchCenter) {
           return false;

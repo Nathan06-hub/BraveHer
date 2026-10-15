@@ -48,7 +48,7 @@ export const CampaignValidationModal: React.FC<CampaignValidationModalProps> = (
 
   // Agents mobilisés pour cette campagne
   const agentsMobilises = allAgents.filter((a) =>
-    campagne.agentsMobilisesIds.includes(a.id)
+    Array.isArray(campagne.agentsMobilisesIds) && campagne.agentsMobilisesIds.includes(a.id)
   );
 
   const handleAction = (decision: 'approuvee' | 'a_corriger' | 'refusee') => {

@@ -12,10 +12,13 @@ export const patientApi = {
    * Récupère la liste de toutes les patientes
    */
   async getPatientes(): Promise<Beneficiaire[]> {
-    return apiFetch<Beneficiaire[]>('/patientes', {
+    const data = await apiFetch<any>('/patientes', {
       method: 'GET',
       fallbackData: MOCK_BENEFICIAIRES,
     });
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.content)) return data.content;
+    return MOCK_BENEFICIAIRES;
   },
 
   /**
