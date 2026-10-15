@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Logo } from '../ui';
 import './sidebarNavbar.css';
 
 export interface NavItem {
@@ -175,14 +176,12 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
       >
         {/*  */}
         <div className="nav-brand-row">
-          <div className="nav-brand-mark font-serif" aria-hidden="true">
-            R
-          </div>
-          <div className="nav-brand-name">
-            <span>Soutien Rose</span>
-            <small>Burkina Faso</small>
-          </div>
-          
+          <Logo
+            variant="teal"
+            size="md"
+            layout={isCollapsed ? 'icon-only' : 'horizontal'}
+            onClick={() => handleItemClick('dashboard')}
+          />
 
           {/* Desktop/Tablet Collapse Toggle Button */}
           <button
@@ -330,13 +329,13 @@ export const MobileNavTopbar: React.FC<MobileNavTopbarProps> = ({
         </svg>
       </button>
 
-      <div className="mobile-topbar-brand">
-        <span className="mobile-topbar-mark font-serif">R</span>
-        <div className="mobile-topbar-text">
-          <span className="font-bold text-sm text-[#17343B] leading-none">{brandTitle}</span>
-          <span className="text-[9px] text-[#536B70] uppercase tracking-wider">{brandSubtitle}</span>
-        </div>
-      </div>
+      <Logo
+        variant="teal"
+        size="sm"
+        layout="horizontal"
+        title={brandTitle}
+        subtitle={brandSubtitle}
+      />
     </header>
   );
 };

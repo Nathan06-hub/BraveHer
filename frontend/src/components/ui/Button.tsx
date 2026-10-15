@@ -1,8 +1,11 @@
 import React from 'react';
 
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   fullWidth?: boolean;
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -22,22 +25,22 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-bold rounded-[9px] transition-all duration-150 outline-none disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
+    'inline-flex items-center justify-center font-bold rounded-[9px] transition-all duration-150 outline-none disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer focus:ring-2 focus:ring-[var(--teal)]/25 focus:ring-offset-1';
 
-  const variantStyles = {
+  const variantStyles: Record<ButtonVariant, string> = {
     primary:
-      'bg-[#007599] text-white hover:bg-[#005C75] active:bg-[#004d64] border-0 shadow-none',
+      'bg-[var(--teal)] text-[var(--paper)] hover:bg-[var(--teal-dark)] active:scale-[0.99] border-0 shadow-[0_1px_3px_rgba(0,117,153,0.2)]',
     secondary:
-      'bg-[#F0F9F8] text-[#17343B] hover:bg-[#e1f3f1] active:bg-[#d0ecea] border border-[#D6E8E8]',
+      'bg-[var(--cream)] text-[var(--ink)] hover:bg-[#e1f3f1] active:bg-[#d0ecea] border border-[var(--line)]',
     outline:
-      'border border-[#D6E8E8] text-[#17343B] bg-white hover:bg-[#F0F9F8]',
+      'border border-[var(--line)] text-[var(--ink)] bg-[var(--paper)] hover:bg-[var(--cream)]',
     ghost:
-      'text-[#005C75] hover:bg-[#007599]/10 active:bg-[#007599]/20',
+      'text-[var(--teal-dark)] hover:bg-[var(--teal)]/10 active:bg-[var(--teal)]/20',
     danger:
-      'bg-[#C62828] text-white hover:bg-[#b02222]',
+      'bg-[var(--red)] text-[var(--paper)] hover:opacity-90 active:scale-[0.99]',
   };
 
-  const sizeStyles = {
+  const sizeStyles: Record<ButtonSize, string> = {
     sm: 'text-xs px-3.5 h-[38px] gap-1.5',
     md: 'text-[14px] px-4 h-[52px] gap-2',
     lg: 'text-base px-6 h-[56px] gap-2.5',
@@ -66,12 +69,12 @@ export const Button: React.FC<ButtonProps> = ({
             r="10"
             stroke="currentColor"
             strokeWidth="4"
-          ></circle>
+          />
           <path
             className="opacity-75"
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+          />
         </svg>
       ) : (
         leftIcon && <span className="inline-flex shrink-0">{leftIcon}</span>

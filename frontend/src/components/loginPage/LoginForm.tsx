@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { InputField, Checkbox, Button } from '../ui';
+import { InputField, Checkbox, Button, Logo } from '../ui';
 import { LoginTrustBadge } from './LoginTrustBadge';
 import { LoginFooterLinks } from './LoginFooterLinks';
 
@@ -55,19 +55,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   return (
     <div className="login w-[min(100%,430px)] mx-auto text-left">
       {/* Marque mobile affichée uniquement en mobile (< 700px) */}
-      <div className="mobile-brand" aria-label="Soutien Rose, Burkina Faso">
-        <span className="brand-mark">R</span>
-        <span>
-          Soutien Rose
-          <small>Burkina Faso</small>
-        </span>
+      <div className="mobile-brand mb-8" aria-label="Soutien Rose, Burkina Faso">
+        <Logo variant="rose" size="lg" layout="horizontal" />
       </div>
 
       {/* Heading */}
-      <h2 className="m-0 mb-[9px] font-serif text-[38px] font-[500] tracking-[-0.025em] text-[#17343B]">
+      <h2 className="m-0 mb-2 font-serif text-[45px] font-[500] tracking-[-0.025em] text-[var(--ink)] leading-tight">
         Bon retour parmi nous
       </h2>
-      <p className="intro m-0 mb-[32px] text-[#536B70] text-[14px] leading-[1.6]">
+      <p className="intro m-0 mb-8 text-[var(--muted)] text-[14px] leading-[1.6]">
         Connectez-vous à votre espace professionnel de santé.
       </p>
 
@@ -108,15 +104,46 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="show absolute top-1/2 right-[13px] -translate-y-1/2 border-0 bg-transparent text-[#005C75] text-[12px] font-[650] cursor-pointer select-none hover:underline"
+              className="show absolute top-1/2 right-[12px] -translate-y-1/2 border-0 bg-transparent text-[var(--teal-dark)] hover:text-[#a82d58] text-[12px] font-[650] cursor-pointer select-none flex items-center gap-1.5 p-1 rounded transition-colors"
+              aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
             >
-              {showPassword ? 'Masquer' : 'Afficher'}
+              {showPassword ? (
+                <>
+                  <svg className="w-4 h-4 text-current transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
+                    />
+                  </svg>
+                  <span>Masquer</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 text-current transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  <span>Afficher</span>
+                </>
+              )}
             </button>
           }
         />
 
         {/* Remember me & Forgot Password */}
-        <div className="form-row flex items-center justify-between gap-3 -mt-[2px] mb-[24px] text-[12px]">
+        <div className="form-row flex items-center justify-between gap-3 -mt-1 mb-6 text-[12px]">
           <Checkbox
             label="Se souvenir de moi"
             name="rememberMe"
@@ -127,7 +154,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           <button
             type="button"
             onClick={onForgotPassword}
-            className="text-[#005C75] font-[650] hover:underline cursor-pointer bg-transparent border-0 p-0 text-[12px]"
+            className="text-[var(--teal-dark)] hover:text-[#a82d58] font-[650] hover:underline cursor-pointer bg-transparent border-0 p-0 text-[12px] transition-colors"
           >
             Mot de passe oublié ?
           </button>

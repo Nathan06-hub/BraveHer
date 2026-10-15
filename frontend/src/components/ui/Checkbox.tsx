@@ -12,16 +12,16 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     return (
       <label
         htmlFor={inputId}
-        className={`remember inline-flex items-center gap-2 cursor-pointer select-none text-xs text-[#536B70] ${containerClassName}`}
+        className={`remember inline-flex items-center gap-2 cursor-pointer select-none text-xs text-[var(--muted)] hover:text-[var(--ink)] transition-colors ${containerClassName}`}
       >
         <input
           ref={ref}
           type="checkbox"
           id={inputId}
-          className={`w-[15px] h-[15px] rounded cursor-pointer accent-[#F3A2BE] ${className}`}
+          className={`w-[16px] h-[16px] rounded cursor-pointer accent-[var(--rose)] focus:ring-2 focus:ring-[var(--rose)]/30 ${className}`}
           {...props}
         />
-        {label && <span className="hover:text-[#17343B] transition-colors">{label}</span>}
+        {label && <span className="transition-colors leading-none">{label}</span>}
       </label>
     );
   }

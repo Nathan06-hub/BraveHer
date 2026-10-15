@@ -11,23 +11,23 @@ export const LoginFooterLinks: React.FC<LoginFooterLinksProps> = ({
 }) => {
   return (
     <>
-      <div className="support mt-[30px] pt-[20px] border-t border-[#D6E8E8] text-[#536B70] text-center text-[13px]">
+      <div className="support mt-[30px] pt-[20px] border-t border-[var(--line)] text-[var(--muted)] text-center text-[13px]">
         Vous n’avez pas encore de compte ?{' '}
         <button
           type="button"
           onClick={onContactAdmin}
-          className="text-[#005C75] font-[650] hover:underline cursor-pointer bg-transparent border-0 p-0 inline font-inherit"
+          className="text-[var(--teal-dark)] hover:text-[#a82d58] font-[650] hover:underline cursor-pointer bg-transparent border-0 p-0 inline transition-colors"
         >
           Contacter l’administrateur
         </button>
       </div>
 
-      <div className="help mt-[32px] text-[#728A8F] text-center text-[11px]" id="aide">
+      <div className="help mt-[28px] text-[var(--muted)]/80 text-center text-[11px]" id="aide">
         Besoin d’aide ?{' '}
         <button
           type="button"
           onClick={onContactSupport}
-          className="hover:underline cursor-pointer bg-transparent border-0 p-0 inline text-inherit font-inherit"
+          className="hover:underline hover:text-[#a82d58] text-[var(--muted)]/80 cursor-pointer bg-transparent border-0 p-0 inline transition-colors"
         >
           Contactez le support de votre centre de santé.
         </button>
