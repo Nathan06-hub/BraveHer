@@ -10,3 +10,4 @@ export * from './evaluationApi';
 export * from './solidarityApi';
 export * from './partnerApi';
 export * from './syncApi';
+export * from './authApi';

@@ -6,7 +6,6 @@ import type {
   CentreSante,
   AgentSante,
   PersonneSensibilisee,
-  CurrentUserContext,
   SmsLog,
   RegleAutomatisationAge,
 } from '../types/campaign';
@@ -598,46 +597,6 @@ export const MOCK_REGLES_AUTOMATISATION_AGE: RegleAutomatisationAge[] = [
       francais:
         'Soutien Rose BFK : {prenom}, à partir de 50 ans, une mammographie annuelle de contrôle est recommandée. Bons de prise en charge disponibles.',
     },
-  },
-];
-
-// Profils prédéfinis pour le commutateur de rôle et de centre (MVP)
-export const PROFILES_DEMO: CurrentUserContext[] = [
-  {
-    id: 'user-admin',
-    nom: 'Ouattara',
-    prenom: 'Ibrahim',
-    role: 'admin',
-    roleTitre: 'Administrateur National de Santé',
-    centreId: 'all',
-    centreNom: 'Tous les centres (Ministère / Coordination)',
-  },
-  {
-    id: 'agent-1',
-    nom: 'Ouédraogo',
-    prenom: 'Dr. Aminata',
-    role: 'responsable',
-    roleTitre: 'Médecin-chef / Responsable de Centre',
-    centreId: 'centre-1',
-    centreNom: 'CSPS Schiphra (Ouagadougou)',
-  },
-  {
-    id: 'agent-2',
-    nom: 'Traoré',
-    prenom: 'Fatimata',
-    role: 'agent',
-    roleTitre: 'Sage-femme / Agent de terrain',
-    centreId: 'centre-1',
-    centreNom: 'CSPS Schiphra (Ouagadougou)',
-  },
-  {
-    id: 'agent-6',
-    nom: 'Sanou',
-    prenom: 'Mariam',
-    role: 'agent',
-    roleTitre: 'Sage-femme mobilisée',
-    centreId: 'centre-3',
-    centreNom: 'CHU Souro Sanou (Bobo-Dioulasso)',
   },
 ];
 

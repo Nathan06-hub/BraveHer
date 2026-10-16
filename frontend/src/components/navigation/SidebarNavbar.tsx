@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Logo } from '../ui';
+import type { CurrentUserContext } from '../../types/campaign';
 import './sidebarNavbar.css';
 
 export interface NavItem {
@@ -17,6 +18,7 @@ export interface SidebarNavbarProps {
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
   onLogout?: () => void;
+  currentUser?: CurrentUserContext | null;
   className?: string;
 }
 
@@ -28,6 +30,7 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
   isOpenMobile = false,
   onCloseMobile,
   onLogout,
+  currentUser,
   className = '',
 }) => {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
@@ -239,6 +242,42 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
 
         {/* Flexible Spacer */}
         <div className="nav-flexible-spacer" />
+
+        {/* Profil utilisateur connecté au Backend */}
+        {currentUser && (
+          <div
+            className={`mx-1 mb-2 p-2 rounded-xl border border-[#D6E8E8] bg-[#F7FAFA] transition-all ${
+              isCollapsed ? 'flex justify-center p-1.5' : ''
+            }`}
+            title={
+              isCollapsed
+                ? `${currentUser.prenom} ${currentUser.nom} (${currentUser.roleTitre}) · ${currentUser.centreNom}`
+                : undefined
+            }
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-[#007599] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                {(currentUser.prenom?.[0] || 'U') + (currentUser.nom?.[0] || '')}
+              </div>
+              {!isCollapsed && (
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-[#17343B] truncate">
+                      {currentUser.prenom} {currentUser.nom}
+                    </span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  </div>
+                  <p className="text-[10px] text-[#007599] font-semibold truncate m-0 leading-tight">
+                    {currentUser.roleTitre}
+                  </p>
+                  <p className="text-[9px] text-[var(--muted)] truncate m-0 leading-tight">
+                    {currentUser.centreNom.split('(')[0].trim()}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Bottom Links: Help & Logout */}
         <div className="nav-bottom-section">

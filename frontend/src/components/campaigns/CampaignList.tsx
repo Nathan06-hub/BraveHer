@@ -23,8 +23,8 @@ interface CampaignListProps {
   centres: CentreSante[];
   agents: AgentSante[];
   currentUser: CurrentUserContext;
-  onSwitchUser: (newUser: CurrentUserContext) => void;
-  availableUsers: CurrentUserContext[];
+  onSwitchUser?: (newUser: CurrentUserContext) => void;
+  availableUsers?: CurrentUserContext[];
   onCreateCampaign: () => void;
   onViewDetails: (campagne: Campagne) => void;
   onEditCampaign: (campagne: Campagne) => void;
@@ -36,8 +36,6 @@ export const CampaignList: React.FC<CampaignListProps> = ({
   centres,
   agents,
   currentUser,
-  onSwitchUser,
-  availableUsers,
   onCreateCampaign,
   onViewDetails,
   onEditCampaign,
@@ -163,24 +161,10 @@ export const CampaignList: React.FC<CampaignListProps> = ({
           </div>
         </div>
 
-        {/* Sélecteur rapide de profil (démonstration des droits) */}
-        <div className="context-switcher">
-          <span className="switcher-label">Tester avec le rôle :</span>
-          <select
-            className="switcher-select"
-            value={currentUser.id}
-            onChange={(e) => {
-              const u = availableUsers.find((x) => x.id === e.target.value);
-              if (u) onSwitchUser(u);
-            }}
-            aria-label="Changer d'utilisateur de test"
-          >
-            {availableUsers.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.prenom} {u.nom} — {u.roleTitre} ({u.centreNom.split('(')[0]})
-              </option>
-            ))}
-          </select>
+        {/* Badge d'identité vérifiée auprès du Backend */}
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-[#007599]/10 border border-[#007599]/25 rounded-full text-xs text-[#007599] font-semibold shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Utilisateur Backend vérifié</span>
         </div>
       </div>
 

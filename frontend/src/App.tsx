@@ -14,7 +14,6 @@ import {
   MOCK_PERSONNES_SENSIBILISEES,
   MOCK_SMS_LOGS,
   MOCK_REGLES_AUTOMATISATION_AGE,
-  PROFILES_DEMO,
 } from './data/mockCampaignData';
 import type {
   Campagne,
@@ -73,6 +72,9 @@ import {
   patientApi,
   solidarityApi,
   partnerApi,
+  authApi,
+  mapBackendUserToContext,
+  type BackendUser,
 } from './services/api';
 import { PredictiveHealthDashboard } from './components/predictive';
 import './App.css';
@@ -105,10 +107,13 @@ const PATH_TAB_MAP: Record<string, string> = {
 
 function getInitialRoute(): { view: 'dashboard' | 'login'; tab: string } {
   if (typeof window === 'undefined') {
-    return { view: 'dashboard', tab: 'dashboard' };
+    return { view: 'login', tab: 'dashboard' };
   }
   const path = window.location.pathname.toLowerCase().replace(/\/$/, '') || '/';
-  if (path === '/login') {
+  const hasToken = !!localStorage.getItem('auth_token');
+
+  // Si aucun jeton n'est présent ou si route /login, affichage obligatoire de la page de connexion
+  if (!hasToken || path === '/login') {
     return { view: 'login', tab: 'dashboard' };
   }
   const mappedTab = PATH_TAB_MAP[path];
@@ -146,7 +151,24 @@ export function App() {
   const [automationRules, setAutomationRules] = useState<RegleAutomatisationAge[]>(
     MOCK_REGLES_AUTOMATISATION_AGE
   );
-  const [currentUser, setCurrentUser] = useState<CurrentUserContext>(PROFILES_DEMO[1]); // Par défaut : Dr. Aminata Ouédraogo (Responsable)
+
+  // Utilisateur connecté au Backend Spring Boot (restauré depuis la session ou null)
+  const [currentUser, setCurrentUser] = useState<CurrentUserContext | null>(() => {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('auth_user');
+      if (stored) {
+        try {
+          const u = JSON.parse(stored) as BackendUser;
+          return mapBackendUserToContext(u);
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
+  });
+
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
 
   // Modals d'interaction
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -346,6 +368,42 @@ export function App() {
   >('dashboard');
   const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiaire | null>(null);
 
+  // Vérification de la session auprès du Backend Spring Boot
+  useEffect(() => {
+    let isMounted = true;
+    async function verifyBackendSession() {
+      const token = authApi.getToken();
+      if (!token) {
+        if (isMounted) {
+          setCurrentUser(null);
+          setCurrentView('login');
+          setIsAuthLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const user = await authApi.getCurrentUser();
+        if (!isMounted) return;
+        if (user) {
+          setCurrentUser(mapBackendUserToContext(user));
+        } else {
+          setCurrentUser(null);
+          setCurrentView('login');
+        }
+      } catch (err) {
+        console.warn('[App] Erreur lors de la validation du jeton backend :', err);
+      } finally {
+        if (isMounted) setIsAuthLoading(false);
+      }
+    }
+
+    verifyBackendSession();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Hydratation initiale depuis l'API Spring Boot (avec Graceful Fallback)
   useEffect(() => {
     let isMounted = true;
@@ -507,6 +565,7 @@ export function App() {
   };
 
   const handleDeployMobileClinic = (regionNom: string) => {
+    if (!currentUser) return;
     showToast(`🚐 Ordre de mission validé ! Clinique Mobile Orange déployée vers la région : ${regionNom}.`);
 
     const mobileCampaign: Campagne = {
@@ -545,18 +604,12 @@ export function App() {
     setCampagnes((prev) => [mobileCampaign, ...prev]);
   };
 
-  const handleLogout = () => {
-    showToast('Déconnexion en cours...');
-    setTimeout(() => {
-      navigateToView('login');
-    }, 400);
-  };
-
   // 1. Création ou modification de campagne
   const handleSaveCampaign = (
     campaignData: Omit<Campagne, 'id' | 'historique'>,
     targetStatut: 'brouillon' | 'en_attente'
   ) => {
+    if (!currentUser) return;
     const dateStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
 
     if (editingCampaign) {
@@ -643,6 +696,7 @@ export function App() {
     decision: 'approuvee' | 'a_corriger' | 'refusee',
     motif?: string
   ) => {
+    if (!currentUser) return;
     const dateStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
 
     // Appel API Décision
@@ -696,6 +750,7 @@ export function App() {
 
   // 3. Ajout d'une personne sensibilisée
   const handleAddPersonne = (data: Omit<PersonneSensibilisee, 'id'>) => {
+    if (!currentUser) return;
     const newPersonne: PersonneSensibilisee = {
       id: `pers-${Date.now()}`,
       ...data,
@@ -805,6 +860,7 @@ export function App() {
     langue: LanguePatiente,
     customMessage?: string
   ) => {
+    if (!currentUser) return;
     const targetCamp = campagnes.find((c) => c.id === campagneId);
     if (!targetCamp) return;
 
@@ -1086,14 +1142,40 @@ export function App() {
     );
   };
 
-  // If current view is login, display the full LoginPage
-  if (currentView === 'login') {
+  const handleLoginSuccess = useCallback((user?: BackendUser) => {
+    if (user) {
+      setCurrentUser(mapBackendUserToContext(user));
+    } else {
+      authApi.getCurrentUser().then((u) => {
+        if (u) {
+          setCurrentUser(mapBackendUserToContext(u));
+        }
+      });
+    }
+    navigateToView('dashboard');
+    showToast('Bienvenue ! Connexion réussie au backend.');
+  }, [navigateToView]);
+
+  const handleLogout = useCallback(() => {
+    authApi.logout();
+    setCurrentUser(null);
+    navigateToView('login');
+    showToast('Session fermée. Vous avez été déconnecté.');
+  }, [navigateToView]);
+
+  // Si l'utilisateur est sur la page de connexion ou n'est pas authentifié
+  if (currentView === 'login' || !currentUser) {
+    if (isAuthLoading && authApi.getToken()) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#F4F9F9] text-[#17343B]">
+          <div className="w-10 h-10 border-4 border-[#007599]/30 border-t-[#007599] rounded-full animate-spin mb-4" />
+          <p className="text-sm font-semibold tracking-wide">Validation de votre session sécurisée auprès du Backend...</p>
+        </div>
+      );
+    }
     return (
       <LoginPage
-        onLoginSuccess={() => {
-          navigateToView('dashboard');
-          showToast('Bienvenue ! Vous êtes connecté.');
-        }}
+        onLoginSuccess={handleLoginSuccess}
       />
     );
   }
@@ -1111,6 +1193,7 @@ export function App() {
           isOpenMobile={isMobileMenuOpen}
           onCloseMobile={() => setIsMobileMenuOpen(false)}
           onLogout={handleLogout}
+          currentUser={currentUser}
         />
 
         {/* Content View Area */}
@@ -1172,11 +1255,6 @@ export function App() {
                 centres={MOCK_CENTRES}
                 agents={MOCK_AGENTS}
                 currentUser={currentUser}
-                onSwitchUser={(u) => {
-                  setCurrentUser(u);
-                  showToast(`Profil actif : ${u.prenom} ${u.nom} (${u.roleTitre})`);
-                }}
-                availableUsers={PROFILES_DEMO}
                 onCreateCampaign={() => {
                   setEditingCampaign(null);
                   setIsCreateModalOpen(true);
@@ -1197,11 +1275,6 @@ export function App() {
                 currentUser={currentUser}
                 onAddPersonne={handleAddPersonne}
                 onViewCampaignDetails={(camp) => setViewingCampaign(camp)}
-                onSwitchUser={(u) => {
-                  setCurrentUser(u);
-                  showToast(`Profil actif : ${u.prenom} ${u.nom} (${u.roleTitre})`);
-                }}
-                availableUsers={PROFILES_DEMO}
               />
             ) : activeTab === 'impact' ? (
               /* Module 4 : Solidarité et pilotage statistique */

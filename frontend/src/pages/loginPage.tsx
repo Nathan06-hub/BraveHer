@@ -1,58 +1,28 @@
 import React, { useState } from 'react';
 import { LoginHeroBanner, LoginForm } from '../components/loginPage';
 import { Alert } from '../components/ui';
+import { authApi, type BackendUser } from '../services/api';
 import './loginPage.css';
 
 export interface LoginPageProps {
-  onLoginSuccess?: () => void;
+  onLoginSuccess?: (user?: BackendUser) => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [authSuccess, setAuthSuccess] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const handleLoginSubmit = async (data: { email: string; password: string; rememberMe: boolean }) => {
+  const handleLoginSubmit = async (data: { identifiant: string; password: string; rememberMe: boolean }) => {
     setIsLoading(true);
-    setAuthSuccess(null);
     setAuthError(null);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          identifiant: data.email,
-          motDePasse: data.password,
-        }),
-      });
-
-      if (!res.ok) {
-        let msg = 'Identifiant ou mot de passe incorrect.';
-        try {
-          const errData = await res.json();
-          if (errData.message) msg = errData.message;
-        } catch {
-          // ignore
-        }
-        throw new Error(msg);
-      }
-
-      const authData = await res.json();
-      if (authData.token) {
-        localStorage.setItem('auth_token', authData.token);
-        localStorage.setItem('auth_user', JSON.stringify(authData));
-      }
-
-      setAuthSuccess(`Connexion réussie : Bienvenue ${authData.prenom || data.email} !`);
+      const loginRes = await authApi.login(data.identifiant, data.password);
       if (onLoginSuccess) {
-        setTimeout(onLoginSuccess, 400);
+        onLoginSuccess(loginRes.utilisateur);
       }
     } catch (err: any) {
-      setAuthError(err.message || 'Impossible de joindre le serveur backend (port 8084).');
+      setAuthError(err.message || 'Impossible de joindre le serveur backend.');
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +50,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
       {/* Panneau droit : Espace de connexion */}
       <section className="main">
-        <div className="w-[min(100%,430px)] mx-auto">
+        <div className="w-[min(100%,430px)] mx-auto py-6">
           {authError && (
             <Alert
               variant="error"
@@ -88,16 +58,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
               onClose={() => setAuthError(null)}
             >
               {authError}
-            </Alert>
-          )}
-
-          {authSuccess && (
-            <Alert
-              variant="success"
-              className="mb-5"
-              onClose={() => setAuthSuccess(null)}
-            >
-              {authSuccess}
             </Alert>
           )}
 

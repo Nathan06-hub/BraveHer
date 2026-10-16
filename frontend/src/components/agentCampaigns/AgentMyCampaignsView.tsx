@@ -34,8 +34,6 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
   currentUser,
   onAddPersonne,
   onViewCampaignDetails,
-  onSwitchUser,
-  availableUsers,
 }) => {
   const [viewMode, setViewMode] = useState<'overview' | 'create_patient'>('overview');
 
@@ -119,25 +117,10 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
             </div>
           </div>
 
-          {onSwitchUser && availableUsers && availableUsers.length > 0 && (
-            <div className="relative">
-              <select
-                aria-label="Changer d'utilisateur de test"
-                value={currentUser.id}
-                onChange={(e) => {
-                  const target = availableUsers.find((u) => u.id === e.target.value);
-                  if (target) onSwitchUser(target);
-                }}
-                className="text-xs bg-white border border-[#D6E8E8] rounded-lg px-2.5 py-2 font-medium text-[#17343B] cursor-pointer shadow-sm"
-              >
-                {availableUsers.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    Tester en tant que : {u.prenom} {u.nom} ({u.role})
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#007599]/10 border border-[#007599]/25 rounded-full text-xs font-semibold text-[#007599] shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{currentUser.centreNom}</span>
+          </div>
         </div>
       </header>
 

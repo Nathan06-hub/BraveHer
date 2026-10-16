@@ -4,7 +4,7 @@ import { LoginTrustBadge } from './LoginTrustBadge';
 import { LoginFooterLinks } from './LoginFooterLinks';
 
 export interface LoginFormProps {
-  onSubmit?: (data: { email: string; password: string; rememberMe: boolean }) => void;
+  onSubmit?: (data: { email: string; identifiant: string; password: string; rememberMe: boolean }) => void;
   onForgotPassword?: () => void;
   onContactAdmin?: () => void;
   onContactSupport?: () => void;
@@ -18,25 +18,26 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   onContactSupport,
   isLoading = false,
 }) => {
-  const [email, setEmail] = useState('');
+  const [identifiant, setIdentifiant] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ identifiant?: string; password?: string }>({});
 
   const validate = (): boolean => {
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { identifiant?: string; password?: string } = {};
+    const val = identifiant.trim();
 
-    if (!email.trim()) {
-      newErrors.email = 'Veuillez saisir votre adresse e-mail professionnelle.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      newErrors.email = 'Format d’adresse e-mail invalide.';
+    if (!val) {
+      newErrors.identifiant = 'Veuillez saisir votre e-mail ou votre numéro de téléphone professionnel.';
+    } else if (val.length < 3) {
+      newErrors.identifiant = 'Identifiant trop court.';
     }
 
     if (!password) {
       newErrors.password = 'Veuillez saisir votre mot de passe.';
-    } else if (password.length < 6) {
-      newErrors.password = 'Le mot de passe doit comporter au moins 6 caractères.';
+    } else if (password.length < 4) {
+      newErrors.password = 'Le mot de passe doit comporter au moins 4 caractères.';
     }
 
     setErrors(newErrors);
@@ -48,7 +49,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     if (!validate()) return;
 
     if (onSubmit) {
-      onSubmit({ email: email.trim(), password, rememberMe });
+      const cleanId = identifiant.trim();
+      onSubmit({ identifiant: cleanId, email: cleanId, password, rememberMe });
     }
   };
 
@@ -69,20 +71,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
       {/* Form */}
       <form onSubmit={handleSubmit} noValidate>
-        {/* Email Field */}
+        {/* Identifiant Field (Email ou Téléphone) */}
         <InputField
-          id="email"
-          label="Adresse e-mail professionnelle"
-          type="email"
-          inputMode="email"
+          id="identifiant"
+          label="Identifiant professionnel (E-mail ou Téléphone)"
+          type="text"
           autoComplete="username"
-          placeholder="nom@centre-sante.bf"
-          value={email}
+          placeholder="nom@centre-sante.bf ou +22670000001"
+          value={identifiant}
           onChange={(e) => {
-            setEmail(e.target.value);
-            if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+            setIdentifiant(e.target.value);
+            if (errors.identifiant) setErrors((prev) => ({ ...prev, identifiant: undefined }));
           }}
-          error={errors.email}
+          error={errors.identifiant}
           required
         />
 
