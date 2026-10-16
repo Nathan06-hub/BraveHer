@@ -62,7 +62,6 @@ import { DashboardView } from './components/dashboard';
 import { AgentMyCampaignsView } from './components/agentCampaigns';
 import { PushSmsMessagingView } from './components/messaging';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
-import { NetworkStatusBadge } from './components/common/NetworkStatusBadge';
 import {
   campaignApi,
   centreApi,
@@ -134,13 +133,7 @@ export function App() {
   // Hook de connectivité & Offline-First (Module 3)
   const {
     isOnline,
-    isSimulatedOffline,
-    backendAvailable,
-    backendLatencyMs,
-    pendingSyncCount,
-    isSyncing,
     toggleSimulatedOffline,
-    syncNow,
   } = useNetworkStatus();
 
   // État des données du Module 1 (Campagnes réelles du Backend Spring Boot et Logs SMS Orange)
@@ -1301,36 +1294,6 @@ export function App() {
 
         {/* Content View Area */}
         <div className="scene-content-area">
-          {/* Top Bar avec Statut Réseau Orange & Synchronisation (Module 3) */}
-          <header className="flex items-center justify-between px-6 py-2.5 bg-white/90 backdrop-blur-md border-b border-[#D6E8E8] sticky top-0 z-30 shadow-[0_1px_4px_rgba(23,52,59,0.03)]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#007599]" />
-              <span className="text-xs font-semibold text-[#17343B]">
-                Plateforme Nationale « Soutien Rose BFK » · CSPS & Centres Référents
-              </span>
-            </div>
-
-            <NetworkStatusBadge
-              isOnline={isOnline}
-              isSimulatedOffline={isSimulatedOffline}
-              backendAvailable={backendAvailable}
-              backendLatencyMs={backendLatencyMs}
-              pendingSyncCount={pendingSyncCount}
-              isSyncing={isSyncing}
-              onToggleSimulatedOffline={() => {
-                toggleSimulatedOffline();
-                showToast(
-                  !isSimulatedOffline
-                    ? 'Mode Hors-Ligne activé (Simulation mission rurale).'
-                    : 'Réseau Orange 4G rétabli !'
-                );
-              }}
-              onSyncNow={async () => {
-                const res = await syncNow();
-                showToast(`Synchronisation terminée : ${res.success} élément(s) transmis vers Spring Boot.`);
-              }}
-            />
-          </header>
 
           {!isOnline && (
             <div className="mx-6 mt-3.5 p-3.5 bg-amber-50 border border-amber-300 rounded-2xl flex items-center justify-between text-xs text-amber-900 shadow-sm animate-fadeIn">
