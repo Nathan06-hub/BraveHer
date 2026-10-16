@@ -802,6 +802,39 @@
   gap: 0.75rem;
 }
 
+/* Navigation par onglets dans les modals */
+.modal-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--line, #D6E8E8);
+  background: #F8FAFB;
+}
+
+.modal-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted, #536B70);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-nav-tab:hover {
+  color: var(--ink, #17343B);
+}
+
+.modal-nav-tab.active {
+  color: var(--teal, #007599);
+  border-bottom-color: var(--teal, #007599);
+}
+
 /* Alerte de rappel de la langue patiente */
 .info-banner-patient-lang {
   display: flex;

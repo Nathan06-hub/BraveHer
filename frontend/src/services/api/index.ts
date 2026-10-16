@@ -11,3 +11,4 @@ export * from './solidarityApi';
 export * from './partnerApi';
 export * from './syncApi';
 export * from './authApi';
+export * from './centreApi';

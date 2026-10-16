@@ -8,8 +8,8 @@ export interface LoginHeroBannerProps {
 }
 
 export const LoginHeroBanner: React.FC<LoginHeroBannerProps> = ({
-  quote = '« Soyez attentives à votre corps ; cela peut vous sauver la vie ! »',
-  quoteAuthor = 'Rosalie Ziba',
+  quote: _quote = '« Soyez attentives à votre corps ; cela peut vous sauver la vie ! »',
+  quoteAuthor: _quoteAuthor = 'Rosalie Ziba',
   className = '',
 }) => {
   return (

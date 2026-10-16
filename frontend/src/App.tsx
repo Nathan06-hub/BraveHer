@@ -1,14 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { SidebarNavbar, MobileNavTopbar } from './components/navigation';
 import { LoginPage } from './pages/loginPage';
+import { CampaignsPage } from './pages/CampaignsPage';
+import { CampaignDetailModal } from './components/campaigns';
 import {
-  CampaignList,
-  CampaignFormModal,
-  CampaignValidationModal,
-  CampaignDetailModal,
-} from './components/campaigns';
-import {
-  MOCK_CAMPAGNES,
   MOCK_CENTRES,
   MOCK_AGENTS,
   MOCK_PERSONNES_SENSIBILISEES,
@@ -17,6 +12,7 @@ import {
 } from './data/mockCampaignData';
 import type {
   Campagne,
+  CentreSante,
   PersonneSensibilisee,
   CurrentUserContext,
   StatutCampagne,
@@ -69,6 +65,7 @@ import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { NetworkStatusBadge } from './components/common/NetworkStatusBadge';
 import {
   campaignApi,
+  centreApi,
   patientApi,
   solidarityApi,
   partnerApi,
@@ -142,8 +139,9 @@ export function App() {
     syncNow,
   } = useNetworkStatus();
 
-  // État des données du Module 1 (Campagnes et Logs SMS Orange conformes au diagramme de classe)
-  const [campagnes, setCampagnes] = useState<Campagne[]>(MOCK_CAMPAGNES);
+  // État des données du Module 1 (Campagnes réelles du Backend Spring Boot et Logs SMS Orange)
+  const [campagnes, setCampagnes] = useState<Campagne[]>([]);
+  const [centresList, setCentresList] = useState<CentreSante[]>(MOCK_CENTRES);
   const [personnes, setPersonnes] = useState<PersonneSensibilisee[]>(
     MOCK_PERSONNES_SENSIBILISEES
   );
@@ -180,7 +178,6 @@ export function App() {
   // Modals d'interaction
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campagne | null>(null);
-  const [validatingCampaign, setValidatingCampaign] = useState<Campagne | null>(null);
   const [viewingCampaign, setViewingCampaign] = useState<Campagne | null>(null);
 
   // État des données du Module 4 : Solidarité & Pilotage Statistique
@@ -416,16 +413,22 @@ export function App() {
     let isMounted = true;
     async function hydrateData() {
       try {
-        const [loadedCampagnes, loadedPatients, loadedDemandes, loadedPartenaires] =
+        const [loadedCampagnes, loadedCentres, loadedPatients, loadedDemandes, loadedPartenaires] =
           await Promise.all([
             campaignApi.getCampagnes(),
+            centreApi.getCentres(),
             patientApi.getPatientes(),
             solidarityApi.getDemandesAide(),
             partnerApi.getPartenaires(),
           ]);
 
         if (isMounted) {
-          if (loadedCampagnes?.length) setCampagnes(loadedCampagnes);
+          if (Array.isArray(loadedCampagnes) && loadedCampagnes.length > 0) {
+            setCampagnes(loadedCampagnes);
+          }
+          if (Array.isArray(loadedCentres) && loadedCentres.length > 0) {
+            setCentresList(loadedCentres);
+          }
           if (loadedPatients?.length) setBeneficiairesList(loadedPatients);
           if (loadedDemandes?.length) setDemandesAide(loadedDemandes);
           if (loadedPartenaires?.length) setPartenairesList(loadedPartenaires);
@@ -438,7 +441,7 @@ export function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [currentUser]);
 
   // Handlers pour les Bénéficiaires
   const handleRegisterNewPatient = (newPatient: Beneficiaire) => {
@@ -567,6 +570,37 @@ export function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  // Synchronisation des données réelles du backend Spring Boot (centres et campagnes)
+  useEffect(() => {
+    let isMounted = true;
+
+    // Charger les centres de santé officiels (/api/centres)
+    centreApi
+      .getCentres()
+      .then((centres) => {
+        if (isMounted && Array.isArray(centres) && centres.length > 0) {
+          setCentresList(centres);
+        }
+      })
+      .catch((err) => console.warn('Erreur chargement centres backend:', err));
+
+    // Charger les campagnes réelles (/api/campagnes) si authentifié
+    if (currentUser) {
+      campaignApi
+        .getCampagnes()
+        .then((backendCamps) => {
+          if (isMounted && Array.isArray(backendCamps)) {
+            setCampagnes(backendCamps);
+          }
+        })
+        .catch((err) => console.warn('Erreur chargement campagnes backend:', err));
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser]);
+
   const handleTabChange = (tabId: string) => {
     navigateToTab(tabId);
   };
@@ -614,22 +648,24 @@ export function App() {
   // 1. Création ou modification de campagne
   const handleSaveCampaign = (
     campaignData: Omit<Campagne, 'id' | 'historique'>,
-    targetStatut: 'brouillon' | 'en_attente'
+    targetStatut: 'brouillon' | 'en_attente',
+    editing?: Campagne | null
   ) => {
     if (!currentUser) return;
     const dateStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+    const targetEditing = editing !== undefined ? editing : editingCampaign;
 
-    if (editingCampaign) {
+    if (targetEditing) {
       // Mise à jour API
       campaignApi
-        .updateCampagne(editingCampaign.id, {
+        .updateCampagne(targetEditing.id, {
           ...campaignData,
           statut: targetStatut === 'en_attente' ? 'en_attente' : undefined,
         })
         .catch(console.warn);
 
       const updatedList = campagnes.map((c) => {
-        if (c.id === editingCampaign.id) {
+        if (c.id === targetEditing.id) {
           const newStatus =
             c.statut === 'a_corriger' && targetStatut === 'en_attente'
               ? 'en_attente'
@@ -666,8 +702,9 @@ export function App() {
       setEditingCampaign(null);
     } else {
       // Nouvelle campagne
+      const tempId = `camp-${Date.now()}`;
       const newCampagne: Campagne = {
-        id: `camp-${Date.now()}`,
+        id: tempId,
         ...campaignData,
         statut: targetStatut,
         historique: [
@@ -684,16 +721,32 @@ export function App() {
         ],
       };
 
-      // Appel API Création
-      campaignApi.createCampagne(newCampagne).catch(console.warn);
+      // Insertion optimiste immédiate dans l'état pour une réactivité UI maximale
+      setCampagnes((prev) => [newCampagne, ...prev]);
+      setIsCreateModalOpen(false);
 
-      setCampagnes([newCampagne, ...campagnes]);
       showToast(
         targetStatut === 'en_attente'
-          ? `Nouvelle campagne transmise pour validation !`
-          : `Brouillon de campagne sauvegardé avec succès.`
+          ? `Transmission de la campagne au backend Spring Boot en cours...`
+          : `Sauvegarde du brouillon en cours...`
       );
-      setIsCreateModalOpen(false);
+
+      // Appel asynchrone au backend Spring Boot (POST /api/campagnes)
+      campaignApi
+        .createCampagne(newCampagne)
+        .then((savedCampagne) => {
+          // Remplacement immédiat par l'entité officielle du backend (avec son véritable UUID)
+          setCampagnes((prev) =>
+            prev.map((c) => (c.id === tempId ? savedCampagne : c))
+          );
+          showToast(
+            `✅ Campagne "${savedCampagne.titre || savedCampagne.nom}" enregistrée avec succès dans le backend !`
+          );
+        })
+        .catch((err) => {
+          console.warn('Persistance backend en attente (hors-ligne ou erreur) :', err);
+          showToast(`Campagne enregistrée localement (mode hors-ligne).`);
+        });
     }
   };
 
@@ -751,8 +804,6 @@ export function App() {
     } else {
       showToast(`Campagne refusée avec motif consigné.`);
     }
-
-    setValidatingCampaign(null);
   };
 
   // 3. Ajout d'une personne sensibilisée
@@ -1160,11 +1211,14 @@ export function App() {
       });
     }
 
-    // Rafraîchir les campagnes depuis le Backend pour garantir des données actives à jour
-    campaignApi
-      .getCampagnes()
-      .then((camps) => {
-        if (camps?.length) setCampagnes(camps);
+    // Rafraîchir les campagnes et centres depuis le Backend pour garantir des données actives à jour
+    Promise.all([
+      campaignApi.getCampagnes(),
+      centreApi.getCentres(),
+    ])
+      .then(([camps, centres]) => {
+        if (Array.isArray(camps)) setCampagnes(camps);
+        if (Array.isArray(centres) && centres.length > 0) setCentresList(centres);
       })
       .catch(console.warn);
 
@@ -1267,21 +1321,21 @@ export function App() {
           <main className="scene-content" aria-label="Espace de travail">
             {activeTab === 'campaigns' ? (
               /* Module 1 : Gestion des campagnes de sensibilisation */
-              <CampaignList
+              <CampaignsPage
                 campagnes={campagnes}
-                centres={MOCK_CENTRES}
+                centres={centresList}
                 agents={MOCK_AGENTS}
                 currentUser={currentUser}
-                onCreateCampaign={() => {
-                  setEditingCampaign(null);
-                  setIsCreateModalOpen(true);
-                }}
-                onViewDetails={(camp) => setViewingCampaign(camp)}
-                onEditCampaign={(camp) => {
-                  setEditingCampaign(camp);
-                  setIsCreateModalOpen(true);
-                }}
-                onValidateCampaign={(camp) => setValidatingCampaign(camp)}
+                personnes={personnes}
+                smsLogs={smsLogs}
+                onSaveCampaign={handleSaveCampaign}
+                onValidationDecision={handleValidationDecision}
+                onAddPersonne={handleAddPersonne}
+                onTriggerPushSms={handleTriggerPushSms}
+                initialCreateOpen={isCreateModalOpen}
+                onCloseInitialCreate={() => setIsCreateModalOpen(false)}
+                initialViewingCampaign={viewingCampaign}
+                onCloseInitialViewing={() => setViewingCampaign(null)}
               />
             ) : activeTab === 'my_campaigns' ? (
               /* Espace Agent : Mes Campagnes & Fiche de création patiente */
@@ -1580,42 +1634,20 @@ export function App() {
         </div>
       </div>
 
-      {/* MODAL 1 : Création / Édition de campagne */}
-      <CampaignFormModal
-        isOpen={isCreateModalOpen}
-        onClose={() => {
-          setIsCreateModalOpen(false);
-          setEditingCampaign(null);
-        }}
-        onSubmit={handleSaveCampaign}
-        centres={MOCK_CENTRES}
-        allAgents={MOCK_AGENTS}
-        currentUser={currentUser}
-        initialData={editingCampaign}
-      />
-
-      {/* MODAL 2 : Validation du Responsable */}
-      <CampaignValidationModal
-        isOpen={!!validatingCampaign}
-        campagne={validatingCampaign}
-        allAgents={MOCK_AGENTS}
-        currentUser={currentUser}
-        onClose={() => setValidatingCampaign(null)}
-        onDecision={handleValidationDecision}
-      />
-
-      {/* MODAL 3 : Fiche détaillée & Suivi patientes */}
-      <CampaignDetailModal
-        isOpen={!!viewingCampaign}
-        campagne={viewingCampaign}
-        allAgents={MOCK_AGENTS}
-        allPersonnes={personnes}
-        allSmsLogs={smsLogs}
-        currentUser={currentUser}
-        onClose={() => setViewingCampaign(null)}
-        onAddPersonne={handleAddPersonne}
-        onTriggerPushSms={handleTriggerPushSms}
-      />
+      {/* MODAL Fiche détaillée pour l'espace Agent (si ouvert hors onglet campagnes) */}
+      {activeTab !== 'campaigns' && viewingCampaign && (
+        <CampaignDetailModal
+          isOpen={!!viewingCampaign}
+          campagne={viewingCampaign}
+          allAgents={MOCK_AGENTS}
+          allPersonnes={personnes}
+          allSmsLogs={smsLogs}
+          currentUser={currentUser}
+          onClose={() => setViewingCampaign(null)}
+          onAddPersonne={handleAddPersonne}
+          onTriggerPushSms={handleTriggerPushSms}
+        />
+      )}
 
       {/* MODAL 4 : Simulateur de Don Entrant Webhook Partenaire (Module 4) */}
       <IncomingDonationApiModal

@@ -47,11 +47,8 @@ export const CampaignFilters: React.FC<CampaignFiltersProps> = ({
 
   const STATUT_TABS: Array<{ id: StatutCampagne | 'tous'; label: string }> = [
     { id: 'tous', label: 'Toutes' },
-    { id: 'en_attente', label: 'À valider' },
     { id: 'en_cours', label: 'En cours' },
-    { id: 'approuvee', label: 'Approuvées' },
-    { id: 'a_corriger', label: 'À corriger' },
-    { id: 'brouillon', label: 'Brouillons' },
+    { id: 'en_attente', label: 'Planifiées & Préparation' },
     { id: 'terminee', label: 'Terminées' },
   ];
 

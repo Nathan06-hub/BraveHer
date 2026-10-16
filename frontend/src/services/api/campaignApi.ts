@@ -5,7 +5,6 @@
 
 import { apiFetch } from './httpClient';
 import type { Campagne, SmsLog, StatutCampagne } from '../../types/campaign';
-import { MOCK_CAMPAGNES } from '../../data/mockCampaignData';
 
 function normalizeCampagne(raw: any): Campagne {
   if (!raw) return raw;
@@ -44,21 +43,25 @@ function normalizeCampagne(raw: any): Campagne {
     objectifFemmes: raw.objectifFemmes || 150,
     personnesSensibiliseesIds: Array.isArray(raw.personnesSensibiliseesIds) ? raw.personnesSensibiliseesIds : [],
     totalSmsEnvoyes: raw.totalSmsEnvoyes || 0,
-    activerPushSms: raw.activerPushSms ?? true,
-    activerRelancesPostCampagne: raw.activerRelancesPostCampagne ?? true,
+    activerPushSms: raw.activerPushSms ?? false,
+    activerRelancesPostCampagne: raw.activerRelancesPostCampagne ?? false,
   };
 }
 
 export const campaignApi = {
   /**
-   * Récupère la liste de toutes les campagnes de sensibilisation
+   * Récupère la liste de toutes les campagnes de sensibilisation réelles depuis le Backend Spring Boot
    */
   async getCampagnes(): Promise<Campagne[]> {
     const data = await apiFetch<any>('/campagnes', {
       method: 'GET',
-      fallbackData: MOCK_CAMPAGNES,
+      fallbackData: [],
     });
-    const list = Array.isArray(data) ? data : (data?.content && Array.isArray(data.content) ? data.content : MOCK_CAMPAGNES);
+    const list = Array.isArray(data)
+      ? data
+      : data?.content && Array.isArray(data.content)
+      ? data.content
+      : [];
     return list.map(normalizeCampagne);
   },
 
@@ -68,7 +71,7 @@ export const campaignApi = {
   async getCampagneById(id: string): Promise<Campagne | undefined> {
     const data = await apiFetch<any>(`/campagnes/${id}`, {
       method: 'GET',
-      fallbackData: MOCK_CAMPAGNES.find((c) => c.id === id),
+      fallbackData: undefined,
     });
     return data ? normalizeCampagne(data) : undefined;
   },
@@ -95,9 +98,42 @@ export const campaignApi = {
       ],
     };
 
-    return apiFetch<Campagne>('/campagnes', {
+    // Détermination d'une région burkinabè valide conforme au backend Spring Boot
+    const determineRegion = (commune?: string, secteur?: string): string => {
+      const c = (commune || '').toLowerCase();
+      const s = (secteur || '').toLowerCase();
+      if (c.includes('bobo') || c.includes('dioulasso') || s.includes('bobo')) return 'Hauts-Bassins';
+      if (c.includes('koudougou') || s.includes('koudougou')) return 'Centre-Ouest';
+      if (c.includes('ouahigouya') || s.includes('ouahigouya')) return 'Nord';
+      if (c.includes('fada') || s.includes('fada')) return 'Est';
+      if (c.includes('kaya') || s.includes('kaya')) return 'Centre-Nord';
+      if (c.includes('banfora') || s.includes('banfora')) return 'Cascades';
+      if (c.includes('dori') || s.includes('dori')) return 'Sahel';
+      if (c.includes('tenkodogo') || s.includes('tenkodogo')) return 'Centre-Est';
+      if (c.includes('dedougou') || c.includes('dédougou')) return 'Boucle du Mouhoun';
+      if (c.includes('manga')) return 'Centre-Sud';
+      if (c.includes('gaoua')) return 'Sud-Ouest';
+      if (c.includes('ziniare') || c.includes('ziniaré')) return 'Plateau-Central';
+      return 'Centre'; // Par défaut : Région du Centre
+    };
+
+    const isUuid = (str?: string) =>
+      typeof str === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str);
+
+    const payload = {
+      titre: campagne.titre || campagne.nom || 'Campagne de sensibilisation',
+      message: campagne.message || campagne.description || 'Dépistage précoce gratuit du cancer du sein avec Soutien Rose.',
+      region: determineRegion(campagne.commune, campagne.secteurCible),
+      commune: campagne.commune || 'Ouagadougou',
+      langueCible: 'FRANCAIS',
+      dateDebut: campagne.dateDebut || new Date().toISOString().split('T')[0],
+      dateFin: campagne.dateFin || new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+      centreId: isUuid(campagne.centreId) ? campagne.centreId : undefined,
+    };
+
+    const res = await apiFetch<any>('/campagnes', {
       method: 'POST',
-      body: JSON.stringify(campagne),
+      body: JSON.stringify(payload),
       fallbackData: fallbackCampagne,
       syncQueueMetadata: {
         typeAction: 'CREATE_CAMPAIGN',
@@ -105,14 +141,15 @@ export const campaignApi = {
         description: `Création de campagne à ${campagne.commune || 'Burkina Faso'}`,
       },
     });
+
+    return normalizeCampagne(res || fallbackCampagne);
   },
 
   /**
    * Met à jour une campagne existante
    */
   async updateCampagne(id: string, updates: Partial<Campagne>): Promise<Campagne> {
-    const existing = MOCK_CAMPAGNES.find((c) => c.id === id);
-    const fallback = { ...(existing || {}), ...updates, id } as Campagne;
+    const fallback = { ...updates, id } as Campagne;
 
     return apiFetch<Campagne>(`/campagnes/${id}`, {
       method: 'PUT',
