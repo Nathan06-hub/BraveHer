@@ -23,6 +23,7 @@ import {
   ArrowRight,
   TrendingUp,
   Globe,
+  Radio,
 } from 'lucide-react';
 
 interface PushSmsMessagingViewProps {
@@ -111,13 +112,10 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
         <div className="messaging-header-content">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-<<<<<<< HEAD
-=======
               <span className="messaging-gateway-badge">
                 <Radio className="w-3.5 h-3.5 text-[#7DE2D1] animate-pulse" />
                 Passerelle GSM Universelle · Orange Burkina Faso
               </span>
->>>>>>> omai/dev
               <h1 className="messaging-title">
                 Hub de Messagerie & Diffusion Push SMS
               </h1>
@@ -458,6 +456,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                     <th>Langue</th>
                     <th>Type Message</th>
                     <th>Contenu SMS</th>
+                    <th>Opérateur</th>
                     <th>Statut de livraison</th>
                   </tr>
                 </thead>
@@ -501,15 +500,12 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                         </td>
 
                         <td>
-<<<<<<< HEAD
-=======
                           <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#007599] bg-[#F0F9F8] px-2 py-0.5 rounded-md border border-[#D6E8E8]">
                             {log.operateur || 'Orange BF'}
                           </span>
                         </td>
 
                         <td>
->>>>>>> omai/dev
                           {log.statut === 'ENVOYE' ? (
                             <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />

@@ -27,31 +27,7 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
   onViewAll,
   onSelectCampaign,
 }) => {
-<<<<<<< HEAD
-  // Préparation des campagnes actives réelles à afficher (jusqu'à 3)
-  const cardsToDisplay: CampaignPreviewCard[] = (campagnes || [])
-    .slice(0, 3)
-    .map((c, index) => {
-      const count = c.personnesSensibiliseesIds?.length || 0;
-      const target = c.objectifFemmes || 100;
-      const pct = Math.min(100, Math.round((count / target) * 100));
-      const isDone = pct >= 100 || c.statut === 'terminee';
-
-      return {
-        id: c.id,
-        nom: c.nom,
-        centre: `${c.commune || 'Burkina Faso'} · ${c.centreNom || 'Centre de santé'}`,
-        dates: `${c.dateDebut || 'Non planifiée'} au ${c.dateFin || 'Non planifiée'}`,
-        icon: index === 0 ? 'sparkle' : index === 1 ? 'heart' : 'sun',
-        statusLabel: isDone ? 'Objectif atteint' : 'En cours',
-        isDone,
-        atteint: count,
-        cible: target,
-        pourcentage: pct,
-      };
-    });
-=======
-  // Affichage des campagnes réelles du Backend Spring Boot
+  // Affichage des campagnes réelles du Backend Spring Boot (jusqu'à 3)
   const cardsToDisplay: CampaignPreviewCard[] =
     campagnes && campagnes.length > 0
       ? campagnes.slice(0, 3).map((c, index) => {
@@ -74,7 +50,6 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
           };
         })
       : [];
->>>>>>> omai/dev
 
   return (
     <section className="dashboard-campaigns-section" id="campagnes">
@@ -97,7 +72,6 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
         </button>
       </div>
 
-<<<<<<< HEAD
       {cardsToDisplay.length === 0 ? (
         <div style={{ marginTop: '1rem' }}>
           <EmptyState
@@ -107,21 +81,8 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
           />
         </div>
       ) : (
-        /* Grille des campagnes */
         <div className="dashboard-campaigns-grid">
-        {cardsToDisplay.map((card) => {
-=======
-      {/* Grille des campagnes */}
-      <div className="dashboard-campaigns-grid">
-        {cardsToDisplay.length === 0 ? (
-          <div style={{ gridColumn: '1 / -1', padding: '32px 24px', background: '#FFFFFF', borderRadius: '14px', border: '1px dashed #D6E8E8', textAlign: 'center', color: '#64748B' }}>
-            <p style={{ margin: 0, fontWeight: 600, color: '#17343B', fontSize: '15px' }}>Aucune campagne de sensibilisation en cours actuellement.</p>
-            <p style={{ margin: '6px 0 0 0', fontSize: '13px', color: '#819194' }}>Créez une nouvelle campagne pour mobiliser votre communauté et lancer des dépistages sur le terrain.</p>
-          </div>
-        ) : (
-          cardsToDisplay.map((card) => {
->>>>>>> omai/dev
-          return (
+          {cardsToDisplay.map((card) => (
             <article key={card.id} className="dashboard-campaign-card">
               <div className="dashboard-camp-top">
                 <span className="dashboard-camp-icon">
@@ -185,15 +146,9 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
                 <ArrowRight size={14} />
               </button>
             </article>
-          );
-<<<<<<< HEAD
-        })}
+          ))}
         </div>
       )}
-=======
-        }))}
-      </div>
->>>>>>> omai/dev
     </section>
   );
 };

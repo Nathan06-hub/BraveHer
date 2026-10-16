@@ -4,8 +4,8 @@
  */
 
 import { apiFetch } from './httpClient';
-<<<<<<< HEAD
 import type { Campagne, SmsLog, StatutCampagne, LanguePatiente, StatutSms } from '../../types/campaign';
+import { MOCK_CAMPAGNES } from '../../data/mockCampaignData';
 
 function normalizeSmsLog(raw: any): SmsLog {
   if (!raw) return raw;
@@ -27,23 +27,22 @@ function normalizeSmsLog(raw: any): SmsLog {
   }
 
   return {
-    id: String(raw.id),
+    id: String(raw.id || `sms-${Date.now()}`),
     campagneId: raw.campagneId ? String(raw.campagneId) : undefined,
-    campagneTitre: raw.campagneTitre || undefined,
+    campagneTitre: raw.campagneTitre || 'Sensibilisation Mobile',
     patienteId: raw.patienteId ? String(raw.patienteId) : undefined,
-    destinataireNom: raw.patienteNomComplet || raw.destinataireNom || 'Contact enregistré',
+    destinataireNom: raw.patienteNomComplet || raw.destinataireNom || (raw.patienteNom ? `${raw.patientePrenom || ''} ${raw.patienteNom}`.trim() : 'Contact enregistré'),
     destinataireTelephone: raw.destinataire || raw.destinataireTelephone || '',
     langue: langueMap[raw.langue] || 'Mooré',
-    contenu: raw.contenu || '',
+    contenu: raw.contenu || raw.messageApercu || '',
     dateEnvoi: dateFormatted || new Date().toISOString().replace('T', ' ').substring(0, 19),
     statut: statutNorm,
+    motifEchec: raw.motifEchec,
+    operateur: raw.operateur || 'Orange BF',
     typeMessage: raw.typeMessage || 'PUSH_CAMPAGNE',
+    ageCible: raw.ageCible,
   };
 }
-=======
-import type { Campagne, SmsLog, StatutCampagne } from '../../types/campaign';
-import { MOCK_CAMPAGNES } from '../../data/mockCampaignData';
->>>>>>> omai/dev
 
 function normalizeCampagne(raw: any): Campagne {
   if (!raw) return raw;
@@ -211,7 +210,7 @@ export const campaignApi = {
       method: 'POST',
       body: JSON.stringify(payload),
       fallbackData: {
-        status: 'ENVOYE_API',
+        status: 'ENVOYE_ORANGE_API',
         totalSent: payload.ciblesCount || 0,
         messageId: `sms-${Date.now()}`,
       },
@@ -231,24 +230,6 @@ export const campaignApi = {
       : data?.content && Array.isArray(data.content)
       ? data.content
       : [];
-<<<<<<< HEAD
     return list.map(normalizeSmsLog);
-=======
-
-    return list.map((item: any) => ({
-      id: String(item.id || `sms-${Date.now()}`),
-      campagneId: item.campagneId,
-      campagneTitre: item.campagneTitre || 'Octobre Rose 2026 — Kadiogo',
-      destinataireTelephone: item.destinataire || item.destinataireTelephone || '',
-      destinataireNom: item.patienteNom ? `${item.patientePrenom || ''} ${item.patienteNom}`.trim() : 'Patiente',
-      langue: item.langue || 'Mooré',
-      canal: item.canal || 'SMS',
-      statut: item.statut || 'ENVOYE',
-      dateEnvoi: item.dateEnvoi ? new Date(item.dateEnvoi).toLocaleDateString('fr-FR') : 'Aujourd\'hui',
-      heureEnvoi: item.dateEnvoi ? new Date(item.dateEnvoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '10:00',
-      messageApercu: item.contenu || item.messageApercu || '',
-      mediaUrl: item.mediaUrl,
-    }));
->>>>>>> omai/dev
   },
 };

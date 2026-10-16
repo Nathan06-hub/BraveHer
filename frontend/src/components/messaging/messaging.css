@@ -3,22 +3,18 @@
 /* Palette : Teal (#007599), Rose (#F3A2BE), Ink (#17343B), Line (#D6E8E8)  */
 /* ========================================================================= */
 
-.push-sms-page-container {
+.push-sms-page-container,
+.messaging-hub-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
 }
 
-<<<<<<< HEAD
-/* 1. Grande Bannière Header neutre & Soutien Rose */
-.sms-page-header {
-  background: linear-gradient(135deg, var(--teal-dark, #005C75) 0%, var(--ink, #17343B) 60%, #1e454e 100%);
-=======
-/* En-tête avec branding Orange BF */
+/* 1. Grande Bannière Header */
+.sms-page-header,
 .messaging-header-card {
   background: linear-gradient(135deg, #17343B 0%, #0F4A57 50%, #007599 100%);
->>>>>>> omai/dev
   border-radius: 1.25rem;
   padding: 1.75rem 2rem;
   color: #FFFFFF;
@@ -28,30 +24,27 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.sms-page-header::after {
+.sms-page-header::after,
+.messaging-header-card::after {
   content: '';
   position: absolute;
   top: -40%;
   right: -5%;
-<<<<<<< HEAD
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(0, 117, 153, 0.22) 0%, rgba(243, 162, 190, 0.1) 45%, transparent 70%);
-=======
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, rgba(125, 226, 209, 0.25) 0%, rgba(0, 117, 153, 0) 70%);
->>>>>>> omai/dev
+  background: radial-gradient(circle, rgba(125, 226, 209, 0.25) 0%, rgba(0, 117, 153, 0.1) 45%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
 
-.sms-page-header-content {
+.sms-page-header-content,
+.messaging-header-content {
   position: relative;
   z-index: 1;
 }
 
-.sms-gateway-pill {
+.sms-gateway-pill,
+.messaging-gateway-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -63,16 +56,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-<<<<<<< HEAD
-  color: #C7F1F0;
-=======
   color: #7DE2D1;
->>>>>>> omai/dev
   margin-bottom: 0.75rem;
   backdrop-filter: blur(4px);
 }
 
-.sms-page-title {
+.sms-page-title,
+.messaging-title {
   font-size: 1.5rem;
   font-weight: 800;
   color: #FFFFFF;
@@ -80,14 +70,16 @@
   letter-spacing: -0.02em;
 }
 
-.sms-page-subtitle {
+.sms-page-subtitle,
+.messaging-subtitle {
   font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.88);
   line-height: 1.5;
 }
 
 /* 2. Barre de navigation par onglets */
-.sms-page-tabs-bar {
+.sms-page-tabs-bar,
+.messaging-tabs-nav {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -96,7 +88,8 @@
   overflow-x: auto;
 }
 
-.sms-page-tab-item {
+.sms-page-tab-item,
+.messaging-tab-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -113,29 +106,17 @@
   white-space: nowrap;
 }
 
-<<<<<<< HEAD
-.sms-page-tab-item:hover {
+.sms-page-tab-item:hover,
+.messaging-tab-btn:hover {
   color: var(--teal, #007599);
   background: var(--cream, #F0F9F8);
 }
 
-.sms-page-tab-item.active {
+.sms-page-tab-item.active,
+.messaging-tab-btn.active {
   color: var(--teal, #007599);
   border-bottom-color: var(--teal, #007599);
   background: var(--paper, #FFFFFF);
-}
-
-/* 3. Règles d'automatisation par âge */
-=======
-.messaging-tab-btn:hover {
-  color: #007599;
-  background: #F0F9F8;
-}
-
-.messaging-tab-btn.active {
-  color: #007599;
-  border-bottom-color: #007599;
-  background: #FFFFFF;
 }
 
 /* Cartes de statistiques Gateway */
@@ -183,7 +164,6 @@
 }
 
 /* Cartes des règles d'automatisation par âge */
->>>>>>> omai/dev
 .automation-rules-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -204,13 +184,8 @@
 }
 
 .automation-rule-card.active {
-<<<<<<< HEAD
-  border-color: #B3DFE5;
-  box-shadow: 0 4px 12px rgba(0, 117, 153, 0.06);
-=======
   border-color: #A3D9E2;
   box-shadow: 0 4px 14px rgba(0, 117, 153, 0.06);
->>>>>>> omai/dev
 }
 
 .automation-rule-card.inactive {
@@ -229,15 +204,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-<<<<<<< HEAD
-  background: var(--cream, #F0F9F8);
-  color: var(--teal, #007599);
-  border: 1px solid #B3DFE5;
-=======
   background: #F0F9F8;
   color: #007599;
   border: 1px solid #D6E8E8;
->>>>>>> omai/dev
   padding: 0.25rem 0.65rem;
   border-radius: 9999px;
   font-size: 0.6875rem;
@@ -270,13 +239,8 @@
 }
 
 .rule-message-box {
-<<<<<<< HEAD
-  background: #FFFDF9;
-  border: 1px solid #FED7AA;
-=======
   background: #F8FAFB;
-  border: 1px solid #E2E8F0;
->>>>>>> omai/dev
+  border: 1px solid #D6E8E8;
   border-radius: 0.75rem;
   padding: 0.85rem;
 }

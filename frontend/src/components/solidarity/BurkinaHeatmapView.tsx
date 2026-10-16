@@ -223,25 +223,6 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
 
   return (
     <div className="inpage-view-container">
-<<<<<<< HEAD
-      {/* En-tête In-Page sans modal */}
-      <div className="inpage-header">
-        <div className="flex items-center gap-3">
-          {onBack && (
-            <button
-              type="button"
-              className="inpage-back-btn"
-              onClick={onBack}
-              aria-label="Retour aux demandes"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Retour</span>
-            </button>
-          )}
-          <div>
-            <span className="modal-eyebrow">
-              {isStandalone ? 'MINISTÈRE DE LA SANTÉ' : 'PILOTAGE ÉPIDÉMIOLOGIQUE TERRITORIAL'}
-=======
       {/* En-tête In-Page (masqué si standalone dans le dashboard prédictif pour éviter la surcharge) */}
       {!isStandalone && (
         <div className="inpage-header">
@@ -269,7 +250,6 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold px-2.5 py-1 bg-[#EEF7F7] text-[#007599] rounded-full border border-[#B2DDDD]">
               13 Régions Sanitaires Déployées
->>>>>>> omai/dev
             </span>
           </div>
         </div>
