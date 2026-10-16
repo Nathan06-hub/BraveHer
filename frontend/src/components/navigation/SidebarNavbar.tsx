@@ -170,6 +170,22 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     },
   ];
 
+  const isSageFemme =
+    currentUser?.role === 'responsable' ||
+    currentUser?.role === 'SAGE_FEMME' ||
+    currentUser?.roleTitre?.toLowerCase().includes('sage-femme');
+
+  // Filtrage des onglets : la Sage-femme n'a pas besoin du Pilotage Ministère,
+  // de la diffusion massive Push SMS, ni de la gestion administrative du centre
+  const visibleNavItems = mainNavItems.filter((item) => {
+    if (isSageFemme) {
+      if (item.id === 'predictive') return false;
+      if (item.id === 'centre_admin') return false;
+      if (item.id === 'messages') return false;
+    }
+    return true;
+  });
+
   return (
     <>
       {/* Mobile Backdrop Scrim */}
@@ -198,7 +214,7 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
         {/* Section Médiane : Navigation scrollable de manière fluide */}
         <div className="nav-scroll-area">
           <nav className="nav-items-list" aria-label="Liens principaux">
-            {mainNavItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <NavListItem
                 key={item.id}
                 id={item.id}

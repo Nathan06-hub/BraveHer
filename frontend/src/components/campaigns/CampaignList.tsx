@@ -207,14 +207,16 @@ export const CampaignList: React.FC<CampaignListProps> = ({
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn-create-campaign"
-          onClick={onCreateCampaign}
-        >
-          <Plus className="w-5 h-5" />
-          <span>Créer une Campagne</span>
-        </button>
+        {(currentUser.role === 'admin' || currentUser.role === 'ADMIN') && (
+          <button
+            type="button"
+            className="btn-create-campaign"
+            onClick={onCreateCampaign}
+          >
+            <Plus className="w-5 h-5" />
+            <span>Créer une Campagne</span>
+          </button>
+        )}
       </div>
 
       {/* Cartes KPI du Module */}

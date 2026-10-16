@@ -94,13 +94,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     ];
   }, [totalPatientes]);
 
+  const isSageFemme =
+    currentUser?.roleTitre?.toLowerCase().includes('sage-femme') ||
+    currentUser?.roleTitre?.toLowerCase().includes('responsable clinique');
+
   return (
     <div className="dashboard-content-container">
       {/* 1. En-tête de bienvenue avec salutation et boutons d'action rapide */}
       <DashboardWelcomeHeader
         userName={currentUser?.prenom || 'Aïcha'}
         onExport={onExportReport}
-        onCreateCampaign={onCreateCampaign}
+        onCreateCampaign={!isSageFemme ? onCreateCampaign : undefined}
       />
 
       {/* 2. Grille des 4 indicateurs clés réels du Backend Spring Boot */}

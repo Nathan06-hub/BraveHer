@@ -48,15 +48,17 @@ export const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
           <span>Exporter</span>
         </button>
 
-        <button
-          type="button"
-          className="dashboard-btn dashboard-btn-primary"
-          onClick={onCreateCampaign}
-          title="Créer une nouvelle campagne de dépistage"
-        >
-          <Plus size={15} aria-hidden="true" />
-          <span>Nouvelle campagne</span>
-        </button>
+        {onCreateCampaign && (
+          <button
+            type="button"
+            className="dashboard-btn dashboard-btn-primary"
+            onClick={onCreateCampaign}
+            title="Créer une nouvelle campagne de dépistage"
+          >
+            <Plus size={15} aria-hidden="true" />
+            <span>Nouvelle campagne</span>
+          </button>
+        )}
       </div>
     </section>
   );
