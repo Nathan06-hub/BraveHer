@@ -3,16 +3,11 @@ import { SidebarNavbar, MobileNavTopbar } from './components/navigation';
 import { LoginPage } from './pages/loginPage';
 import { CampaignsPage } from './pages/CampaignsPage';
 import { CampaignDetailModal } from './components/campaigns';
-import {
-  MOCK_CENTRES,
-  MOCK_AGENTS,
-  MOCK_PERSONNES_SENSIBILISEES,
-  MOCK_SMS_LOGS,
-  MOCK_REGLES_AUTOMATISATION_AGE,
-} from './data/mockCampaignData';
+import { MOCK_REGLES_AUTOMATISATION_AGE } from './data/mockCampaignData';
 import type {
   Campagne,
   CentreSante,
+  AgentSante,
   PersonneSensibilisee,
   CurrentUserContext,
   StatutCampagne,
@@ -32,35 +27,19 @@ import {
   type PatientCandidate,
 } from './components/solidarity';
 import {
-  MOCK_DEMANDES_AIDE,
   MOCK_FONDS_SOLIDARITE,
   MOCK_INDICATEURS_REGIONS_BF,
 } from './data/mockSolidarityData';
-import {
-  MOCK_PARTENAIRES,
-  MOCK_DONS_TRANSACTIONS,
-  MOCK_APPELS_AIDE_CAS_GRAVES,
-} from './data/mockPartnersData';
 import type {
   PartenaireDonneur,
   DonTransaction,
   AppelAideCasGrave,
 } from './types/partner';
 import type { DemandeAide, FondsSolidariteSummary } from './types/solidarity';
-import {
-  BeneficiariesDashboard,
-  PatientTriageView,
-  NewPatientRegistrationView,
-  PatientProfileView,
-} from './components/beneficiaries';
-import {
-  MOCK_BENEFICIAIRES,
-  MOCK_BENEFICIAIRES_KPIS,
-} from './data/mockBeneficiariesData';
+import { PatientsPage, PushSmsPage } from './pages';
 import type { Beneficiaire, BeneficiairesKPIs, ExamenCliniqueDetails } from './types/beneficiary';
 import { DashboardView } from './components/dashboard';
 import { AgentMyCampaignsView } from './components/agentCampaigns';
-import { PushSmsMessagingView } from './components/messaging';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { NetworkStatusBadge } from './components/common/NetworkStatusBadge';
 import {
@@ -139,13 +118,12 @@ export function App() {
     syncNow,
   } = useNetworkStatus();
 
-  // État des données du Module 1 (Campagnes réelles du Backend Spring Boot et Logs SMS Orange)
+  // État des données du Module 1 (Campagnes réelles du Backend Spring Boot et Logs SMS)
   const [campagnes, setCampagnes] = useState<Campagne[]>([]);
-  const [centresList, setCentresList] = useState<CentreSante[]>(MOCK_CENTRES);
-  const [personnes, setPersonnes] = useState<PersonneSensibilisee[]>(
-    MOCK_PERSONNES_SENSIBILISEES
-  );
-  const [smsLogs, setSmsLogs] = useState<SmsLog[]>(MOCK_SMS_LOGS);
+  const [centresList, setCentresList] = useState<CentreSante[]>([]);
+  const [agentsList] = useState<AgentSante[]>([]);
+  const [personnes, setPersonnes] = useState<PersonneSensibilisee[]>([]);
+  const [smsLogs, setSmsLogs] = useState<SmsLog[]>([]);
 
   // Nombre réel de campagnes actives (statut EN_COURS) issues du Backend Spring Boot
   const activeCampaignsCount = useMemo(() => {
@@ -180,8 +158,8 @@ export function App() {
   const [editingCampaign, setEditingCampaign] = useState<Campagne | null>(null);
   const [viewingCampaign, setViewingCampaign] = useState<Campagne | null>(null);
 
-  // État des données du Module 4 : Solidarité & Pilotage Statistique
-  const [demandesAide, setDemandesAide] = useState<DemandeAide[]>(MOCK_DEMANDES_AIDE);
+  // État des données du Fonds de Solidarité & Pilotage Statistique
+  const [demandesAide, setDemandesAide] = useState<DemandeAide[]>([]);
   const [fondsSolidarite, setFondsSolidarite] = useState<FondsSolidariteSummary>(
     MOCK_FONDS_SOLIDARITE
   );
@@ -190,11 +168,12 @@ export function App() {
   >('dashboard');
   const [activeSolidarityTab, setActiveSolidarityTab] = useState<SolidaritySectionTab>('requests');
   const [selectedAidRequest, setSelectedAidRequest] = useState<DemandeAide | null>(null);
+  const [selectedPatientForAid, setSelectedPatientForAid] = useState<Beneficiaire | null>(null);
 
   // Données Partenaires & Parrainages (Étape 2 & 3)
-  const [partenairesList, setPartenairesList] = useState<PartenaireDonneur[]>(MOCK_PARTENAIRES);
-  const [donsTransactions, setDonsTransactions] = useState<DonTransaction[]>(MOCK_DONS_TRANSACTIONS);
-  const [appelsAideCasGraves, setAppelsAideCasGraves] = useState<AppelAideCasGrave[]>(MOCK_APPELS_AIDE_CAS_GRAVES);
+  const [partenairesList, setPartenairesList] = useState<PartenaireDonneur[]>([]);
+  const [donsTransactions, setDonsTransactions] = useState<DonTransaction[]>([]);
+  const [appelsAideCasGraves, setAppelsAideCasGraves] = useState<AppelAideCasGrave[]>([]);
   const [isIncomingDonationModalOpen, setIsIncomingDonationModalOpen] = useState<boolean>(false);
   const [preselectedPartnerForDonation, setPreselectedPartnerForDonation] = useState<string | undefined>(undefined);
 
@@ -285,7 +264,7 @@ export function App() {
     );
   };
 
-  // Handlers pour le Module 4
+  // Handlers pour le Fonds de Solidarité & Mécénat
   const handleCreateAidRequest = (newDemande: DemandeAide) => {
     // Appel API Solidarité
     solidarityApi.createDemandeAide(newDemande).catch(console.warn);
@@ -296,6 +275,23 @@ export function App() {
       nombreDemandesTotal: prev.nombreDemandesTotal + 1,
       demandesEnAttente: prev.demandesEnAttente + 1,
     }));
+
+    if (selectedPatientForAid) {
+      setBeneficiairesList((prev) =>
+        prev.map((b) =>
+          b.id === selectedPatientForAid.id
+            ? {
+                ...b,
+                demandeAideId: newDemande.id,
+                demandeAideCode: newDemande.codeDossier,
+                statutAideFonds: 'EN_ATTENTE',
+              }
+            : b
+        )
+      );
+    }
+
+    setSelectedPatientForAid(null);
     setSolidarityView('dashboard');
     showToast(`Demande d'aide ${newDemande.codeDossier} enregistrée avec succès !`);
   };
@@ -362,15 +358,37 @@ export function App() {
     );
   };
 
-  // État des données du Module Bénéficiaires & Patientes
-  const [beneficiairesList, setBeneficiairesList] = useState<Beneficiaire[]>(MOCK_BENEFICIAIRES);
-  const [beneficiairesKpis, setBeneficiairesKpis] = useState<BeneficiairesKPIs>(
-    MOCK_BENEFICIAIRES_KPIS
-  );
-  const [beneficiaryView, setBeneficiaryView] = useState<
-    'dashboard' | 'triage' | 'create' | 'detail'
-  >('dashboard');
-  const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiaire | null>(null);
+  // État des données réelles du Module Patientes (chargées depuis PostgreSQL via patientApi)
+  const [beneficiairesList, setBeneficiairesList] = useState<Beneficiaire[]>([]);
+  const [beneficiairesKpis, setBeneficiairesKpis] = useState<BeneficiairesKPIs>({
+    totalPatientes: 0,
+    depistagesEffectues: 0,
+    casRisqueEleve: 0,
+    casRisqueModere: 0,
+    femmesPdiOuVulnerables: 0,
+    aidesAttribueesCount: 0,
+  });
+
+  // Liste dynamique des patientes candidates au parrainage à partir de la patientèle réelle
+  const candidatePatientsList = useMemo<PatientCandidate[] | undefined>(() => {
+    const list = beneficiairesList.map((b) => ({
+      id: b.id,
+      nom: b.nom,
+      prenom: b.prenom,
+      age: b.age,
+      commune: b.commune,
+      region: b.secteur || 'Burkina Faso',
+      scoreIA: b.dernierTriage?.scoreCalcule || b.derniereEvaluation?.scoreIA || 75,
+      descriptionClinique:
+        b.dernierTriage?.observationsVocales ||
+        b.dernierTriage?.conduiteATenir ||
+        b.derniereEvaluation?.conduiteATenir ||
+        'Patiente prioritaire identifiée lors des campagnes de dépistage terrain.',
+      vulnerabilite: b.statutVulnerabilite,
+      centreNom: b.centreSuiviNom,
+    }));
+    return list.length > 0 ? list : undefined;
+  }, [beneficiairesList]);
 
   // Vérification de la session auprès du Backend Spring Boot
   useEffect(() => {
@@ -413,25 +431,63 @@ export function App() {
     let isMounted = true;
     async function hydrateData() {
       try {
-        const [loadedCampagnes, loadedCentres, loadedPatients, loadedDemandes, loadedPartenaires] =
-          await Promise.all([
-            campaignApi.getCampagnes(),
-            centreApi.getCentres(),
-            patientApi.getPatientes(),
-            solidarityApi.getDemandesAide(),
-            partnerApi.getPartenaires(),
-          ]);
+        const [
+          loadedCampagnes,
+          loadedCentres,
+          loadedPatients,
+          loadedDemandes,
+          loadedPartenaires,
+          loadedSmsLogs,
+        ] = await Promise.all([
+          campaignApi.getCampagnes(),
+          centreApi.getCentres(),
+          patientApi.getPatientes(),
+          solidarityApi.getDemandesAide(),
+          partnerApi.getPartenaires(),
+          campaignApi.getSmsLogs(),
+        ]);
 
         if (isMounted) {
-          if (Array.isArray(loadedCampagnes) && loadedCampagnes.length > 0) {
+          if (Array.isArray(loadedCampagnes)) {
             setCampagnes(loadedCampagnes);
           }
-          if (Array.isArray(loadedCentres) && loadedCentres.length > 0) {
+          if (Array.isArray(loadedCentres)) {
             setCentresList(loadedCentres);
           }
-          if (loadedPatients?.length) setBeneficiairesList(loadedPatients);
-          if (loadedDemandes?.length) setDemandesAide(loadedDemandes);
-          if (loadedPartenaires?.length) setPartenairesList(loadedPartenaires);
+          if (Array.isArray(loadedPatients)) {
+            setBeneficiairesList(loadedPatients);
+            setBeneficiairesKpis({
+              totalPatientes: loadedPatients.length,
+              depistagesEffectues: loadedPatients.filter(
+                (p) => p.derniereEvaluation || p.dernierTriage
+              ).length,
+              casRisqueEleve: loadedPatients.filter(
+                (p) =>
+                  p.dernierTriage?.niveauSuspicion === 'eleve' ||
+                  p.derniereEvaluation?.niveauRisque === 'ELEVE'
+              ).length,
+              casRisqueModere: loadedPatients.filter(
+                (p) =>
+                  p.dernierTriage?.niveauSuspicion === 'modere' ||
+                  p.derniereEvaluation?.niveauRisque === 'MODERE'
+              ).length,
+              femmesPdiOuVulnerables: loadedPatients.filter(
+                (p) => p.statutVulnerabilite === 'PDI' || p.statutVulnerabilite === 'Vulnerable'
+              ).length,
+              aidesAttribueesCount: loadedPatients.filter(
+                (p) => p.demandeAideId || p.statutAideFonds === 'APPROUVEE' || p.statutAideFonds === 'PAYEE'
+              ).length,
+            });
+          }
+          if (Array.isArray(loadedDemandes)) {
+            setDemandesAide(loadedDemandes);
+          }
+          if (Array.isArray(loadedPartenaires)) {
+            setPartenairesList(loadedPartenaires);
+          }
+          if (Array.isArray(loadedSmsLogs)) {
+            setSmsLogs(loadedSmsLogs);
+          }
         }
       } catch (err) {
         console.warn('[App] Mode fallback local actif pour l\'hydratation', err);
@@ -471,7 +527,6 @@ export function App() {
           ? prev.femmesPdiOuVulnerables + 1
           : prev.femmesPdiOuVulnerables,
     }));
-    setBeneficiaryView('dashboard');
     if (newPatient.derniereEvaluation?.niveauRisque === 'ELEVE') {
       showToast(
         `Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée · Score IA : ${newPatient.derniereEvaluation.scoreIA}% (RISQUE ÉLEVÉ) — Bon de Santé prioritaire recommandé !`
@@ -500,14 +555,13 @@ export function App() {
           ? prev.casRisqueEleve + 1
           : prev.casRisqueEleve,
     }));
-    setBeneficiaryView('dashboard');
-    setSelectedBeneficiary(null);
     showToast(
       `Triage clinique de ${updatedPatient.nom} ${updatedPatient.prenom} enregistré (Score : ${updatedPatient.dernierTriage?.scoreCalcule}%) !`
     );
   };
 
   const handleRequestSolidarityForPatient = (patient: Beneficiaire) => {
+    setSelectedPatientForAid(patient);
     setActiveTab('impact');
     setSolidarityView('create');
     showToast(
@@ -526,10 +580,8 @@ export function App() {
   const navigateToTab = useCallback((tabId: string, replace = false) => {
     setActiveTab(tabId);
     if (tabId === 'impact') {
+      setSelectedPatientForAid(null);
       setSolidarityView('dashboard');
-    }
-    if (tabId === 'beneficiaries') {
-      setBeneficiaryView('dashboard');
     }
 
     if (typeof window !== 'undefined') {
@@ -1038,25 +1090,23 @@ export function App() {
     );
   };
 
-  // 6. Déclenchement d'une vague mensuelle/semestrielle selon l'âge (ex: 20 ans, 40 ans)
+  // 6. Déclenchement d'une vague selon l'âge (20, 35, 40, 50 ans)
   const handleTriggerAgeWave = (rule: RegleAutomatisationAge) => {
     const dateStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-    // Filtrer les patientes enregistrées dans cette tranche d'âge
+    // Filtrer les patientes réelles du backend dans cette tranche d'âge
     const eligiblePatients = beneficiairesList.filter(
       (b) => b.age >= rule.ageMin && b.age <= rule.ageMax
     );
 
-    const count = eligiblePatients.length > 0 ? eligiblePatients.length : 3;
-    const sampleNames = eligiblePatients.length > 0
-      ? eligiblePatients
-      : [
-          { nom: 'Kaboré', prenom: 'Rasmata', telephone: '+226 70 12 34 56', languePreferee: 'Mooré' as LanguePatiente, age: 22 },
-          { nom: 'Ouattara', prenom: 'Aïcha', telephone: '+226 76 98 76 54', languePreferee: 'Dioula' as LanguePatiente, age: 24 },
-          { nom: 'Diallo', prenom: 'Fatoumata', telephone: '+226 77 11 22 33', languePreferee: 'Fulfuldé' as LanguePatiente, age: 28 },
-        ];
+    if (eligiblePatients.length === 0) {
+      showToast(
+        `Aucune patiente enregistrée dans la tranche d'âge ${rule.ageMin}-${rule.ageMax} ans.`
+      );
+      return;
+    }
 
-    const generatedLogs: SmsLog[] = sampleNames.map((p, idx) => {
+    const generatedLogs: SmsLog[] = eligiblePatients.map((p, idx) => {
       const langKey = p.languePreferee === 'Mooré'
         ? 'moore'
         : p.languePreferee === 'Dioula'
@@ -1075,7 +1125,6 @@ export function App() {
         contenu: text,
         dateEnvoi: dateStr,
         statut: 'ENVOYE',
-        operateur: 'Orange BF',
         typeMessage: 'RAPPEL_AGE_AUTOPALPATION',
         ageCible: p.age,
       };
@@ -1089,7 +1138,7 @@ export function App() {
         r.id === rule.id
           ? {
               ...r,
-              totalEnvoyes: r.totalEnvoyes + count,
+              totalEnvoyes: r.totalEnvoyes + eligiblePatients.length,
               derniereExecution: dateStr.substring(0, 16),
             }
           : r
@@ -1097,7 +1146,7 @@ export function App() {
     );
 
     showToast(
-      `⚡ Vague mensuelle Orange SMS (${rule.ageMin}-${rule.ageMax} ans) diffusée avec succès auprès de ${count} femmes !`
+      `⚡ Rappels automatiques (${rule.ageMin}-${rule.ageMax} ans) diffusés auprès de ${eligiblePatients.length} femmes !`
     );
   };
 
@@ -1123,12 +1172,14 @@ export function App() {
       return true;
     });
 
-    const listToNotify = targeted.length > 0 ? targeted : [
-      { id: 'rel-1', nom: 'Sawadogo', prenom: 'Bibata', telephone: '+226 70 88 44 22', languePreferee: 'Mooré' as LanguePatiente },
-      { id: 'rel-2', nom: 'Sanogo', prenom: 'Minata', telephone: '+226 76 55 11 00', languePreferee: 'Dioula' as LanguePatiente },
-    ];
+    if (targeted.length === 0) {
+      showToast(
+        `Aucune patiente ciblée pour cette campagne.`
+      );
+      return;
+    }
 
-    const generatedLogs: SmsLog[] = listToNotify.map((p, idx) => {
+    const generatedLogs: SmsLog[] = targeted.map((p, idx) => {
       const langKey = p.languePreferee === 'Mooré'
         ? 'moore'
         : p.languePreferee === 'Dioula'
@@ -1149,7 +1200,6 @@ export function App() {
         contenu: text,
         dateEnvoi: dateStr,
         statut: 'ENVOYE',
-        operateur: 'Orange BF',
         typeMessage: 'RELANCE_POST_CAMPAGNE',
       };
     });
@@ -1162,14 +1212,14 @@ export function App() {
         c.id === campagneId
           ? {
               ...c,
-              totalSmsEnvoyes: (c.totalSmsEnvoyes || 0) + listToNotify.length,
+              totalSmsEnvoyes: (c.totalSmsEnvoyes || 0) + targeted.length,
             }
           : c
       )
     );
 
     showToast(
-      `📢 Relance post-campagne diffusée en langues locales auprès de ${listToNotify.length} patientes !`
+      `📢 Relance post-campagne diffusée en langues locales auprès de ${targeted.length} patientes !`
     );
   };
 
@@ -1184,19 +1234,18 @@ export function App() {
     const dateStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const newLog: SmsLog = {
       id: `sms-quick-${Date.now()}`,
-      destinataireNom: `Contacts géociblés (${secteur}, ${commune})`,
-      destinataireTelephone: `+226 70 ${Math.floor(10 + Math.random() * 89)} XX XX`,
+      destinataireNom: `Diffusion de proximité (${secteur}, ${commune})`,
+      destinataireTelephone: `Commune de ${commune}`,
       langue,
       contenu,
       dateEnvoi: dateStr,
       statut: 'ENVOYE',
-      operateur: 'Orange BF',
       typeMessage: 'ALERTE_IMMEDIATE',
     };
 
     setSmsLogs((prev) => [newLog, ...prev]);
     showToast(
-      `⚡ Alerte Push SMS Orange diffusée sur ${secteur} (${commune}) auprès de ~${estimatedCount} téléphones !`
+      `⚡ Alerte SMS diffusée sur ${secteur} (${commune}) auprès de ~${estimatedCount} téléphones !`
     );
   };
 
@@ -1211,14 +1260,16 @@ export function App() {
       });
     }
 
-    // Rafraîchir les campagnes et centres depuis le Backend pour garantir des données actives à jour
+    // Rafraîchir les campagnes, centres et patientes depuis le Backend PostgreSQL
     Promise.all([
       campaignApi.getCampagnes(),
       centreApi.getCentres(),
+      patientApi.getPatientes(),
     ])
-      .then(([camps, centres]) => {
+      .then(([camps, centres, patients]) => {
         if (Array.isArray(camps)) setCampagnes(camps);
         if (Array.isArray(centres) && centres.length > 0) setCentresList(centres);
+        if (Array.isArray(patients)) setBeneficiairesList(patients);
       })
       .catch(console.warn);
 
@@ -1274,7 +1325,7 @@ export function App() {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#007599]" />
               <span className="text-xs font-semibold text-[#17343B]">
-                Plateforme Nationale « Soutien Rose BFK » · CSPS & Centres Référents
+                Plateforme Nationale « Soutien Rose » · CSPS & Centres Référents
               </span>
             </div>
 
@@ -1324,7 +1375,7 @@ export function App() {
               <CampaignsPage
                 campagnes={campagnes}
                 centres={centresList}
-                agents={MOCK_AGENTS}
+                agents={agentsList}
                 currentUser={currentUser}
                 personnes={personnes}
                 smsLogs={smsLogs}
@@ -1342,9 +1393,12 @@ export function App() {
               <AgentMyCampaignsView
                 campagnes={campagnes}
                 personnes={personnes}
-                allAgents={MOCK_AGENTS}
+                allAgents={agentsList}
                 currentUser={currentUser}
+                centres={centresList}
+                allBeneficiaires={beneficiairesList}
                 onAddPersonne={handleAddPersonne}
+                onRegisterBeneficiaire={handleRegisterNewPatient}
                 onViewCampaignDetails={(camp) => setViewingCampaign(camp)}
               />
             ) : activeTab === 'impact' ? (
@@ -1356,7 +1410,10 @@ export function App() {
                     fonds={fondsSolidarite}
                     indicateursRegions={MOCK_INDICATEURS_REGIONS_BF}
                     currentUser={currentUser}
-                    onCreateAidRequest={() => setSolidarityView('create')}
+                    onCreateAidRequest={() => {
+                      setSelectedPatientForAid(null);
+                      setSolidarityView('create');
+                    }}
                     onViewDetail={(demande) => {
                       setSelectedAidRequest(demande);
                       setSolidarityView('validate');
@@ -1409,7 +1466,11 @@ export function App() {
                 {solidarityView === 'create' && (
                   <AidRequestFormView
                     currentUser={currentUser}
-                    onBack={() => setSolidarityView('dashboard')}
+                    initialPatient={selectedPatientForAid}
+                    onBack={() => {
+                      setSelectedPatientForAid(null);
+                      setSolidarityView('dashboard');
+                    }}
                     onSubmit={handleCreateAidRequest}
                   />
                 )}
@@ -1439,86 +1500,29 @@ export function App() {
                 )}
               </>
             ) : activeTab === 'beneficiaries' ? (
-              /* Module 2 : Bénéficiaires & Triage Clinique par IA */
-              <>
-                {beneficiaryView === 'dashboard' && (
-                  <BeneficiariesDashboard
-                    beneficiaires={beneficiairesList}
-                    kpis={beneficiairesKpis}
-                    currentUser={currentUser}
-                    onRegisterNewPatient={() => setBeneficiaryView('create')}
-                    onStartTriage={(patient) => {
-                      setSelectedBeneficiary(patient);
-                      setBeneficiaryView('triage');
-                    }}
-                    onViewProfile={(patient) => {
-                      setSelectedBeneficiary(patient);
-                      setBeneficiaryView('detail');
-                    }}
-                    onRequestSolidarity={handleRequestSolidarityForPatient}
-                  />
-                )}
-
-                {beneficiaryView === 'triage' && selectedBeneficiary && (
-                  <PatientTriageView
-                    patient={selectedBeneficiary}
-                    currentUser={currentUser}
-                    onBack={() => {
-                      setSelectedBeneficiary(null);
-                      setBeneficiaryView('dashboard');
-                    }}
-                    onSaveTriage={handleSavePatientTriage}
-                    onRequestSolidarity={handleRequestSolidarityForPatient}
-                  />
-                )}
-
-                {beneficiaryView === 'create' && (
-                  <NewPatientRegistrationView
-                    currentUser={currentUser}
-                    onBack={() => setBeneficiaryView('dashboard')}
-                    onSubmit={handleRegisterNewPatient}
-                  />
-                )}
-
-                {beneficiaryView === 'detail' && selectedBeneficiary && (
-                  <PatientProfileView
-                    patient={selectedBeneficiary}
-                    onBack={() => {
-                      setSelectedBeneficiary(null);
-                      setBeneficiaryView('dashboard');
-                    }}
-                    onStartTriage={(patient) => {
-                      setSelectedBeneficiary(patient);
-                      setBeneficiaryView('triage');
-                    }}
-                    onRequestSolidarity={handleRequestSolidarityForPatient}
-                    onRequestPartnerSponsorship={(patient) => {
-                      handleOpenSendAidAppeal(undefined, {
-                        id: patient.id,
-                        nom: patient.nom,
-                        prenom: patient.prenom,
-                        age: patient.age,
-                        commune: patient.commune,
-                        region: patient.secteur || 'Centre',
-                        scoreIA: patient.derniereEvaluation?.scoreIA || 85,
-                        descriptionClinique:
-                          patient.derniereEvaluation?.conduiteATenir ||
-                          'Cas à risque élevé détecté lors du dépistage communautaire.',
-                        vulnerabilite: patient.statutVulnerabilite,
-                        centreNom: patient.centreSuiviNom,
-                      });
-                    }}
-                  />
-                )}
-              </>
+              /* Module 2 : Dossiers & Suivi des Patientes */
+              <PatientsPage
+                beneficiaires={beneficiairesList}
+                kpis={beneficiairesKpis}
+                currentUser={currentUser}
+                centres={centresList}
+                campagnes={campagnes}
+                onRegisterNewPatient={handleRegisterNewPatient}
+                onSavePatientTriage={handleSavePatientTriage}
+                onRequestSolidarity={handleRequestSolidarityForPatient}
+                onRequestPartnerSponsorship={(candidate) =>
+                  handleOpenSendAidAppeal(undefined, candidate)
+                }
+              />
             ) : activeTab === 'dashboard' ? (
               /* Vue d'ensemble fidèle à dashboard-maquette.html */
               <DashboardView
                 currentUser={currentUser}
                 campagnes={campagnes}
+                beneficiairesList={beneficiairesList}
+                beneficiairesKpis={beneficiairesKpis}
                 onNavigateTab={(tab) => {
                   setActiveTab(tab);
-                  if (tab === 'beneficiaries') setBeneficiaryView('dashboard');
                   if (tab === 'solidarity' || tab === 'impact') setSolidarityView('dashboard');
                 }}
                 onCreateCampaign={() => {
@@ -1539,7 +1543,7 @@ export function App() {
               />
             ) : activeTab === 'messages' ? (
               /* Hub de Messagerie Orange SMS, Automatisation par Âge & Relances */
-              <PushSmsMessagingView
+              <PushSmsPage
                 campagnes={campagnes}
                 allPersonnes={personnes}
                 smsLogs={smsLogs}
@@ -1593,12 +1597,11 @@ export function App() {
                     type="button"
                     onClick={() => {
                       setActiveTab('beneficiaries');
-                      setBeneficiaryView('dashboard');
                     }}
                     className="btn-primary-filled"
                     style={{ background: '#007599' }}
                   >
-                    Module 2 : Bénéficiaires & Triage IA →
+                    Dossiers Bénéficiaires & Triage IA →
                   </button>
                   <button
                     type="button"
@@ -1609,7 +1612,7 @@ export function App() {
                     className="btn-primary-filled"
                     style={{ background: '#FF7900' }}
                   >
-                    Module 4 : Solidarité & Orange Money →
+                    Fonds de Solidarité & Mécénat →
                   </button>
                   <button
                     type="button"
@@ -1639,7 +1642,7 @@ export function App() {
         <CampaignDetailModal
           isOpen={!!viewingCampaign}
           campagne={viewingCampaign}
-          allAgents={MOCK_AGENTS}
+          allAgents={agentsList}
           allPersonnes={personnes}
           allSmsLogs={smsLogs}
           currentUser={currentUser}
@@ -1649,7 +1652,7 @@ export function App() {
         />
       )}
 
-      {/* MODAL 4 : Simulateur de Don Entrant Webhook Partenaire (Module 4) */}
+      {/* MODAL 4 : Simulateur de Don Entrant Webhook Partenaire */}
       <IncomingDonationApiModal
         isOpen={isIncomingDonationModalOpen}
         onClose={() => setIsIncomingDonationModalOpen(false)}
@@ -1658,17 +1661,22 @@ export function App() {
         onConfirmDonation={handleConfirmIncomingDonation}
       />
 
-      {/* MODAL 5 : Envoi d'Appel à l'Aide / Parrainage Cas Graves (Module 4) */}
+      {/* MODAL 5 : Envoi d'Appel à l'Aide / Parrainage Cas Graves */}
       <SendPartnerAidRequestModal
         isOpen={isSendAidAppealModalOpen}
-        onClose={() => setIsSendAidAppealModalOpen(false)}
+        onClose={() => {
+          setIsSendAidAppealModalOpen(false);
+          setPreselectedPatientForAppeal(undefined);
+          setPreselectedPartnerForAppeal(undefined);
+        }}
         partenaires={partenairesList}
         preselectedPartnerId={preselectedPartnerForAppeal}
         preselectedPatient={preselectedPatientForAppeal}
+        patientsCandidats={candidatePatientsList}
         onSubmitAppeal={handleSubmitAidAppeal}
       />
 
-      {/* MODAL 6 : Fiche Détaillée & Contrat Partenaire (Module 4) */}
+      {/* MODAL 6 : Fiche Détaillée & Contrat Partenaire */}
       <PartnerDetailModal
         isOpen={isPartnerDetailModalOpen}
         onClose={() => {

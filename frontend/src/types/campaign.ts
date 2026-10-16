@@ -80,7 +80,7 @@ export interface RegleAutomatisationAge {
   description: string;
   ageMin: number;
   ageMax: number;
-  frequence: 'MENSUEL' | 'TRIMESTRIEL' | 'SEMESTRIEL' | 'ANNUEL';
+  frequence: 'MENSUEL' | 'TRIMESTRIEL' | 'SEMESTRIEL' | 'ANNUEL' | 'TOUS LES 2 ANS' | 'TOUS LES 2-3 ANS';
   jourDuMois: number; // Ex: 1 pour le 1er du mois
   actif: boolean;
   messages: {

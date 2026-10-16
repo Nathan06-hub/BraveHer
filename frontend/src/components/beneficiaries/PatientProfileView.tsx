@@ -307,7 +307,7 @@ export const PatientProfileView: React.FC<PatientProfileViewProps> = ({
 
               {(isHighRisk || patient.statutVulnerabilite === 'PDI' || patient.statutVulnerabilite === 'Vulnerable') && (
                 <div className="p-3 bg-orange-50 rounded-lg border border-orange-200 text-orange-900 leading-relaxed">
-                  <strong>Éligibilité au Fonds :</strong> Cette patiente présente des critères prioritaires pour le financement de sa mammographie (25 000 FCFA) par Orange Money Burkina Faso.
+                  <strong>Éligibilité au Fonds :</strong> Cette patiente présente des critères prioritaires pour la prise en charge de ses examens par le Fonds de Solidarité & Mécénat.
                 </div>
               )}
 

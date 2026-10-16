@@ -1,4 +1,14 @@
 import React from 'react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  HelpCircle,
+  ShieldAlert,
+  Heart,
+  User,
+} from 'lucide-react';
 
 export type StatusBadgeVariant =
   | 'neutral'
@@ -6,7 +16,9 @@ export type StatusBadgeVariant =
   | 'info'
   | 'success'
   | 'danger'
-  | 'primary';
+  | 'primary'
+  | 'purple'
+  | 'orange';
 
 export interface StatusBadgeProps {
   label: React.ReactNode;
@@ -58,6 +70,18 @@ const VARIANT_STYLES: Record<
     border: 'rgba(0, 117, 153, 0.25)',
     pulseColor: '#007599',
   },
+  purple: {
+    bg: '#FAF5FF',
+    text: '#6B21A8',
+    border: '#E9D5FF',
+    pulseColor: '#A855F7',
+  },
+  orange: {
+    bg: '#FFF4EB',
+    text: '#C05E00',
+    border: '#FED7AA',
+    pulseColor: '#ED8B00',
+  },
 };
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({
@@ -103,5 +127,148 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
         />
       )}
     </span>
+  );
+};
+
+/* ========================================================================= */
+/* SOUS-COMPOSANTS SPÉCIALISÉS POUR LE TRIAGE MÉDICAL ET LES PATIENTES        */
+/* ========================================================================= */
+
+export type ClinicalRiskLevel = 'eleve' | 'modere' | 'faible' | 'non_evalue';
+
+export interface ClinicalRiskBadgeProps {
+  niveau: ClinicalRiskLevel;
+  size?: 'sm' | 'md';
+  className?: string;
+}
+
+export const ClinicalRiskBadge: React.FC<ClinicalRiskBadgeProps> = ({
+  niveau,
+  size = 'md',
+  className = '',
+}) => {
+  switch (niveau) {
+    case 'eleve':
+      return (
+        <StatusBadge
+          label="Risque Élevé (Suspicion)"
+          variant="danger"
+          size={size}
+          icon={AlertTriangle}
+          pulse
+          className={className}
+        />
+      );
+    case 'modere':
+      return (
+        <StatusBadge
+          label="Vigilance (Modéré)"
+          variant="warning"
+          size={size}
+          icon={Clock}
+          className={className}
+        />
+      );
+    case 'faible':
+      return (
+        <StatusBadge
+          label="Normal (Faible)"
+          variant="success"
+          size={size}
+          icon={CheckCircle2}
+          className={className}
+        />
+      );
+    case 'non_evalue':
+    default:
+      return (
+        <StatusBadge
+          label="Non Évalué"
+          variant="neutral"
+          size={size}
+          icon={HelpCircle}
+          className={className}
+        />
+      );
+  }
+};
+
+export type PatientVulnerabilityStatus = 'PDI' | 'Vulnerable' | 'Standard';
+
+export interface PatientVulnerabilityBadgeProps {
+  statut: PatientVulnerabilityStatus;
+  size?: 'sm' | 'md';
+  className?: string;
+}
+
+export const PatientVulnerabilityBadge: React.FC<PatientVulnerabilityBadgeProps> = ({
+  statut,
+  size = 'sm',
+  className = '',
+}) => {
+  if (statut === 'PDI') {
+    return (
+      <StatusBadge
+        label="PDI (Déplacée Interne)"
+        variant="purple"
+        size={size}
+        icon={ShieldAlert}
+        className={className}
+      />
+    );
+  }
+  if (statut === 'Vulnerable') {
+    return (
+      <StatusBadge
+        label="Vulnérable"
+        variant="danger"
+        size={size}
+        icon={Heart}
+        className={className}
+      />
+    );
+  }
+  return (
+    <StatusBadge
+      label="Standard"
+      variant="neutral"
+      size={size}
+      icon={User}
+      className={className}
+    />
+  );
+};
+
+export interface SmsStatusBadgeProps {
+  statut: 'ENVOYE' | 'ECHEC' | string;
+  size?: 'sm' | 'md';
+  className?: string;
+}
+
+export const SmsStatusBadge: React.FC<SmsStatusBadgeProps> = ({
+  statut,
+  size = 'sm',
+  className = '',
+}) => {
+  if (statut === 'ENVOYE') {
+    return (
+      <StatusBadge
+        label="ENVOYÉ"
+        variant="success"
+        size={size}
+        icon={CheckCircle2}
+        className={className}
+      />
+    );
+  }
+
+  return (
+    <StatusBadge
+      label="ÉCHEC"
+      variant="danger"
+      size={size}
+      icon={XCircle}
+      className={className}
+    />
   );
 };

@@ -239,7 +239,7 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
           )}
           <div>
             <span className="modal-eyebrow">
-              {isStandalone ? 'MINISTÈRE DE LA SANTÉ & ORANGE DATA FOR GOOD' : 'MODULE 4 · PILOTAGE ÉPIDÉMIOLOGIQUE TERRITORIAL'}
+              {isStandalone ? 'MINISTÈRE DE LA SANTÉ' : 'PILOTAGE ÉPIDÉMIOLOGIQUE TERRITORIAL'}
             </span>
             <h2 className="text-xl font-bold text-[#17343B] font-serif">
               Cartographie & Tendances de Dépistage au Burkina Faso

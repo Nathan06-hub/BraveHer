@@ -936,7 +936,7 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
                       Déclenchement prioritaire du Bon de Santé (Fonds Orange Money)
                     </strong>
                     <p className="text-slate-600 mt-0.5 mb-0">
-                      En cas de vulnérabilité confirmée ({statutVulnerabilite}), l'évaluation déclenchera automatiquement la proposition d'un Bon de Santé de 25 000 FCFA pour couvrir sans délai la mammographie d'urgence au CHU.
+                      En cas de vulnérabilité confirmée ({statutVulnerabilite}), l'évaluation déclenchera automatiquement la proposition d'un Bon de Santé solidaire pour couvrir sans délai les examens d'urgence au CHU.
                     </p>
                   </div>
                 </div>

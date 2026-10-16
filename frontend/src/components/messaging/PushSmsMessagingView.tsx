@@ -12,7 +12,6 @@ import { PostCampaignFollowupModal } from './PostCampaignFollowupModal';
 import { QuickPushSmsModal } from './QuickPushSmsModal';
 import './messaging.css';
 import {
-  Radio,
   Send,
   Smartphone,
   CheckCircle2,
@@ -112,10 +111,6 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
         <div className="messaging-header-content">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <span className="messaging-gateway-badge">
-                <Radio className="w-3.5 h-3.5 text-[#FF7900] animate-pulse" />
-                Passerelle GSM Universelle · Orange Burkina Faso
-              </span>
               <h1 className="messaging-title">
                 Hub de Messagerie & Diffusion Push SMS
               </h1>
@@ -455,9 +450,8 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                     <th>Destinataire</th>
                     <th>Langue</th>
                     <th>Type Message</th>
-                    <th>Contenu SMS Orange</th>
-                    <th>Opérateur</th>
-                    <th>Statut GSM</th>
+                    <th>Contenu SMS</th>
+                    <th>Statut de livraison</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -497,12 +491,6 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                           <p className="text-xs text-[#17343B] font-mono leading-snug line-clamp-2 max-w-md">
                             {log.contenu}
                           </p>
-                        </td>
-
-                        <td>
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#FF7900] bg-[#FFF4EB] px-2 py-0.5 rounded-md border border-[#FFD8B8]">
-                            {log.operateur || 'Orange BF'}
-                          </span>
                         </td>
 
                         <td>

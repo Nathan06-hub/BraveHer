@@ -2,31 +2,29 @@ import React, { useState, useMemo } from 'react';
 import type {
   Beneficiaire,
   BeneficiairesKPIs,
-  NiveauSuspicion,
-  StatutVulnerabilite,
-  StatutDepistage,
 } from '../../types/beneficiary';
 import type { CurrentUserContext } from '../../types/campaign';
 import {
-  SuspicionBadge,
-  VulnerabilityBadge,
-  ScreeningStatusBadge,
-} from './BeneficiaryBadges';
+  KpiCard,
+  SearchInput,
+  EmptyState,
+  ClinicalRiskBadge,
+  PatientVulnerabilityBadge,
+} from '../ui';
+import { PatientFilters, type PatientFilterTab } from './PatientFilters';
 import './beneficiaries.css';
 import {
   Users,
   HeartHandshake,
   AlertTriangle,
   Activity,
-  Search,
-  X,
   Plus,
   Stethoscope,
   Phone,
   MapPin,
-  Calendar,
   Eye,
   CreditCard,
+  Building2,
 } from 'lucide-react';
 
 interface BeneficiariesDashboardProps {
@@ -49,40 +47,91 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
   onRequestSolidarity,
 }) => {
   const [search, setSearch] = useState('');
-  const [selectedRisk, setSelectedRisk] = useState<NiveauSuspicion | 'tous'>('tous');
-  const [selectedVulnerability, setSelectedVulnerability] = useState<
-    StatutVulnerabilite | 'tous'
-  >('tous');
-  const [selectedLanguage, setSelectedLanguage] = useState<string | 'tous'>('tous');
-  const [selectedStatus, setSelectedStatus] = useState<StatutDepistage | 'tous'>('tous');
+  const [activeTab, setActiveTab] = useState<PatientFilterTab>('tous');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('toutes');
+  const [selectedCommune, setSelectedCommune] = useState<string>('toutes');
 
-  // Filtrage multi-critères
+  // Liste unique des communes pour le filtre
+  const communesList = useMemo(() => {
+    const set = new Set<string>();
+    beneficiaires.forEach((b) => {
+      if (b.commune) set.add(b.commune);
+    });
+    return Array.from(set).sort();
+  }, [beneficiaires]);
+
+  // Calcul dynamique des compteurs de filtres
+  const filterCounts = useMemo(() => {
+    let risqueEleve = 0;
+    let vigilance = 0;
+    let vulnerables = 0;
+    let depistees = 0;
+
+    beneficiaires.forEach((b) => {
+      const evaluation = b.derniereEvaluation;
+      const triage = b.dernierTriage;
+      const isHigh = evaluation?.niveauRisque === 'ELEVE' || triage?.niveauSuspicion === 'eleve';
+      const isModere = evaluation?.niveauRisque === 'MODERE' || triage?.niveauSuspicion === 'modere';
+
+      if (isHigh) risqueEleve++;
+      if (isModere) vigilance++;
+      if (b.statutVulnerabilite === 'PDI' || b.statutVulnerabilite === 'Vulnerable') {
+        vulnerables++;
+      }
+      if (b.statutDepistage === 'Effectué') {
+        depistees++;
+      }
+    });
+
+    return {
+      total: beneficiaires.length,
+      risqueEleve,
+      vigilance,
+      vulnerables,
+      depistees,
+    };
+  }, [beneficiaires]);
+
+  // Filtrage combiné (Tab + Langue + Commune + Recherche)
   const filteredBeneficiaires = useMemo(() => {
     return beneficiaires.filter((b) => {
-      if (selectedRisk !== 'tous') {
-        const risk = b.dernierTriage ? b.dernierTriage.niveauSuspicion : 'non_evalue';
-        if (risk !== selectedRisk) return false;
-      }
+      const evaluation = b.derniereEvaluation;
+      const triage = b.dernierTriage;
+      const isHigh = evaluation?.niveauRisque === 'ELEVE' || triage?.niveauSuspicion === 'eleve';
+      const isModere = evaluation?.niveauRisque === 'MODERE' || triage?.niveauSuspicion === 'modere';
 
-      if (selectedVulnerability !== 'tous' && b.statutVulnerabilite !== selectedVulnerability) {
+      // Filtre d'onglet principal
+      if (activeTab === 'risque_eleve' && !isHigh) return false;
+      if (activeTab === 'vigilance' && !isModere) return false;
+      if (
+        activeTab === 'vulnerables' &&
+        b.statutVulnerabilite !== 'PDI' &&
+        b.statutVulnerabilite !== 'Vulnerable'
+      ) {
+        return false;
+      }
+      if (activeTab === 'depistees' && b.statutDepistage !== 'Effectué') {
         return false;
       }
 
-      if (selectedLanguage !== 'tous' && b.languePreferee !== selectedLanguage) {
+      // Filtre langue
+      if (selectedLanguage !== 'toutes' && b.languePreferee !== selectedLanguage) {
         return false;
       }
 
-      if (selectedStatus !== 'tous' && b.statutDepistage !== selectedStatus) {
+      // Filtre commune
+      if (selectedCommune !== 'toutes' && b.commune !== selectedCommune) {
         return false;
       }
 
+      // Recherche textuelle multi-champs
       if (search.trim()) {
         const q = search.toLowerCase();
         const matchName = `${b.prenom} ${b.nom}`.toLowerCase().includes(q);
-        const matchCode = b.numeroDossier.toLowerCase().includes(q);
-        const matchTel = b.telephone.includes(q);
-        const matchCommune = b.commune.toLowerCase().includes(q);
-        const matchCentre = b.centreSuiviNom.toLowerCase().includes(q);
+        const matchCode = (b.numeroDossier || '').toLowerCase().includes(q);
+        const matchTel = (b.telephone || '').includes(q);
+        const matchCommune = (b.commune || '').toLowerCase().includes(q);
+        const matchCentre = (b.centreSuiviNom || '').toLowerCase().includes(q);
 
         if (!matchName && !matchCode && !matchTel && !matchCommune && !matchCentre) {
           return false;
@@ -91,45 +140,37 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
 
       return true;
     });
-  }, [
-    beneficiaires,
-    selectedRisk,
-    selectedVulnerability,
-    selectedLanguage,
-    selectedStatus,
-    search,
-  ]);
+  }, [beneficiaires, activeTab, selectedLanguage, selectedCommune, search]);
 
-  const highRiskCount = beneficiaires.filter(
-    (b) => b.dernierTriage?.niveauSuspicion === 'eleve'
-  ).length;
-
-  const pdiCount = beneficiaires.filter(
-    (b) => b.statutVulnerabilite === 'PDI' || b.statutVulnerabilite === 'Vulnerable'
-  ).length;
+  const handleResetFilters = () => {
+    setSearch('');
+    setActiveTab('tous');
+    setSelectedLanguage('toutes');
+    setSelectedCommune('toutes');
+  };
 
   return (
     <div className="beneficiaries-container">
-      {/* En-tête */}
+      {/* En-tête de la page */}
       <div className="beneficiaries-header">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="modal-eyebrow">MODULE 2 · TRIAGE CLINIQUE & SUIVI TERRAIN</span>
-            <span className="text-[11px] text-[#007599] font-medium bg-[#EEF7F7] px-2 py-0.5 rounded-full">
-              Agent actif : {currentUser.prenom} {currentUser.nom}
+            <span className="modal-eyebrow">DOSSIERS PATIENTES & SUIVI CLINIQUE</span>
+            <span className="text-[11px] text-[#007599] font-medium bg-[#EEF7F7] px-2.5 py-0.5 rounded-full border border-[#B3DFE5]">
+              Praticien : {currentUser.prenom} {currentUser.nom} ({currentUser.roleTitre})
             </span>
           </div>
           <h2 className="beneficiaries-title font-serif">
-            Bénéficiaires & Suivi des Patientes
+            Dossiers & Suivi des Patientes
           </h2>
           <p className="beneficiaries-subtitle">
-            Triage clinique intelligent par IA, enregistrement mobile en langues locales (Mooré, Dioula, Fulfuldé) et continuité de soins pour les femmes du Burkina Faso.
+            Triage clinique intelligent par IA, enregistrement mobile en langues locales (Mooré, Dioula, Fulfuldé) et continuité des soins pour les femmes du Burkina Faso.
           </p>
         </div>
 
         <button
           type="button"
-          className="btn-create-campaign"
+          className="btn-create-campaign cursor-pointer"
           onClick={onRegisterNewPatient}
         >
           <Plus className="w-5 h-5" />
@@ -137,203 +178,103 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
         </button>
       </div>
 
-      {/* Cartes KPI */}
-      <div className="beneficiaries-kpi-grid">
-        {/* KPI 1 : Total Patientes */}
-        <div className="beneficiaries-kpi-card teal">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
-              Patientes Suivies
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-[#E6F4F7] text-[#007599] flex items-center justify-center font-bold">
-              <Users className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-[#17343B]">
-            {beneficiaires.length}
-          </div>
-          <span className="text-[11px] text-[#64748B] mt-0.5 block">
-            {kpis.totalPatientes} répertoriées au niveau national
-          </span>
-        </div>
+      {/* Cartes KPI réutilisables et harmonisées */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiCard
+          title="Patientes Suivies"
+          value={filterCounts.total}
+          icon={Users}
+          variant="teal"
+          subtitle={
+            kpis?.totalPatientes
+              ? `${filterCounts.total} suivies sur le terrain (${kpis.totalPatientes} au total)`
+              : 'Dossiers médicaux actifs répertoriés'
+          }
+          onClick={() => setActiveTab('tous')}
+        />
 
-        {/* KPI 2 : Dépistages Effectués */}
-        <div className="beneficiaries-kpi-card amber">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
-              Dépistages Faits
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
-              <Activity className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-amber-800">
-            {beneficiaires.filter((b) => b.statutDepistage === 'Effectué').length}
-          </div>
-          <span className="text-[11px] text-[#64748B] mt-0.5 block">
-            Palpation clinique bilatérale réalisée
-          </span>
-        </div>
+        <KpiCard
+          title="Dépistages Faits"
+          value={filterCounts.depistees}
+          icon={Activity}
+          variant="amber"
+          subtitle="Examens cliniques bilatéraux réalisés"
+          onClick={() => setActiveTab('depistees')}
+        />
 
-        {/* KPI 3 : Cas Suspects Élevés */}
-        <div className="beneficiaries-kpi-card rose">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
-              Cas Risque Élevé
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center font-bold">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-rose-700">
-            {highRiskCount} cas
-          </div>
-          <span className="text-[11px] text-rose-600 font-medium mt-0.5 block">
-            Orientation mammographie sous 72h
-          </span>
-        </div>
+        <KpiCard
+          title="Cas Risque Élevé"
+          value={`${filterCounts.risqueEleve} cas`}
+          icon={AlertTriangle}
+          variant="rose"
+          subtitle="Orientation mammographie prioritaire sous 72h"
+          onClick={() => setActiveTab('risque_eleve')}
+        />
 
-        {/* KPI 4 : Femmes PDI / Vulnérables */}
-        <div className="beneficiaries-kpi-card purple">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
-              Femmes PDI / Vulnérables
-            </span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center font-bold">
-              <HeartHandshake className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-purple-900">
-            {pdiCount}
-          </div>
-          <span className="text-[11px] text-[#64748B] mt-0.5 block">
-            Éligibles au Fonds de Solidarité Orange Money
-          </span>
-        </div>
+        <KpiCard
+          title="PDI & Vulnérables"
+          value={filterCounts.vulnerables}
+          icon={HeartHandshake}
+          variant="purple"
+          subtitle="Éligibles au Fonds Solidarité Orange Money"
+          onClick={() => setActiveTab('vulnerables')}
+        />
       </div>
 
-      {/* Barre de Recherche et Filtres Avancés */}
-      <div className="p-4 bg-white rounded-xl border border-[#D6E8E8] shadow-sm space-y-3">
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-2.5" />
-            <input
-              type="text"
-              placeholder="Rechercher par nom, N° dossier, téléphone, commune, CSPS..."
+      {/* Barre de recherche et Filtres par pilules */}
+      <div className="p-4 bg-white rounded-2xl border border-[#D6E8E8] shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="w-full sm:max-w-md">
+            <SearchInput
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 text-xs border border-[#CBD5E1] rounded-lg focus:outline-none focus:border-[#007599]"
+              onChange={setSearch}
+              placeholder="Rechercher par nom, N° dossier, téléphone, commune..."
             />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch('')}
-                className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
           </div>
 
-          <span className="text-xs font-semibold text-[#64748B] whitespace-nowrap">
-            {filteredBeneficiaires.length} patiente{filteredBeneficiaires.length > 1 ? 's' : ''} trouvée{filteredBeneficiaires.length > 1 ? 's' : ''}
+          <span className="text-xs font-semibold text-[#64748B] whitespace-nowrap self-end sm:self-center">
+            <strong>{filteredBeneficiaires.length}</strong> patiente{filteredBeneficiaires.length > 1 ? 's' : ''} affichée{filteredBeneficiaires.length > 1 ? 's' : ''}
           </span>
         </div>
 
-        {/* Filtres par tags */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-slate-100">
-          <div>
-            <label className="block text-[11px] font-bold text-[#64748B] mb-1">
-              Suspicion Clinique (Triage)
-            </label>
-            <select
-              value={selectedRisk}
-              onChange={(e) => setSelectedRisk(e.target.value as any)}
-              className="w-full px-2.5 py-1.5 text-xs border border-[#CBD5E1] rounded-md focus:outline-none focus:border-[#007599] bg-white font-medium"
-            >
-              <option value="tous">Tous les niveaux</option>
-              <option value="eleve">🔴 Risque Élevé</option>
-              <option value="modere">🟡 Vigilance (Modéré)</option>
-              <option value="faible">🟢 Normal (Faible)</option>
-              <option value="non_evalue">⚪ Non évalué</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-bold text-[#64748B] mb-1">
-              Vulnérabilité / Situation
-            </label>
-            <select
-              value={selectedVulnerability}
-              onChange={(e) => setSelectedVulnerability(e.target.value as any)}
-              className="w-full px-2.5 py-1.5 text-xs border border-[#CBD5E1] rounded-md focus:outline-none focus:border-[#007599] bg-white font-medium"
-            >
-              <option value="tous">Toutes situations</option>
-              <option value="PDI">PDI (Déplacée Interne)</option>
-              <option value="Vulnerable">Femme Vulnérable</option>
-              <option value="Standard">Standard</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-bold text-[#64748B] mb-1">
-              Langue locale
-            </label>
-            <select
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full px-2.5 py-1.5 text-xs border border-[#CBD5E1] rounded-md focus:outline-none focus:border-[#007599] bg-white font-medium"
-            >
-              <option value="tous">Toutes les langues</option>
-              <option value="Mooré">Mooré</option>
-              <option value="Dioula">Dioula</option>
-              <option value="Fulfuldé">Fulfuldé</option>
-              <option value="Français">Français</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-bold text-[#64748B] mb-1">
-              Statut Dépistage
-            </label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as any)}
-              className="w-full px-2.5 py-1.5 text-xs border border-[#CBD5E1] rounded-md focus:outline-none focus:border-[#007599] bg-white font-medium"
-            >
-              <option value="tous">Tous statuts</option>
-              <option value="Effectué">Effectué</option>
-              <option value="Planifié">Planifié</option>
-              <option value="À orienter">À orienter</option>
-              <option value="Refusé">Refusé</option>
-            </select>
-          </div>
-        </div>
+        {/* Pilules de filtrage interactives */}
+        <PatientFilters
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          counts={filterCounts}
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={setSelectedLanguage}
+          selectedCommune={selectedCommune}
+          onCommuneChange={setSelectedCommune}
+          communesList={communesList}
+        />
       </div>
 
       {/* Tableau des Patientes */}
-      <div className="patient-table-wrapper">
-        <table className="patient-table">
-          <thead>
-            <tr>
-              <th>Patiente & N° Dossier</th>
-              <th>Contact & Langue</th>
-              <th>Situation</th>
-              <th>Centre de Suivi</th>
-              <th>Dépistage</th>
-              <th>Triage Clinique IA</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBeneficiaires.length === 0 ? (
+      {filteredBeneficiaires.length === 0 ? (
+        <EmptyState
+          title="Aucune patiente ne correspond aux critères"
+          description="Essayez de modifier votre recherche ou de réinitialiser les filtres pour afficher l'ensemble des dossiers."
+          action={{
+            label: 'Réinitialiser les filtres',
+            onClick: handleResetFilters,
+          }}
+        />
+      ) : (
+        <div className="patient-table-wrapper">
+          <table className="patient-table">
+            <thead>
               <tr>
-                <td colSpan={7} className="text-center py-10 text-slate-500 text-xs">
-                  Aucune patiente ne correspond aux filtres appliqués.
-                </td>
+                <th>Patiente & N° Dossier</th>
+                <th>Contact & Langue</th>
+                <th>Situation</th>
+                <th>Centre de Suivi</th>
+                <th>Bilan Clinique & Risque IA</th>
+                <th className="text-right">Actions</th>
               </tr>
-            ) : (
-              filteredBeneficiaires.map((pat) => {
+            </thead>
+            <tbody>
+              {filteredBeneficiaires.map((pat) => {
                 const triage = pat.dernierTriage;
                 const evaluation = pat.derniereEvaluation;
                 const isHighRisk =
@@ -348,13 +289,14 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                     key={pat.id}
                     className={isHighRisk ? 'row-high-risk' : ''}
                   >
+                    {/* Patiente & Dossier */}
                     <td>
                       <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                          className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ${
                             isHighRisk
-                              ? 'bg-rose-100 text-rose-700'
-                              : 'bg-[#EEF7F7] text-[#007599]'
+                              ? 'bg-rose-100 text-rose-700 border border-rose-300'
+                              : 'bg-[#EEF7F7] text-[#007599] border border-[#B3DFE5]'
                           }`}
                         >
                           {pat.prenom.charAt(0)}
@@ -371,6 +313,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                       </div>
                     </td>
 
+                    {/* Contact & Langue */}
                     <td>
                       <div className="text-xs">
                         <span className="flex items-center gap-1 text-[#17343B] font-medium">
@@ -382,47 +325,43 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                             <MapPin className="w-3 h-3 text-slate-400" />
                             {pat.commune}
                           </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-semibold">
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200">
                             {pat.languePreferee}
                           </span>
                         </div>
                       </div>
                     </td>
 
+                    {/* Situation de vulnérabilité */}
                     <td>
-                      <VulnerabilityBadge statut={pat.statutVulnerabilite} />
+                      <PatientVulnerabilityBadge statut={pat.statutVulnerabilite} />
                     </td>
 
+                    {/* Centre de suivi & Campagne */}
                     <td>
-                      <span className="text-xs text-[#17343B] block font-medium">
+                      <span className="text-xs text-[#17343B] block font-medium flex items-center gap-1">
+                        <Building2 className="w-3 h-3 text-slate-400" />
                         {pat.centreSuiviNom}
                       </span>
                       {pat.campagneNom && (
-                        <span className="text-[10px] text-[#007599] block">
+                        <span className="text-[10px] text-[#007599] block mt-0.5 font-medium">
                           {pat.campagneNom}
                         </span>
                       )}
                     </td>
 
-                    <td>
-                      <ScreeningStatusBadge statut={pat.statutDepistage} />
-                      <span className="text-[10px] text-[#64748B] block mt-0.5 flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-slate-400" />
-                        {pat.dateSensibilisation}
-                      </span>
-                    </td>
-
+                    {/* Bilan Clinique & Triage IA combiné */}
                     <td>
                       {riskLevel || scoreValue !== undefined ? (
                         <div className="space-y-1">
-                          <SuspicionBadge
+                          <ClinicalRiskBadge
                             niveau={riskLevel || 'faible'}
                             size="sm"
                           />
                           <div className="text-[10px] text-[#64748B] flex items-center gap-1">
                             <span>Score IA :</span>
                             <strong
-                              className={`font-mono ${
+                              className={`font-mono font-bold ${
                                 (scoreValue ?? 0) >= 70
                                   ? 'text-rose-700'
                                   : (scoreValue ?? 0) >= 35
@@ -432,6 +371,9 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                             >
                               {scoreValue ?? 0}/100
                             </strong>
+                            {pat.statutDepistage === 'Effectué' && (
+                              <span className="text-[10px] text-slate-400">· Palpation OK</span>
+                            )}
                           </div>
                           {evaluation?.bonSanteDeclenche && (
                             <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 border border-orange-200">
@@ -446,12 +388,13 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                       )}
                     </td>
 
+                    {/* Actions */}
                     <td>
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
                         {/* Bouton Triage Clinique IA */}
                         <button
                           type="button"
-                          className="btn-triage-action"
+                          className="btn-triage-action cursor-pointer"
                           onClick={() => onStartTriage(pat)}
                           title="Effectuer ou réviser l'examen de triage clinique par IA"
                         >
@@ -463,7 +406,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                         {(isHighRisk || pat.statutVulnerabilite === 'PDI' || pat.statutVulnerabilite === 'Vulnerable') && (
                           <button
                             type="button"
-                            className="btn-solidarity-action"
+                            className="btn-solidarity-action cursor-pointer"
                             onClick={() => onRequestSolidarity(pat)}
                             title="Créer une demande d'aide financière Orange Money pour mammographie"
                           >
@@ -475,7 +418,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                         {/* Bouton Profil complet */}
                         <button
                           type="button"
-                          className="p-1.5 rounded-md hover:bg-slate-100 text-slate-600 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
                           onClick={() => onViewProfile(pat)}
                           title="Consulter la fiche patiente complète"
                         >
@@ -485,11 +428,11 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                     </td>
                   </tr>
                 );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

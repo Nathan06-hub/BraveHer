@@ -5,7 +5,6 @@
 
 import { apiFetch } from './httpClient';
 import type { CentreSante } from '../../types/campaign';
-import { MOCK_CENTRES } from '../../data/mockCampaignData';
 
 function normalizeCentre(raw: any): CentreSante {
   if (!raw) return raw;
@@ -31,17 +30,17 @@ export const centreApi = {
     try {
       const data = await apiFetch<any>('/centres', {
         method: 'GET',
-        fallbackData: MOCK_CENTRES,
+        fallbackData: [],
       });
       const list = Array.isArray(data)
         ? data
         : data?.content && Array.isArray(data.content)
         ? data.content
-        : MOCK_CENTRES;
+        : [];
 
       return list.map(normalizeCentre);
     } catch {
-      return MOCK_CENTRES;
+      return [];
     }
   },
 
@@ -52,11 +51,11 @@ export const centreApi = {
     try {
       const data = await apiFetch<any>(`/centres/${id}`, {
         method: 'GET',
-        fallbackData: MOCK_CENTRES.find((c) => c.id === id),
+        fallbackData: undefined,
       });
       return data ? normalizeCentre(data) : undefined;
     } catch {
-      return MOCK_CENTRES.find((c) => c.id === id);
+      return undefined;
     }
   },
 };

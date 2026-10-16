@@ -116,7 +116,7 @@ export const AidValidationView: React.FC<AidValidationViewProps> = ({
             <span>Retour aux demandes</span>
           </button>
           <div>
-            <span className="modal-eyebrow">MODULE 4 · ARBITRAGE ET DÉCISION MÉDICALE</span>
+            <span className="modal-eyebrow">ARBITRAGE ET DÉCISION MÉDICALE</span>
             <h2 className="text-xl font-bold text-[#17343B] font-serif">
               Instruction du Dossier #{demande.codeDossier}
             </h2>

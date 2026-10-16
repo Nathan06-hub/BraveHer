@@ -16,16 +16,12 @@ interface DashboardReachDonutProps {
 }
 
 export const DashboardReachDonut: React.FC<DashboardReachDonutProps> = ({
-  totalCount = '4 829',
+  totalCount = '0',
   channels,
-  growthLabel = '↗ 16,4 %',
+  growthLabel = '0',
   onOptionsClick,
 }) => {
-  const displayChannels: ReachChannelItem[] = channels || [
-    { canal: 'Présentiel', count: '2 801', pourcentage: 58 },
-    { canal: 'Réseaux sociaux', count: '1 324', pourcentage: 27 },
-    { canal: 'Radio & médias', count: '704', pourcentage: 15 },
-  ];
+  const displayChannels: ReachChannelItem[] = channels || [];
 
   return (
     <article className="dashboard-panel dashboard-reach-panel">
@@ -62,13 +58,19 @@ export const DashboardReachDonut: React.FC<DashboardReachDonutProps> = ({
         </div>
 
         <div className="dashboard-donut-legend">
-          {displayChannels.map((item, idx) => (
-            <div key={idx} className="dashboard-legend-row">
-              <i />
-              <span>{item.canal}</span>
-              <b>{item.count}</b>
+          {displayChannels.length > 0 ? (
+            displayChannels.map((item, idx) => (
+              <div key={idx} className="dashboard-legend-row">
+                <i />
+                <span>{item.canal}</span>
+                <b>{item.count}</b>
+              </div>
+            ))
+          ) : (
+            <div className="dashboard-legend-row" style={{ color: '#819194', fontSize: '12px' }}>
+              <span>Sensibilisation en continu</span>
             </div>
-          ))}
+          )}
         </div>
       </div>
 

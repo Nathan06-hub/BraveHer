@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Campagne } from '../../types/campaign';
 import { Sparkles, Heart, Sun, MapPin, Clock, ArrowRight, MoreHorizontal } from 'lucide-react';
+import { EmptyState } from '../ui/EmptyState';
 
 interface DashboardActiveCampaignsProps {
   campagnes?: Campagne[];
@@ -22,71 +23,32 @@ interface CampaignPreviewCard {
 }
 
 export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> = ({
-  campagnes,
+  campagnes = [],
   onViewAll,
   onSelectCampaign,
 }) => {
-  // Préparation des 3 campagnes affichées
-  const defaultPreviews: CampaignPreviewCard[] = [
-    {
-      id: 'camp-1',
-      nom: 'Dépistage précoce',
-      centre: 'Ouagadougou · Centre médical Schiphra',
-      dates: '12 – 24 octobre 2026',
-      icon: 'sparkle',
-      statusLabel: 'En cours',
-      atteint: 68,
-      cible: 100,
-      pourcentage: 68,
-    },
-    {
-      id: 'camp-2',
-      nom: 'Parlons santé des femmes',
-      centre: 'Bobo-Dioulasso · Maison de la femme',
-      dates: '05 – 31 octobre 2026',
-      icon: 'heart',
-      statusLabel: 'En cours',
-      atteint: 42,
-      cible: 80,
-      pourcentage: 52,
-    },
-    {
-      id: 'camp-3',
-      nom: 'Octobre Rose en communauté',
-      centre: 'Koudougou · 3 centres de santé',
-      dates: '01 – 20 octobre 2026',
-      icon: 'sun',
-      statusLabel: 'Objectif atteint',
-      isDone: true,
-      atteint: 91,
-      cible: 90,
-      pourcentage: 100,
-    },
-  ];
+  // Préparation des campagnes actives réelles à afficher (jusqu'à 3)
+  const cardsToDisplay: CampaignPreviewCard[] = (campagnes || [])
+    .slice(0, 3)
+    .map((c, index) => {
+      const count = c.personnesSensibiliseesIds?.length || 0;
+      const target = c.objectifFemmes || 100;
+      const pct = Math.min(100, Math.round((count / target) * 100));
+      const isDone = pct >= 100 || c.statut === 'terminee';
 
-  // Si des campagnes réelles sont passées et que l'utilisateur en a au moins 1 active
-  const cardsToDisplay: CampaignPreviewCard[] =
-    campagnes && campagnes.length >= 3
-      ? campagnes.slice(0, 3).map((c, index) => {
-          const count = c.personnesSensibiliseesIds?.length || 0;
-          const target = c.objectifFemmes || 100;
-          const pct = Math.min(100, Math.round((count / target) * 100));
-          const isDone = pct >= 100 || c.statut === 'terminee';
-
-          return {
-            id: c.id,
-            nom: c.nom,
-            centre: `${c.commune} · ${c.centreNom}`,
-            dates: `${c.dateDebut} au ${c.dateFin}`,
-            icon: index === 0 ? 'sparkle' : index === 1 ? 'heart' : 'sun',
-            statusLabel: isDone ? 'Objectif atteint' : 'En cours',
-            isDone,
-            atteint: count,
-            cible: target,
-            pourcentage: pct,
-          };
-        })
-      : defaultPreviews;
+      return {
+        id: c.id,
+        nom: c.nom,
+        centre: `${c.commune || 'Burkina Faso'} · ${c.centreNom || 'Centre de santé'}`,
+        dates: `${c.dateDebut || 'Non planifiée'} au ${c.dateFin || 'Non planifiée'}`,
+        icon: index === 0 ? 'sparkle' : index === 1 ? 'heart' : 'sun',
+        statusLabel: isDone ? 'Objectif atteint' : 'En cours',
+        isDone,
+        atteint: count,
+        cible: target,
+        pourcentage: pct,
+      };
+    });
 
   return (
     <section className="dashboard-campaigns-section" id="campagnes">
@@ -109,8 +71,17 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
         </button>
       </div>
 
-      {/* Grille des 3 campagnes */}
-      <div className="dashboard-campaigns-grid">
+      {cardsToDisplay.length === 0 ? (
+        <div style={{ marginTop: '1rem' }}>
+          <EmptyState
+            title="Aucune campagne active"
+            description="Aucune campagne de sensibilisation ou de dépistage n'est en cours pour le moment. Lancez une campagne pour suivre vos actions sur le terrain."
+            action={onViewAll ? { label: "Gérer les campagnes", onClick: onViewAll } : undefined}
+          />
+        </div>
+      ) : (
+        /* Grille des campagnes */
+        <div className="dashboard-campaigns-grid">
         {cardsToDisplay.map((card) => {
           return (
             <article key={card.id} className="dashboard-campaign-card">
@@ -178,7 +149,8 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
             </article>
           );
         })}
-      </div>
+        </div>
+      )}
     </section>
   );
 };

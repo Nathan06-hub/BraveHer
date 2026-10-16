@@ -4,9 +4,11 @@ import type {
   PersonneSensibilisee,
   AgentSante,
   CurrentUserContext,
+  CentreSante,
 } from '../../types/campaign';
+import type { Beneficiaire } from '../../types/beneficiary';
 import { AgentActiveCampaignCard } from './AgentActiveCampaignCard';
-import { AgentPatientCreationForm } from './AgentPatientCreationForm';
+import { PatientFormModal } from '../beneficiaries/PatientFormModal';
 import { AgentCampaignHistoryList } from './AgentCampaignHistoryList';
 import {
   Megaphone,
@@ -21,7 +23,10 @@ interface AgentMyCampaignsViewProps {
   personnes: PersonneSensibilisee[];
   allAgents: AgentSante[];
   currentUser: CurrentUserContext;
+  centres?: CentreSante[];
+  allBeneficiaires?: Beneficiaire[];
   onAddPersonne: (personne: Omit<PersonneSensibilisee, 'id'>) => void;
+  onRegisterBeneficiaire?: (patient: Beneficiaire) => void;
   onViewCampaignDetails?: (campagne: Campagne) => void;
   onSwitchUser?: (user: CurrentUserContext) => void;
   availableUsers?: CurrentUserContext[];
@@ -32,10 +37,13 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
   personnes,
   allAgents,
   currentUser,
+  centres = [],
+  allBeneficiaires = [],
   onAddPersonne,
+  onRegisterBeneficiaire,
   onViewCampaignDetails,
 }) => {
-  const [viewMode, setViewMode] = useState<'overview' | 'create_patient'>('overview');
+  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
 
   // Filtrer les campagnes attribuées à cet agent
   // Si l'utilisateur est admin, ou responsable sans filtre strict, on peut lui montrer les campagnes de son centre ou celles où il est nommé
@@ -67,24 +75,26 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
     (p) => p.statutDepistage === 'À orienter'
   ).length;
 
-  const handlePatientSubmit = (data: Omit<PersonneSensibilisee, 'id'>) => {
-    onAddPersonne(data);
-    setViewMode('overview');
+  const handlePatientSubmit = (patient: Beneficiaire) => {
+    if (onRegisterBeneficiaire) {
+      onRegisterBeneficiaire(patient);
+    }
+    onAddPersonne({
+      campagneId: campagneActive?.id || patient.campagneId || '',
+      nom: patient.nom,
+      prenom: patient.prenom,
+      age: patient.age,
+      telephone: patient.telephone,
+      languePreferee: patient.languePreferee,
+      commune: patient.commune,
+      secteur: patient.secteur,
+      statutDepistage: patient.statutDepistage,
+      dateSensibilisation: patient.dateSensibilisation,
+      agentContactNom: patient.agentContactNom,
+      derniereEvaluation: patient.derniereEvaluation,
+    });
+    setIsPatientModalOpen(false);
   };
-
-  // Si l'agent a cliqué sur 'Fiche de création de patiente'
-  if (viewMode === 'create_patient' && campagneActive) {
-    return (
-      <div className="agent-campaigns-container">
-        <AgentPatientCreationForm
-          campagne={campagneActive}
-          currentUser={currentUser}
-          onBack={() => setViewMode('overview')}
-          onSubmit={handlePatientSubmit}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="agent-campaigns-container">
@@ -101,27 +111,8 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
             <b>{currentUser.centreNom}</b>.
           </p>
         </div>
+    
 
-        {/* Badge profil et sélecteur rapide de test */}
-        <div className="flex items-center gap-3">
-          <div className="agent-badge-profile">
-            <div className="agent-avatar-circle">
-              {currentUser.prenom[0]}
-              {currentUser.nom[0]}
-            </div>
-            <div className="agent-profile-info">
-              <span className="agent-profile-name">
-                {currentUser.prenom} {currentUser.nom}
-              </span>
-              <span className="agent-profile-role">{currentUser.roleTitre}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#007599]/10 border border-[#007599]/25 rounded-full text-xs font-semibold text-[#007599] shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{currentUser.centreNom}</span>
-          </div>
-        </div>
       </header>
 
       {/* Grille des 4 indicateurs de l'agent */}
@@ -172,7 +163,7 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
         campagne={campagneActive}
         personnes={personnes}
         allAgents={allAgents}
-        onOpenAddPatient={() => setViewMode('create_patient')}
+        onOpenAddPatient={() => setIsPatientModalOpen(true)}
         onViewCampaignDetails={onViewCampaignDetails}
       />
 
@@ -181,6 +172,18 @@ export const AgentMyCampaignsView: React.FC<AgentMyCampaignsViewProps> = ({
         campagnes={mesCampagnes}
         personnes={personnes}
         onViewDetails={onViewCampaignDetails}
+      />
+
+      {/* Modal Standard de Création Patiente avec Exclusivité de Campagne */}
+      <PatientFormModal
+        isOpen={isPatientModalOpen}
+        onClose={() => setIsPatientModalOpen(false)}
+        onSubmit={handlePatientSubmit}
+        centres={centres}
+        currentUser={currentUser}
+        assignedCampagne={campagneActive}
+        allCampagnes={campagnes}
+        allBeneficiaires={allBeneficiaires}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Campagne, PersonneSensibilisee } from '../../types/campaign';
 import {
   X,
@@ -12,6 +12,7 @@ interface PostCampaignFollowupModalProps {
   onClose: () => void;
   campagnes: Campagne[];
   allPersonnes: PersonneSensibilisee[];
+  initialCampagneId?: string;
   onConfirmFollowup: (
     campagneId: string,
     targetFilter: 'A_ORIENTER' | 'EFFECTUE' | 'TOUTES',
@@ -29,13 +30,21 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
   onClose,
   campagnes,
   allPersonnes,
+  initialCampagneId,
   onConfirmFollowup,
 }) => {
   if (!isOpen) return null;
 
   const [selectedCampagneId, setSelectedCampagneId] = useState<string>(
-    campagnes[0]?.id || ''
+    initialCampagneId || campagnes[0]?.id || ''
   );
+
+  useEffect(() => {
+    if (initialCampagneId) {
+      setSelectedCampagneId(initialCampagneId);
+    }
+  }, [initialCampagneId]);
+
   const [targetFilter, setTargetFilter] = useState<'A_ORIENTER' | 'EFFECTUE' | 'TOUTES'>('A_ORIENTER');
 
   // Textes multilingues pré-rédigés
@@ -112,14 +121,14 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
         {/* En-tête */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF7900] text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[var(--teal)] text-white flex items-center justify-center font-bold shadow-xs">
               <Radio className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#17343B]">
+              <h3 className="text-sm font-bold text-[var(--ink)]">
                 📢 Relance & Suivi Post-Campagne ciblée par Langue
               </h3>
-              <p className="text-xs text-[#536B70]">
+              <p className="text-xs text-[var(--muted)]">
                 Chaque patiente recevra le rappel dans la <strong>langue maternelle</strong> enregistrée dans son dossier.
               </p>
             </div>
@@ -134,13 +143,13 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
         </div>
 
         {/* Sélection de la campagne */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#FFF9F5] p-3 rounded-xl border border-[#FFD8B8]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[var(--cream)] p-3 rounded-xl border border-[var(--line)]">
           <div>
-            <label className="text-[11px] font-bold text-[#536B70] uppercase tracking-wide block mb-1">
+            <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wide block mb-1">
               Campagne source :
             </label>
             <select
-              className="form-input text-xs"
+              className="form-input text-xs bg-white"
               value={selectedCampagneId}
               onChange={(e) => setSelectedCampagneId(e.target.value)}
             >
@@ -153,11 +162,11 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-[#536B70] uppercase tracking-wide block mb-1">
+            <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wide block mb-1">
               Groupe cible de patientes :
             </label>
             <select
-              className="form-input text-xs"
+              className="form-input text-xs bg-white"
               value={targetFilter}
               onChange={(e) => handleTemplateChange(e.target.value as any)}
             >
@@ -175,12 +184,12 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
         </div>
 
         {/* Compteur de destinataires détectés */}
-        <div className="flex items-center justify-between text-xs p-2.5 bg-white rounded-lg border border-[#D6E8E8]">
-          <span className="text-[#536B70] font-medium flex items-center gap-1.5">
-            <Users className="w-4 h-4 text-[#007599]" />
+        <div className="flex items-center justify-between text-xs p-2.5 bg-white rounded-lg border border-[var(--line)]">
+          <span className="text-[var(--muted)] font-medium flex items-center gap-1.5">
+            <Users className="w-4 h-4 text-[var(--teal)]" />
             <span>Destinataires éligibles trouvées :</span>
           </span>
-          <strong className="text-[#17343B] font-bold bg-[#F0F9F8] px-2 py-0.5 rounded text-xs">
+          <strong className="text-[var(--ink)] font-bold bg-[var(--cream)] px-2 py-0.5 rounded text-xs border border-[var(--line)]">
             {targetedPersonnes.length} patientes ({selectedCamp?.secteurCible || 'Secteur'})
           </strong>
         </div>
@@ -188,7 +197,7 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
         {/* Textes du SMS traduits */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs flex-wrap gap-2">
-            <span className="text-xs font-bold text-[#17343B]">
+            <span className="text-xs font-bold text-[var(--ink)]">
               Personnalisation des messages par langue :
             </span>
 
@@ -200,8 +209,8 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
                   onClick={() => setActivePreviewLang(l)}
                   className={`px-2 py-0.5 rounded text-xs font-bold transition-all capitalize ${
                     activePreviewLang === l
-                      ? 'bg-[#FF7900] text-white'
-                      : 'bg-[#F1F5F9] text-[#536B70] hover:bg-[#E2E8F0]'
+                      ? 'bg-[var(--teal)] text-white shadow-xs'
+                      : 'bg-[var(--cream)] text-[var(--muted)] hover:bg-[#d8eded]'
                   }`}
                 >
                   {l === 'moore' ? 'Mooré' : l === 'dioula' ? 'Dioula' : l === 'fulfulde' ? 'Fulfuldé' : 'Français'}
@@ -213,20 +222,20 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
           <div className="space-y-1">
             <textarea
               rows={3}
-              className="form-input text-xs font-mono resize-none leading-relaxed w-full"
+              className="form-input text-xs font-mono resize-none leading-relaxed w-full bg-white border border-[var(--line)]"
               value={messages[activePreviewLang]}
               onChange={(e) =>
                 setMessages({ ...messages, [activePreviewLang]: e.target.value })
               }
             />
-            <span className="text-[11px] text-[#536B70] block">
-              💡 Le tag <code className="font-bold text-[#007599]">{'{prenom}'}</code> sera automatiquement remplacé par le prénom individuel de chaque patiente.
+            <span className="text-[11px] text-[var(--muted)] block">
+              💡 Le tag <code className="font-bold text-[var(--teal)]">{'{prenom}'}</code> sera automatiquement remplacé par le prénom individuel de chaque patiente.
             </span>
           </div>
         </div>
 
         {/* Boutons d'action */}
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D6E8E8]">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--line)]">
           <button
             type="button"
             className="btn-modal-cancel"
@@ -237,7 +246,7 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
           <button
             type="button"
             onClick={handleConfirm}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] transition-colors shadow-md flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[var(--teal)] hover:bg-[var(--teal-dark)] transition-colors shadow-sm flex items-center gap-1.5"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Diffuser la relance ({targetedPersonnes.length} SMS)</span>

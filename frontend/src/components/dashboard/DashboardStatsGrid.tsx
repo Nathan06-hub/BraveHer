@@ -31,28 +31,28 @@ interface DashboardStatsGridProps {
 
 export const DashboardStatsGrid: React.FC<DashboardStatsGridProps> = ({ data }) => {
   const femmes = data?.femmesAccompagnees || {
-    total: '2 847',
-    progression: '↗ 12,8 %',
+    total: 0,
+    progression: '0',
     isPositive: true,
   };
 
   const depistages = data?.depistagesRealises || {
-    total: '1 263',
-    progression: '↗ 8,2 %',
-    pourcentageObjectif: 72,
+    total: 0,
+    progression: '0',
+    pourcentageObjectif: 0,
   };
 
   const campagnes = data?.campagnesActives || {
-    total: 8,
-    terminentBientot: 3,
-    nombreRegions: 4,
-    avatars: ['A', 'S', 'M'],
+    total: 0,
+    terminentBientot: 0,
+    nombreRegions: 0,
+    avatars: [],
   };
 
   const participation = data?.tauxParticipation || {
-    pourcentage: 84,
-    progression: '↘ 2,1 %',
-    isPositive: false,
+    pourcentage: 0,
+    progression: '0%',
+    isPositive: true,
   };
 
   return (
@@ -119,13 +119,18 @@ export const DashboardStatsGrid: React.FC<DashboardStatsGridProps> = ({ data }) 
           <span>● &nbsp;{campagnes.terminentBientot} se terminent bientôt</span>
         </div>
         <div className="dashboard-dots">
-          {(campagnes.avatars || ['A', 'S', 'M']).map((initial, idx) => (
-            <span key={idx} className="dashboard-dot-avatar">
-              {initial}
-            </span>
-          ))}
-          <span className="dashboard-dot-avatar more">+5</span>
-          <span className="dashboard-regions-label">dans {campagnes.nombreRegions} régions</span>
+          {(campagnes.avatars && campagnes.avatars.length > 0) ? (
+            <>
+              {campagnes.avatars.map((initial, idx) => (
+                <span key={idx} className="dashboard-dot-avatar">
+                  {initial}
+                </span>
+              ))}
+              <span className="dashboard-regions-label">dans {campagnes.nombreRegions} région{campagnes.nombreRegions > 1 ? 's' : ''}</span>
+            </>
+          ) : (
+            <span className="dashboard-regions-label">dans {campagnes.nombreRegions} région{campagnes.nombreRegions > 1 ? 's' : ''}</span>
+          )}
         </div>
       </article>
 

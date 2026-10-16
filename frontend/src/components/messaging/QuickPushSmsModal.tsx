@@ -64,17 +64,17 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
 
   return (
     <div className="modal-backdrop z-[110]" role="dialog" aria-modal="true">
-      <div className="modal-content max-w-lg bg-white rounded-2xl shadow-2xl p-6 border border-[#FFD8B8] space-y-4 animate-in fade-in">
+      <div className="modal-content max-w-lg bg-white rounded-2xl shadow-2xl p-6 border border-[var(--line)] space-y-4 animate-in fade-in">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#FF7900] text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[var(--orange)] text-white flex items-center justify-center font-bold shadow-xs">
               <Radio className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#17343B]">
+              <h3 className="text-sm font-bold text-[var(--ink)]">
                 ⚡ Alerte Push SMS Orange Immédiate
               </h3>
-              <span className="text-[11px] text-[#536B70]">
+              <span className="text-[11px] text-[var(--muted)]">
                 Diffusion GSM instantanée par secteur géographique
               </span>
             </div>
@@ -88,13 +88,13 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 bg-[#FFF9F5] p-3 rounded-xl border border-[#FFD8B8]">
+        <div className="grid grid-cols-2 gap-3 bg-[var(--cream)] p-3 rounded-xl border border-[var(--line)]">
           <div>
-            <label className="text-[11px] font-bold text-[#536B70] uppercase tracking-wide block mb-1">
+            <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wide block mb-1">
               Commune :
             </label>
             <select
-              className="form-input text-xs"
+              className="form-input text-xs bg-white"
               value={commune}
               onChange={(e) => setCommune(e.target.value)}
             >
@@ -107,12 +107,12 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-[#536B70] uppercase tracking-wide block mb-1">
+            <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wide block mb-1">
               Secteur / Quartier :
             </label>
             <input
               type="text"
-              className="form-input text-xs"
+              className="form-input text-xs bg-white"
               value={secteur}
               onChange={(e) => setSecteur(e.target.value)}
               placeholder="Ex : Secteur 22"
@@ -121,7 +121,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
         </div>
 
         <div>
-          <label className="text-[11px] font-bold text-[#536B70] uppercase tracking-wide block mb-1.5">
+          <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wide block mb-1.5">
             Langue locale de diffusion :
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -132,8 +132,8 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
                 onClick={() => handleTemplate(l)}
                 className={`py-1.5 px-2 text-xs font-bold rounded-lg border transition-all ${
                   langue === l
-                    ? 'bg-[#FF7900] text-white border-[#FF7900] shadow-sm'
-                    : 'bg-[#F8FAFB] text-[#17343B] border-[#D6E8E8] hover:bg-[#F1F5F9]'
+                    ? 'bg-[var(--orange)] text-white border-[var(--orange)] shadow-xs'
+                    : 'bg-white text-[var(--ink)] border-[var(--line)] hover:bg-[var(--cream)]'
                 }`}
               >
                 {l}
@@ -144,12 +144,12 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
 
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-bold text-[#17343B]">
+            <label className="text-xs font-bold text-[var(--ink)]">
               Texte du SMS ({langue}) :
             </label>
             <span
               className={`text-[11px] font-mono ${
-                contenu.length > 160 ? 'text-amber-600 font-bold' : 'text-[#536B70]'
+                contenu.length > 160 ? 'text-amber-600 font-bold' : 'text-[var(--muted)]'
               }`}
             >
               {contenu.length} / 160 caractères
@@ -157,21 +157,21 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
           </div>
           <textarea
             rows={3}
-            className="form-input text-xs font-mono resize-none leading-relaxed w-full"
+            className="form-input text-xs font-mono resize-none leading-relaxed w-full bg-white border border-[var(--line)]"
             value={contenu}
             onChange={(e) => setContenu(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center justify-between text-xs text-[#536B70] bg-[#F8FAFB] p-2.5 rounded-lg border border-[#D6E8E8]">
-          <span className="flex items-center gap-1">
-            <Smartphone className="w-3.5 h-3.5 text-[#FF7900]" />
-            <span>Passerelle GSM Orange BF</span>
+        <div className="flex items-center justify-between text-xs text-[var(--muted)] bg-[var(--cream)] p-2.5 rounded-lg border border-[var(--line)]">
+          <span className="flex items-center gap-1.5">
+            <Smartphone className="w-3.5 h-3.5 text-[var(--teal)]" />
+            <span className="font-semibold text-[var(--ink)]">Passerelle SMS</span>
           </span>
-          <span>~ 300 à 450 téléphones cibles</span>
+          <span>Diffusion locale</span>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#D6E8E8]">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--line)]">
           <button
             type="button"
             className="btn-modal-cancel"
@@ -182,7 +182,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
           <button
             type="button"
             onClick={handleSend}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] transition-colors shadow-md flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[var(--orange)] hover:bg-[#D97706] transition-colors shadow-sm flex items-center gap-1.5"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Diffuser immédiatement via Orange BF</span>

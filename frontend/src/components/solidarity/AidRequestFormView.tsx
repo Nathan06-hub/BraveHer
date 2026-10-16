@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type {
   DemandeAide,
   NiveauPriorite,
 } from '../../types/solidarity';
 import type { CurrentUserContext } from '../../types/campaign';
+import type { Beneficiaire } from '../../types/beneficiary';
 import { MOCK_CENTRES_IMAGERIE } from '../../data/mockSolidarityData';
 import {
   ArrowLeft,
@@ -15,32 +16,63 @@ import {
   CheckCircle2,
   Phone,
   MapPin,
-  Sparkles,
 } from 'lucide-react';
 
 interface AidRequestFormViewProps {
   currentUser: CurrentUserContext;
   onBack: () => void;
   onSubmit: (demande: DemandeAide) => void;
+  initialPatient?: Beneficiaire | null;
 }
+
+const deriveMotifClinique = (p?: Beneficiaire | null): string => {
+  if (!p) {
+    return 'Présence d’un nodule palpable découvert lors du dépistage. Absence de moyens financiers pour honorer la mammographie.';
+  }
+  const triage = p.dernierTriage;
+  const ev = p.derniereEvaluation;
+  const signs: string[] = [];
+  if (triage?.nodulePalpable || ev?.nodule) {
+    signs.push(`Nodule palpable au sein ${triage?.seinConcerne || ev?.autresIndicateurs?.seinConcerne || 'droit'}${triage?.tailleNoduleCm ? ` (~${triage.tailleNoduleCm} cm)` : ''}`);
+  }
+  if (triage?.peauOrange || ev?.peauOrange) signs.push("aspect peau d'orange");
+  if (triage?.ecoulementMamelonnaire || ev?.autresIndicateurs?.ecoulementMamelonnaire) signs.push("écoulement mamelonnaire");
+  if (triage?.adenopathieAxillaire || ev?.autresIndicateurs?.adenopathieAxillaire) signs.push("adénopathie axillaire");
+  if (triage?.observationsVocales || ev?.autresIndicateurs?.observationsVocales) {
+    signs.push(`Observations : ${triage?.observationsVocales || ev?.autresIndicateurs?.observationsVocales}`);
+  }
+
+  if (signs.length > 0) {
+    return `Suspicion clinique détectée lors du dépistage (${signs.join(', ')}). Examen échomammographique d'urgence recommandé pour confirmation diagnostique.`;
+  }
+  return `Patiente vulnérable (${p.statutVulnerabilite}) de ${p.age} ans nécessitant un bilan sénologique complet dans le cadre du dépistage précoce.`;
+};
+
+const derivePriorite = (p?: Beneficiaire | null): NiveauPriorite => {
+  if (!p) return 'urgent';
+  if (p.dernierTriage?.niveauSuspicion === 'eleve' || p.derniereEvaluation?.niveauRisque === 'ELEVE') return 'urgent';
+  if (p.dernierTriage?.niveauSuspicion === 'modere' || p.derniereEvaluation?.niveauRisque === 'MODERE') return 'eleve';
+  return 'standard';
+};
 
 export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
   currentUser,
   onBack,
   onSubmit,
+  initialPatient,
 }) => {
-  // Form states
-  const [patienteNom, setPatienteNom] = useState('');
-  const [patientePrenom, setPatientePrenom] = useState('');
-  const [patienteAge, setPatienteAge] = useState<number>(42);
-  const [patienteTelephone, setPatienteTelephone] = useState('+226 ');
-  const [patienteLangue, setPatienteLangue] = useState('Mooré');
-  const [commune, setCommune] = useState('Ouagadougou');
-  const [secteur, setSecteur] = useState('Secteur 28');
+  // Form states pré-remplis automatiquement si une patiente est sélectionnée
+  const [patienteNom, setPatienteNom] = useState(initialPatient?.nom || '');
+  const [patientePrenom, setPatientePrenom] = useState(initialPatient?.prenom || '');
+  const [patienteAge, setPatienteAge] = useState<number>(initialPatient?.age || 42);
+  const [patienteTelephone, setPatienteTelephone] = useState(initialPatient?.telephone || '+226 ');
+  const [patienteLangue, setPatienteLangue] = useState<string>(initialPatient?.languePreferee || 'Mooré');
+  const [commune, setCommune] = useState(initialPatient?.commune || 'Ouagadougou');
+  const [secteur, setSecteur] = useState(initialPatient?.secteur || 'Secteur 28');
 
   // Centre demandeur
   const [centreDemandeurNom, setCentreDemandeurNom] = useState(
-    currentUser.centreNom || 'CSPS Kossodo — Ouagadougou'
+    initialPatient?.centreSuiviNom || currentUser.centreNom || 'CSPS Kossodo — Ouagadougou'
   );
 
   // Centre imagerie réalisateur
@@ -48,16 +80,30 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
     MOCK_CENTRES_IMAGERIE[0].id
   );
 
-  // Motif et priorité clinique
-  const [motifClinique, setMotifClinique] = useState(
-    'Présence d’un nodule rétro-aréolaire droit palpable de 2cm, non douloureux, découvert lors de la campagne de dépistage. Absence de moyens financiers pour honorer la mammographie.'
-  );
-  const [niveauPriorite, setNiveauPriorite] = useState<NiveauPriorite>('urgent');
+  // Motif et priorité clinique dérivés automatiquement
+  const [motifClinique, setMotifClinique] = useState(deriveMotifClinique(initialPatient));
+  const [niveauPriorite, setNiveauPriorite] = useState<NiveauPriorite>(derivePriorite(initialPatient));
 
   // Coût estimé
   const [coutEstime, setCoutEstime] = useState<number>(
     MOCK_CENTRES_IMAGERIE[0].tarifStandardFCFA
   );
+
+  // Synchronisation automatique si la patiente sélectionnée change
+  useEffect(() => {
+    if (initialPatient) {
+      setPatienteNom(initialPatient.nom || '');
+      setPatientePrenom(initialPatient.prenom || '');
+      setPatienteAge(initialPatient.age || 42);
+      setPatienteTelephone(initialPatient.telephone || '+226 ');
+      setPatienteLangue(initialPatient.languePreferee || 'Mooré');
+      setCommune(initialPatient.commune || 'Ouagadougou');
+      setSecteur(initialPatient.secteur || 'Secteur 28');
+      if (initialPatient.centreSuiviNom) setCentreDemandeurNom(initialPatient.centreSuiviNom);
+      setMotifClinique(deriveMotifClinique(initialPatient));
+      setNiveauPriorite(derivePriorite(initialPatient));
+    }
+  }, [initialPatient]);
 
   // Erreurs
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -107,7 +153,7 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
     const newDemande: DemandeAide = {
       id: `aide-${Date.now()}`,
       codeDossier: newCode,
-      patienteId: `pat-${Date.now()}`,
+      patienteId: initialPatient?.id || `pat-${Date.now()}`,
       patienteNom: patienteNom.trim().toUpperCase(),
       patientePrenom: patientePrenom.trim(),
       patienteAge: Number(patienteAge),
@@ -154,7 +200,7 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
             <span>Retour aux demandes</span>
           </button>
           <div>
-            <span className="modal-eyebrow">MODULE 4 · INSTRUCTION D'AIDE</span>
+            <span className="modal-eyebrow">INSTRUCTION D'AIDE SOLIDARITÉ</span>
             <h2 className="text-xl font-bold text-[#17343B] font-serif">
               Nouvelle Demande de Prise en Charge Solidaire
             </h2>
@@ -527,16 +573,6 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
                   {errors.coutEstime}
                 </span>
               )}
-            </div>
-
-            <div className="p-3 bg-[#EEF7F7] border border-[#B2DDDD] rounded-lg">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#005C75]">
-                <Sparkles className="w-4 h-4 text-[#007599]" />
-                Prise en charge à 100% par le Fonds Soutien Rose
-              </div>
-              <p className="text-[11px] text-[#005C75] mt-1">
-                La totalité des <strong>{coutEstime.toLocaleString('fr-FR')} FCFA</strong> sera débloquée et transférée sans frais pour la patiente dès validation par le responsable.
-              </p>
             </div>
           </div>
         </div>

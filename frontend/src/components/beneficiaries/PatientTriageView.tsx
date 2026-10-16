@@ -266,7 +266,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold text-[#007599] bg-[#E6F4F7] px-2 py-0.5 rounded-full">
-                MODULE 2 · TRIAGE CLINIQUE PAR IA
+                TRIAGE CLINIQUE PAR IA
               </span>
               <span className="text-xs text-[#64748B]">Dossier #{patient.numeroDossier}</span>
             </div>
@@ -684,7 +684,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                     <span>Besoin de Prise en Charge Solidaire</span>
                   </div>
                   <p className="text-[11px] text-[#475569]">
-                    Patiente en situation de vulnérabilité nécessitant une mammographie urgente (25 000 FCFA).
+                    Patiente en situation de vulnérabilité nécessitant une prise en charge urgente de ses examens.
                   </p>
                   <button
                     type="button"
@@ -695,7 +695,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                     }}
                     className="w-full py-2 px-3 bg-[#FF7900] hover:bg-[#EA580C] text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5"
                   >
-                    <span>Déposer dossier Orange Money (M4)</span>
+                    <span>Déposer dossier de prise en charge Orange Money</span>
                   </button>
                 </div>
               )}

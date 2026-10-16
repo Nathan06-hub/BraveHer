@@ -61,23 +61,23 @@ export const OrangeSmsComposer: React.FC<OrangeSmsComposerProps> = ({
       <div className="info-banner-patient-lang py-2.5 px-3 rounded-xl bg-[#F0F9F8] border border-[#B3DFE5] flex items-start gap-2.5">
         <Info className="w-4 h-4 text-[#007599] shrink-0 mt-0.5" />
         <p className="text-xs text-[#17343B] leading-relaxed m-0">
-          <strong>Langues nationales automatiques :</strong> Le système de passerelle Orange adapte la langue maternelle des relances (<em>Mooré</em>, <em>Dioula</em>, <em>Fulfuldé</em>, <em>Français</em>) selon le dossier de chaque patiente.
+          <strong>Langues nationales automatiques :</strong> Le système adapte la langue maternelle des relances (<em>Mooré</em>, <em>Dioula</em>, <em>Fulfuldé</em>, <em>Français</em>) selon le dossier de chaque patiente.
         </p>
       </div>
 
-      {/* Bloc Diffusion Push SMS Orange (DÉSACTIVÉ PAR DÉFAUT) */}
+      {/* Bloc Diffusion Push SMS (DÉSACTIVÉ PAR DÉFAUT) */}
       <div className="p-4 bg-[#FFF9F5] border border-[#FED7AA] rounded-xl space-y-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#FF7900] text-white flex items-center justify-center font-bold shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#007599] text-white flex items-center justify-center font-bold shrink-0">
               <Radio className="w-4 h-4" />
             </div>
             <div>
               <strong className="text-xs font-bold text-[#17343B] block">
-                Diffuser un Push SMS Orange lors du lancement
+                Diffuser un Push SMS lors du lancement
               </strong>
               <span className="text-[11px] text-[#536B70]">
-                Diffusion géociblée sur les secteurs via la passerelle GSM Orange BF (désactivé par défaut)
+                Diffusion géociblée sur les secteurs via la passerelle SMS (désactivé par défaut)
               </span>
             </div>
           </div>

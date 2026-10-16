@@ -105,7 +105,7 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     },
     {
       id: 'beneficiaries',
-      label: 'Bénéficiaires & Patientes',
+      label: 'Dossiers Patientes',
       icon: (
         <svg viewBox="0 0 24 24">
           <circle cx="9" cy="8" r="3.3" />
@@ -115,7 +115,7 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     },
     {
       id: 'messages',
-      label: 'Push SMS Orange',
+      label: 'Diffusion SMS',
       icon: (
         <svg viewBox="0 0 24 24">
           <path d="M4 5.5h16v12H9l-5 3v-15Z" />

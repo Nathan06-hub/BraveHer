@@ -237,12 +237,8 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
         <div className="modal-header">
           <div>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <span className="modal-eyebrow">MODULE 1 · SENSIBILISATION & CAMPAGNES</span>
+              <span className="modal-eyebrow">CAMPAGNE DE SENSIBILISATION</span>
               <CampaignStatusBadge statut={campagne.statut} size="sm" />
-              <span className="text-[11px] font-semibold text-[#FF7900] bg-[#FFF4EB] px-2 py-0.5 rounded-full border border-[#FFD8B8] flex items-center gap-1">
-                <Radio className="w-3 h-3 text-[#FF7900] animate-pulse" />
-                Orange BF SMS Gateway
-              </span>
             </div>
             <h2 id="detail-title" className="modal-title">
               {campagne.titre || campagne.nom}

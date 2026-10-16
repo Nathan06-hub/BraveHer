@@ -5,27 +5,28 @@
 
 import { apiFetch } from './httpClient';
 import type { PartenaireDonneur, DonTransaction, AppelAideCasGrave } from '../../types/partner';
-import { MOCK_PARTENAIRES, MOCK_APPELS_AIDE_CAS_GRAVES, MOCK_DONS_TRANSACTIONS } from '../../data/mockPartnersData';
 
 export const partnerApi = {
   /**
    * Récupère la liste des partenaires institutionnels et entreprises marraines
    */
   async getPartenaires(): Promise<PartenaireDonneur[]> {
-    return apiFetch<PartenaireDonneur[]>('/partners', {
+    const data = await apiFetch<any>('/partners', {
       method: 'GET',
-      fallbackData: MOCK_PARTENAIRES,
+      fallbackData: [],
     });
+    return Array.isArray(data) ? data : data?.content || [];
   },
 
   /**
    * Récupère la liste des appels à l'aide pour cas graves
    */
   async getAppelsAide(): Promise<AppelAideCasGrave[]> {
-    return apiFetch<AppelAideCasGrave[]>('/partners/appels-aide', {
+    const data = await apiFetch<any>('/partners/appels-aide', {
       method: 'GET',
-      fallbackData: MOCK_APPELS_AIDE_CAS_GRAVES,
+      fallbackData: [],
     });
+    return Array.isArray(data) ? data : data?.content || [];
   },
 
   /**
@@ -70,10 +71,11 @@ export const partnerApi = {
    * Récupère l'historique des transactions de dons
    */
   async getDonTransactions(): Promise<DonTransaction[]> {
-    return apiFetch<DonTransaction[]>('/partners/donations', {
+    const data = await apiFetch<any>('/partners/donations', {
       method: 'GET',
-      fallbackData: MOCK_DONS_TRANSACTIONS,
+      fallbackData: [],
     });
+    return Array.isArray(data) ? data : data?.content || [];
   },
 
   /**

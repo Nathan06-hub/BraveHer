@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type {
   PartenaireDonneur,
   AppelAideCasGrave,
@@ -107,6 +107,21 @@ export const SendPartnerAidRequestModal: React.FC<SendPartnerAidRequestModalProp
     preselectedPartnerId || partenaires[0]?.id || ''
   );
 
+  // Synchronisation dynamique dès que la patiente ou le partenaire pré-sélectionné change
+  useEffect(() => {
+    if (preselectedPatient?.id) {
+      setSelectedPatientId(preselectedPatient.id);
+    } else if (patientsCandidats.length > 0 && !patientsCandidats.some((p) => p.id === selectedPatientId)) {
+      setSelectedPatientId(patientsCandidats[0].id);
+    }
+  }, [preselectedPatient, patientsCandidats]);
+
+  useEffect(() => {
+    if (preselectedPartnerId) {
+      setSelectedPartnerId(preselectedPartnerId);
+    }
+  }, [preselectedPartnerId]);
+
   const [montant, setMontant] = useState<number>(25000);
   const [message, setMessage] = useState<string>(
     'Dossier prioritaire détecté lors du dépistage communautaire. Sollicitation d’un Bon de Santé Orange Money pour mammographie et échographie bilatérale d’urgence.'
@@ -116,13 +131,13 @@ export const SendPartnerAidRequestModal: React.FC<SendPartnerAidRequestModalProp
 
   // Patiente active
   const currentPatient = useMemo(() => {
-    if (preselectedPatient && preselectedPatient.id === selectedPatientId) {
+    if (preselectedPatient) {
       return preselectedPatient;
     }
     return (
       patientsCandidats.find((p) => p.id === selectedPatientId) ||
-      preselectedPatient ||
-      patientsCandidats[0]
+      patientsCandidats[0] ||
+      DEFAULT_CANDIDATES[0]
     );
   }, [patientsCandidats, preselectedPatient, selectedPatientId]);
 

@@ -452,7 +452,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
                       Femme en situation de grande précarité
                     </strong>
                     <span className="text-[11px] text-[#64748B]">
-                      Revenus insuffisants pour honorer les frais de mammographie (25 000 FCFA).
+                      Revenus insuffisants pour honorer les frais médicaux et d'imagerie.
                     </span>
                   </div>
                 </label>
@@ -1057,7 +1057,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
                     <HeartHandshake className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                     <div className="text-xs">
                       <strong className="text-rose-900 block font-bold">
-                        Bon de Santé Immédiat Déclenché (Solidarité Orange Money 25 000 FCFA)
+                        Bon de Santé Immédiat Déclenché (Fonds de Solidarité & Mécénat)
                       </strong>
                       <p className="text-slate-600 mt-0.5 mb-0">
                         Cette patiente vulnérable sera directement orientée pour l'émission d'un Bon de Santé prioritaire afin de réaliser sa mammographie d'urgence sans avance de frais.

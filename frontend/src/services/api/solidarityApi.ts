@@ -5,17 +5,27 @@
 
 import { apiFetch } from './httpClient';
 import type { DemandeAide, FondsSolidariteSummary, BonSante } from '../../types/solidarity';
-import { MOCK_DEMANDES_AIDE, MOCK_FONDS_SOLIDARITE } from '../../data/mockSolidarityData';
+
+const EMPTY_FONDS_SUMMARY: FondsSolidariteSummary = {
+  dotationTotale: 0,
+  montantEngage: 0,
+  montantDisponible: 0,
+  nombreDemandesTotal: 0,
+  nombreAidesAttribuees: 0,
+  nombreExamensRealises: 0,
+  demandesEnAttente: 0,
+};
 
 export const solidarityApi = {
   /**
    * Récupère la liste de toutes les demandes de prise en charge solidaire
    */
   async getDemandesAide(): Promise<DemandeAide[]> {
-    return apiFetch<DemandeAide[]>('/demandes-aide', {
+    const data = await apiFetch<any>('/demandes-aide', {
       method: 'GET',
-      fallbackData: MOCK_DEMANDES_AIDE,
+      fallbackData: [],
     });
+    return Array.isArray(data) ? data : data?.content || [];
   },
 
   /**
@@ -24,7 +34,7 @@ export const solidarityApi = {
   async getFondsSummary(): Promise<FondsSolidariteSummary> {
     return apiFetch<FondsSolidariteSummary>('/fonds/summary', {
       method: 'GET',
-      fallbackData: MOCK_FONDS_SOLIDARITE,
+      fallbackData: EMPTY_FONDS_SUMMARY,
     });
   },
 
@@ -76,9 +86,7 @@ export const solidarityApi = {
     id: string,
     decision: { statut: DemandeAide['statut']; montantAccorde?: number }
   ): Promise<DemandeAide> {
-    const existing = MOCK_DEMANDES_AIDE.find((d) => d.id === id);
     const fallback: DemandeAide = {
-      ...(existing || {}),
       ...decision,
       id,
     } as DemandeAide;

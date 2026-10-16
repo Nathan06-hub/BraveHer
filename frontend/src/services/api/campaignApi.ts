@@ -4,7 +4,41 @@
  */
 
 import { apiFetch } from './httpClient';
-import type { Campagne, SmsLog, StatutCampagne } from '../../types/campaign';
+import type { Campagne, SmsLog, StatutCampagne, LanguePatiente, StatutSms } from '../../types/campaign';
+
+function normalizeSmsLog(raw: any): SmsLog {
+  if (!raw) return raw;
+  const langueMap: Record<string, LanguePatiente> = {
+    MOORE: 'Mooré',
+    DIOULA: 'Dioula',
+    FULFULDE: 'Fulfuldé',
+    FRANCAIS: 'Français',
+    'Mooré': 'Mooré',
+    'Dioula': 'Dioula',
+    'Fulfuldé': 'Fulfuldé',
+    'Français': 'Français',
+  };
+  const statutNorm: StatutSms = raw.statut === 'ECHEC' ? 'ECHEC' : 'ENVOYE';
+  const rawDate = raw.dateEnvoi;
+  let dateFormatted = String(rawDate || '');
+  if (rawDate && typeof rawDate === 'string' && rawDate.includes('T')) {
+    dateFormatted = rawDate.replace('T', ' ').substring(0, 19);
+  }
+
+  return {
+    id: String(raw.id),
+    campagneId: raw.campagneId ? String(raw.campagneId) : undefined,
+    campagneTitre: raw.campagneTitre || undefined,
+    patienteId: raw.patienteId ? String(raw.patienteId) : undefined,
+    destinataireNom: raw.patienteNomComplet || raw.destinataireNom || 'Contact enregistré',
+    destinataireTelephone: raw.destinataire || raw.destinataireTelephone || '',
+    langue: langueMap[raw.langue] || 'Mooré',
+    contenu: raw.contenu || '',
+    dateEnvoi: dateFormatted || new Date().toISOString().replace('T', ' ').substring(0, 19),
+    statut: statutNorm,
+    typeMessage: raw.typeMessage || 'PUSH_CAMPAGNE',
+  };
+}
 
 function normalizeCampagne(raw: any): Campagne {
   if (!raw) return raw;
@@ -159,7 +193,7 @@ export const campaignApi = {
   },
 
   /**
-   * Envoie une diffusion de SMS de sensibilisation via la Passerelle Orange SMS API
+   * Envoie une diffusion de SMS de sensibilisation via la passerelle SMS
    */
   async sendPushSms(payload: {
     campagneId: string;
@@ -172,20 +206,26 @@ export const campaignApi = {
       method: 'POST',
       body: JSON.stringify(payload),
       fallbackData: {
-        status: 'ENVOYE_ORANGE_API',
-        totalSent: payload.ciblesCount || 150,
-        messageId: `sms-orange-${Date.now()}`,
+        status: 'ENVOYE_API',
+        totalSent: payload.ciblesCount || 0,
+        messageId: `sms-${Date.now()}`,
       },
     });
   },
 
   /**
-   * Récupère l'historique des SMS envoyés
+   * Récupère l'historique des SMS envoyés réels depuis le backend
    */
   async getSmsLogs(): Promise<SmsLog[]> {
-    return apiFetch<SmsLog[]>('/sms/logs', {
+    const data = await apiFetch<any>('/sms/logs', {
       method: 'GET',
       fallbackData: [],
     });
+    const list = Array.isArray(data)
+      ? data
+      : data?.content && Array.isArray(data.content)
+      ? data.content
+      : [];
+    return list.map(normalizeSmsLog);
   },
 };

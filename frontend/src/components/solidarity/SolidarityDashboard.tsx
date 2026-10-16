@@ -81,7 +81,7 @@ export const SolidarityDashboard: React.FC<SolidarityDashboardProps> = ({
       {/* En-tête du Module Solidarité */}
       <div className="solidarity-header-row">
         <div>
-          <span className="modal-eyebrow">MODULE 4 · SOUTIEN ROSE BFK</span>
+          <span className="modal-eyebrow">FONDS DE SOLIDARITÉ & MÉCÉNAT</span>
           <h2 className="solidarity-title font-serif">
             Solidarité Financière & Pilotage Statistique
           </h2>
