@@ -516,12 +516,89 @@ export function App() {
     };
   }, [currentUser]);
 
+  // Émission et envoi automatique d'une demande de don solidaire (25 000 FCFA) en cas de priorité urgente
+  const autoSendUrgentAidRequest = (patient: Beneficiaire): DemandeAide => {
+    const codeDossier = `MAMMO-BF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const motif =
+      patient.dernierTriage?.conduiteATenir ||
+      patient.dernierTriage?.observationsVocales ||
+      patient.derniereEvaluation?.conduiteATenir ||
+      'Priorité URGENTE détectée lors du dépistage : Forte suspicion clinique (Score >= 70). Prise en charge échomammographique sous 72h via le Fonds de Solidarité Orange Money.';
+
+    const autoDemande: DemandeAide = {
+      id: `aide-${Date.now()}`,
+      codeDossier,
+      patienteId: patient.id,
+      patienteNom: patient.nom,
+      patientePrenom: patient.prenom,
+      patienteAge: patient.age,
+      patienteTelephone: patient.telephone,
+      patienteLangue: patient.languePreferee || 'Mooré',
+      commune: patient.commune || 'Ouagadougou',
+      secteur: patient.secteur || 'Centre',
+      centreDemandeurId: patient.centreSuiviId || 'centre-1',
+      centreDemandeurNom: patient.centreSuiviNom || currentUser?.centreNom || 'CSPS de Référence',
+      centreImagerieId: 'img-chu-yalgado',
+      centreImagerieNom: 'Service Radiologie & Sénologie — CHU Yalgado Ouédraogo',
+      motifClinique: motif,
+      niveauPriorite: 'urgent',
+      coutEstime: 25000,
+      montantAccorde: 25000,
+      statut: 'en_attente_decision',
+      dateDemande: new Date().toISOString().split('T')[0],
+      agentDemandeurNom: `${currentUser?.prenom || 'Sage-femme'} ${currentUser?.nom || 'Référente'}`,
+      agentDemandeurId: currentUser?.id || 'agent-1',
+    };
+
+    // Transmission automatique vers l'API Solidarité
+    solidarityApi.createDemandeAide(autoDemande).catch(console.warn);
+
+    setDemandesAide((prev) => [autoDemande, ...prev]);
+    setFondsSolidarite((prev) => ({
+      ...prev,
+      nombreDemandesTotal: prev.nombreDemandesTotal + 1,
+      demandesEnAttente: prev.demandesEnAttente + 1,
+    }));
+
+    return autoDemande;
+  };
+
   // Handlers pour les Bénéficiaires
   const handleRegisterNewPatient = (newPatient: Beneficiaire) => {
-    // Appel du service API Spring Boot (avec synchronisation automatique offline)
-    patientApi.registerPatiente(newPatient).catch(console.warn);
+    let patientToStore = { ...newPatient };
 
-    setBeneficiairesList([newPatient, ...beneficiairesList]);
+    // Détection de priorité urgente (Score IA >= 70, risque ÉLEVÉ, alerte bon santé ou besoin mammographie urgent)
+    const isUrgent =
+      newPatient.derniereEvaluation?.niveauRisque === 'ELEVE' ||
+      Boolean(newPatient.derniereEvaluation?.bonSanteDeclenche) ||
+      newPatient.dernierTriage?.niveauSuspicion === 'eleve' ||
+      Boolean(newPatient.dernierTriage?.besoinMammographieUrgence) ||
+      (newPatient.derniereEvaluation?.scoreIA !== undefined && newPatient.derniereEvaluation.scoreIA >= 70) ||
+      (newPatient.dernierTriage?.scoreCalcule !== undefined && newPatient.dernierTriage.scoreCalcule >= 70);
+
+    if (isUrgent) {
+      const autoDemande = autoSendUrgentAidRequest(patientToStore);
+      patientToStore = {
+        ...patientToStore,
+        demandeAideId: autoDemande.id,
+        demandeAideCode: autoDemande.codeDossier,
+        statutAideFonds: 'EN_ATTENTE',
+      };
+      showToast(
+        `🚨 Priorité URGENTE (${newPatient.prenom} ${newPatient.nom}) : Demande de don & Bon solidaire ${autoDemande.codeDossier} (25 000 FCFA) envoyée automatiquement !`
+      );
+    } else if (newPatient.derniereEvaluation) {
+      showToast(
+        `Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée · Score IA : ${newPatient.derniereEvaluation.scoreIA}% (${newPatient.derniereEvaluation.niveauRisque})`
+      );
+    } else {
+      showToast(`Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée avec succès !`);
+    }
+
+    // Appel du service API Spring Boot (avec synchronisation automatique offline)
+    patientApi.registerPatiente(patientToStore).catch(console.warn);
+
+    setBeneficiairesList([patientToStore, ...beneficiairesList]);
     setBeneficiairesKpis((prev) => ({
       ...prev,
       totalPatientes: prev.totalPatientes + 1,
@@ -529,11 +606,7 @@ export function App() {
         newPatient.derniereEvaluation || newPatient.dernierTriage
           ? prev.depistagesEffectues + 1
           : prev.depistagesEffectues,
-      casRisqueEleve:
-        newPatient.derniereEvaluation?.niveauRisque === 'ELEVE' ||
-        newPatient.dernierTriage?.niveauSuspicion === 'eleve'
-          ? prev.casRisqueEleve + 1
-          : prev.casRisqueEleve,
+      casRisqueEleve: isUrgent ? prev.casRisqueEleve + 1 : prev.casRisqueEleve,
       casRisqueModere:
         newPatient.derniereEvaluation?.niveauRisque === 'MODERE' ||
         newPatient.dernierTriage?.niveauSuspicion === 'modere'
@@ -543,38 +616,50 @@ export function App() {
         newPatient.statutVulnerabilite !== 'Standard'
           ? prev.femmesPdiOuVulnerables + 1
           : prev.femmesPdiOuVulnerables,
+      aidesAttribueesCount: isUrgent ? prev.aidesAttribueesCount + 1 : prev.aidesAttribueesCount,
     }));
-    if (newPatient.derniereEvaluation?.niveauRisque === 'ELEVE') {
-      showToast(
-        `Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée · Score IA : ${newPatient.derniereEvaluation.scoreIA}% (RISQUE ÉLEVÉ) — Bon de Santé prioritaire recommandé !`
-      );
-    } else if (newPatient.derniereEvaluation) {
-      showToast(
-        `Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée · Score IA : ${newPatient.derniereEvaluation.scoreIA}% (${newPatient.derniereEvaluation.niveauRisque})`
-      );
-    } else {
-      showToast(`Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée avec succès !`);
-    }
   };
 
   const handleSavePatientTriage = (updatedPatient: Beneficiaire) => {
+    let finalPatient = { ...updatedPatient };
+
+    // Détection de priorité urgente
+    const isUrgent =
+      updatedPatient.dernierTriage?.niveauSuspicion === 'eleve' ||
+      Boolean(updatedPatient.dernierTriage?.besoinMammographieUrgence) ||
+      updatedPatient.derniereEvaluation?.niveauRisque === 'ELEVE' ||
+      Boolean(updatedPatient.derniereEvaluation?.bonSanteDeclenche) ||
+      (updatedPatient.dernierTriage?.scoreCalcule !== undefined && updatedPatient.dernierTriage.scoreCalcule >= 70);
+
+    if (isUrgent && !finalPatient.demandeAideId) {
+      const autoDemande = autoSendUrgentAidRequest(finalPatient);
+      finalPatient = {
+        ...finalPatient,
+        demandeAideId: autoDemande.id,
+        demandeAideCode: autoDemande.codeDossier,
+        statutAideFonds: 'EN_ATTENTE',
+      };
+      showToast(
+        `🚨 Priorité URGENTE (${finalPatient.prenom} ${finalPatient.nom}) : Demande de don & Bon solidaire ${autoDemande.codeDossier} (25 000 FCFA) envoyée automatiquement !`
+      );
+    } else {
+      showToast(
+        `Triage clinique de ${finalPatient.nom} ${finalPatient.prenom} enregistré (Score : ${finalPatient.dernierTriage?.scoreCalcule || 0}%) !`
+      );
+    }
+
     // Appel API Patiente & Triage
-    patientApi.updatePatiente(updatedPatient.id, updatedPatient).catch(console.warn);
+    patientApi.updatePatiente(finalPatient.id, finalPatient).catch(console.warn);
 
     setBeneficiairesList((prev) =>
-      prev.map((b) => (b.id === updatedPatient.id ? updatedPatient : b))
+      prev.map((b) => (b.id === finalPatient.id ? finalPatient : b))
     );
     setBeneficiairesKpis((prev) => ({
       ...prev,
       depistagesEffectues: prev.depistagesEffectues + 1,
-      casRisqueEleve:
-        updatedPatient.dernierTriage?.niveauSuspicion === 'eleve'
-          ? prev.casRisqueEleve + 1
-          : prev.casRisqueEleve,
+      casRisqueEleve: isUrgent ? prev.casRisqueEleve + 1 : prev.casRisqueEleve,
+      aidesAttribueesCount: isUrgent ? prev.aidesAttribueesCount + 1 : prev.aidesAttribueesCount,
     }));
-    showToast(
-      `Triage clinique de ${updatedPatient.nom} ${updatedPatient.prenom} enregistré (Score : ${updatedPatient.dernierTriage?.scoreCalcule}%) !`
-    );
   };
 
   const handleRequestSolidarityForPatient = (patient: Beneficiaire) => {

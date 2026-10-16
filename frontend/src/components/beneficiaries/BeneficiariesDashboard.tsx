@@ -19,7 +19,6 @@ import {
   AlertTriangle,
   Activity,
   Plus,
-  Stethoscope,
   Phone,
   MapPin,
   Eye,
@@ -32,7 +31,7 @@ interface BeneficiariesDashboardProps {
   kpis: BeneficiairesKPIs;
   currentUser: CurrentUserContext;
   onRegisterNewPatient: () => void;
-  onStartTriage: (patient: Beneficiaire) => void;
+  onStartTriage?: (patient: Beneficiaire) => void;
   onViewProfile: (patient: Beneficiaire) => void;
   onRequestSolidarity: (patient: Beneficiaire) => void;
 }
@@ -42,7 +41,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
   kpis,
   currentUser,
   onRegisterNewPatient,
-  onStartTriage,
+  onStartTriage: _onStartTriage,
   onViewProfile,
   onRequestSolidarity,
 }) => {
@@ -375,11 +374,15 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                               <span className="text-[10px] text-slate-400">· Palpation OK</span>
                             )}
                           </div>
-                          {evaluation?.bonSanteDeclenche && (
+                          {(pat.demandeAideCode || pat.statutAideFonds === 'EN_ATTENTE' || (isHighRisk && pat.demandeAideId)) ? (
+                            <span className="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">
+                              Don Auto : {pat.demandeAideCode || 'Priorité Urgente'}
+                            </span>
+                          ) : evaluation?.bonSanteDeclenche ? (
                             <span className="inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 border border-orange-200">
                               Bon Santé
                             </span>
-                          )}
+                          ) : null}
                         </div>
                       ) : (
                         <span className="text-xs text-slate-400 italic">
@@ -391,17 +394,6 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                     {/* Actions */}
                     <td>
                       <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                        {/* Bouton Triage Clinique IA */}
-                        <button
-                          type="button"
-                          className="btn-triage-action cursor-pointer"
-                          onClick={() => onStartTriage(pat)}
-                          title="Effectuer ou réviser l'examen de triage clinique par IA"
-                        >
-                          <Stethoscope className="w-3.5 h-3.5" />
-                          <span>Triage IA</span>
-                        </button>
-
                         {/* Bouton Passerelle Solidarité Orange Money si cas suspect */}
                         {(isHighRisk || pat.statutVulnerabilite === 'PDI' || pat.statutVulnerabilite === 'Vulnerable') && (
                           <button

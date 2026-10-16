@@ -24,7 +24,7 @@ interface PatientTriageViewProps {
   currentUser: CurrentUserContext;
   onBack: () => void;
   onSaveTriage: (updatedPatient: Beneficiaire) => void;
-  onRequestSolidarity: (patient: Beneficiaire) => void;
+  onRequestSolidarity?: (patient: Beneficiaire) => void;
 }
 
 export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
@@ -32,7 +32,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
   currentUser,
   onBack,
   onSaveTriage,
-  onRequestSolidarity,
+  onRequestSolidarity: _onRequestSolidarity,
 }) => {
   const existing = patient.dernierTriage;
 
@@ -676,27 +676,16 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                 {riskResult.conduite}
               </div>
 
-              {/* Passerelle directe vers Module 4 Orange Money */}
-              {riskResult.urgence && (
-                <div className="mt-4 p-3 bg-gradient-to-r from-orange-50 to-rose-50 rounded-lg border border-orange-200 space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#C2410C]">
-                    <CreditCard className="w-4 h-4 text-[#FF7900]" />
-                    <span>Besoin de Prise en Charge Solidaire</span>
+              {/* Prise en Charge Urgente & Demande de Don Automatique */}
+              {(riskResult.urgence || riskResult.niveau === 'eleve') && (
+                <div className="mt-4 p-3.5 bg-gradient-to-r from-rose-50 to-orange-50 rounded-xl border border-rose-200 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-rose-800">
+                    <CreditCard className="w-4 h-4 text-rose-600" />
+                    <span>⚡ Priorité URGENTE · Demande de Don Automatique</span>
                   </div>
-                  <p className="text-[11px] text-[#475569]">
-                    Patiente en situation de vulnérabilité nécessitant une prise en charge urgente de ses examens.
+                  <p className="text-[11px] text-[#475569] leading-relaxed">
+                    Forte suspicion clinique détectée (score {riskResult.score}/100) : <strong>une demande de don & bon solidaire Orange Money (25 000 FCFA) sera envoyée automatiquement</strong> dès validation de ce formulaire.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // Sauvegarde préalable puis redirection
-                      handleSave(new Event('submit') as any);
-                      onRequestSolidarity(patient);
-                    }}
-                    className="w-full py-2 px-3 bg-[#FF7900] hover:bg-[#EA580C] text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5"
-                  >
-                    <span>Déposer dossier de prise en charge Orange Money</span>
-                  </button>
                 </div>
               )}
             </div>

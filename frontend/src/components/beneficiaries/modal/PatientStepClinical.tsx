@@ -347,6 +347,11 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
               <p className="text-[11px] text-[#536B70] m-0">
                 {evalResult.conduiteATenir}
               </p>
+              {evalResult.niveauRisque === 'ELEVE' && (
+                <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 w-fit">
+                  <span>⚡ Priorité URGENTE : Demande de don solidaire (25 000 FCFA) transmise automatiquement</span>
+                </div>
+              )}
             </div>
 
             <div className="text-right shrink-0">
