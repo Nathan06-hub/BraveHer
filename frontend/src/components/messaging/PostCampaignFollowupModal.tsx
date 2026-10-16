@@ -117,11 +117,15 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
 
   return (
     <div className="modal-backdrop z-[110]" role="dialog" aria-modal="true">
-      <div className="modal-content max-w-2xl bg-white rounded-2xl shadow-2xl p-6 border border-[#FFD8B8] space-y-4 animate-in fade-in">
+      <div className="modal-content max-w-2xl bg-white rounded-2xl shadow-2xl p-6 border border-[#D6E8E8] space-y-4 animate-in fade-in">
         {/* En-tête */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
+<<<<<<< HEAD
             <div className="w-10 h-10 rounded-xl bg-[var(--teal)] text-white flex items-center justify-center font-bold shadow-xs">
+=======
+            <div className="w-10 h-10 rounded-xl bg-[#007599] text-white flex items-center justify-center font-bold shadow-sm">
+>>>>>>> omai/dev
               <Radio className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
@@ -143,7 +147,11 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
         </div>
 
         {/* Sélection de la campagne */}
+<<<<<<< HEAD
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[var(--cream)] p-3 rounded-xl border border-[var(--line)]">
+=======
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#F0F9F8] p-3 rounded-xl border border-[#D6E8E8]">
+>>>>>>> omai/dev
           <div>
             <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wide block mb-1">
               Campagne source :
@@ -209,8 +217,13 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
                   onClick={() => setActivePreviewLang(l)}
                   className={`px-2 py-0.5 rounded text-xs font-bold transition-all capitalize ${
                     activePreviewLang === l
+<<<<<<< HEAD
                       ? 'bg-[var(--teal)] text-white shadow-xs'
                       : 'bg-[var(--cream)] text-[var(--muted)] hover:bg-[#d8eded]'
+=======
+                      ? 'bg-[#007599] text-white'
+                      : 'bg-[#F1F5F9] text-[#536B70] hover:bg-[#E2E8F0]'
+>>>>>>> omai/dev
                   }`}
                 >
                   {l === 'moore' ? 'Mooré' : l === 'dioula' ? 'Dioula' : l === 'fulfulde' ? 'Fulfuldé' : 'Français'}
@@ -246,7 +259,11 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
           <button
             type="button"
             onClick={handleConfirm}
+<<<<<<< HEAD
             className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[var(--teal)] hover:bg-[var(--teal-dark)] transition-colors shadow-sm flex items-center gap-1.5"
+=======
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#007599] hover:bg-[#005C75] transition-colors shadow-md flex items-center gap-1.5"
+>>>>>>> omai/dev
           >
             <Send className="w-3.5 h-3.5" />
             <span>Diffuser la relance ({targetedPersonnes.length} SMS)</span>

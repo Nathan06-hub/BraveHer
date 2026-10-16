@@ -12,3 +12,4 @@ export * from './partnerApi';
 export * from './syncApi';
 export * from './authApi';
 export * from './centreApi';
+export * from './statsApi';

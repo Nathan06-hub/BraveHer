@@ -8,7 +8,7 @@
    --rose-dark: #D44374;
    --ink: #17343B;
    --line: #D6E8E8;
-   --orange-money: #FF7900;
+   --orange-money: #ED8B00;
    ========================================================================== */
 
 .solidarity-module-container {
@@ -192,7 +192,7 @@
 .fund-progress-bar-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--teal, #007599) 0%, #38BDF8 60%, var(--orange-money, #FF7900) 100%);
+  background: linear-gradient(90deg, var(--teal, #007599) 0%, #0F4A57 50%, var(--rose, #F3A2BE) 100%);
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -272,9 +272,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #FFF7ED;
-  color: #C2410C;
-  border: 1px solid #FED7AA;
+  background: #F0F9F8;
+  color: #007599;
+  border: 1px solid #D6E8E8;
   padding: 0.45rem 0.85rem;
   border-radius: 0.5rem;
   font-size: 0.825rem;
@@ -284,10 +284,10 @@
 }
 
 .btn-orange-money:hover {
-  background: var(--orange-money, #FF7900);
+  background: var(--teal, #007599);
   color: #FFFFFF;
-  border-color: var(--orange-money, #FF7900);
-  box-shadow: 0 2px 8px rgba(255, 121, 0, 0.25);
+  border-color: var(--teal, #007599);
+  box-shadow: 0 2px 8px rgba(0, 117, 153, 0.25);
 }
 
 /* Tableau des demandes */
@@ -396,7 +396,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.85rem;
-  background: var(--orange-money, #FF7900);
+  background: var(--teal, #007599);
   color: #FFFFFF;
   border-radius: 0.5rem;
   font-weight: 700;

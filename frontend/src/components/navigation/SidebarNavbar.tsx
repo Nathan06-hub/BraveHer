@@ -134,6 +134,17 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
       ),
     },
     {
+      id: 'centre_admin',
+      label: 'Mon Centre & Équipe',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      ),
+    },
+    {
       id: 'predictive',
       label: 'Pilotage Ministère (Data)',
       icon: (
@@ -158,6 +169,23 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
       ),
     },
   ];
+
+  const isSageFemme =
+    currentUser?.role === 'responsable' ||
+    currentUser?.role === 'SAGE_FEMME' ||
+    currentUser?.roleTitre?.toLowerCase().includes('sage-femme');
+
+  // Filtrage des onglets : la Sage-femme n'a pas besoin de la page Campagnes (gestion réservée à l'administrateur),
+  // ni du Pilotage Ministère, ni du Push SMS Orange massif, ni de la gestion administrative du centre
+  const visibleNavItems = mainNavItems.filter((item) => {
+    if (isSageFemme) {
+      if (item.id === 'campaigns') return false;
+      if (item.id === 'predictive') return false;
+      if (item.id === 'centre_admin') return false;
+      if (item.id === 'messages') return false;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -187,7 +215,7 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
         {/* Section Médiane : Navigation scrollable de manière fluide */}
         <div className="nav-scroll-area">
           <nav className="nav-items-list" aria-label="Liens principaux">
-            {mainNavItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <NavListItem
                 key={item.id}
                 id={item.id}

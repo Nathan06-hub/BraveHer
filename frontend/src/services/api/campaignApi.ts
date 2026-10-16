@@ -4,6 +4,7 @@
  */
 
 import { apiFetch } from './httpClient';
+<<<<<<< HEAD
 import type { Campagne, SmsLog, StatutCampagne, LanguePatiente, StatutSms } from '../../types/campaign';
 
 function normalizeSmsLog(raw: any): SmsLog {
@@ -39,6 +40,10 @@ function normalizeSmsLog(raw: any): SmsLog {
     typeMessage: raw.typeMessage || 'PUSH_CAMPAGNE',
   };
 }
+=======
+import type { Campagne, SmsLog, StatutCampagne } from '../../types/campaign';
+import { MOCK_CAMPAGNES } from '../../data/mockCampaignData';
+>>>>>>> omai/dev
 
 function normalizeCampagne(raw: any): Campagne {
   if (!raw) return raw;
@@ -89,7 +94,7 @@ export const campaignApi = {
   async getCampagnes(): Promise<Campagne[]> {
     const data = await apiFetch<any>('/campagnes', {
       method: 'GET',
-      fallbackData: [],
+      fallbackData: MOCK_CAMPAGNES,
     });
     const list = Array.isArray(data)
       ? data
@@ -226,6 +231,24 @@ export const campaignApi = {
       : data?.content && Array.isArray(data.content)
       ? data.content
       : [];
+<<<<<<< HEAD
     return list.map(normalizeSmsLog);
+=======
+
+    return list.map((item: any) => ({
+      id: String(item.id || `sms-${Date.now()}`),
+      campagneId: item.campagneId,
+      campagneTitre: item.campagneTitre || 'Octobre Rose 2026 — Kadiogo',
+      destinataireTelephone: item.destinataire || item.destinataireTelephone || '',
+      destinataireNom: item.patienteNom ? `${item.patientePrenom || ''} ${item.patienteNom}`.trim() : 'Patiente',
+      langue: item.langue || 'Mooré',
+      canal: item.canal || 'SMS',
+      statut: item.statut || 'ENVOYE',
+      dateEnvoi: item.dateEnvoi ? new Date(item.dateEnvoi).toLocaleDateString('fr-FR') : 'Aujourd\'hui',
+      heureEnvoi: item.dateEnvoi ? new Date(item.dateEnvoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '10:00',
+      messageApercu: item.contenu || item.messageApercu || '',
+      mediaUrl: item.mediaUrl,
+    }));
+>>>>>>> omai/dev
   },
 };

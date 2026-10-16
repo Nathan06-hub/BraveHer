@@ -14,8 +14,17 @@ export const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
   onExport,
   onCreateCampaign,
 }) => {
-  // Formatage par défaut si non spécifié
-  const displayDate = dateLabel || 'MERCREDI 14 OCTOBRE 2026';
+  // Date dynamique en français selon la date du jour
+  const displayDate =
+    dateLabel ||
+    new Intl.DateTimeFormat('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+      .format(new Date())
+      .toUpperCase();
 
   return (
     <section className="dashboard-welcome">
@@ -39,15 +48,17 @@ export const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
           <span>Exporter</span>
         </button>
 
-        <button
-          type="button"
-          className="dashboard-btn dashboard-btn-primary"
-          onClick={onCreateCampaign}
-          title="Créer une nouvelle campagne de dépistage"
-        >
-          <Plus size={15} aria-hidden="true" />
-          <span>Nouvelle campagne</span>
-        </button>
+        {onCreateCampaign && (
+          <button
+            type="button"
+            className="dashboard-btn dashboard-btn-primary"
+            onClick={onCreateCampaign}
+            title="Créer une nouvelle campagne de dépistage"
+          >
+            <Plus size={15} aria-hidden="true" />
+            <span>Nouvelle campagne</span>
+          </button>
+        )}
       </div>
     </section>
   );

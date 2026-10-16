@@ -42,9 +42,15 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
           </p>
         </div>
 
+<<<<<<< HEAD
         <span className="text-[11px] font-medium text-[var(--teal)] bg-[#E6F4F2] px-3 py-1 rounded-full border border-[#B2DFDB] flex items-center gap-1.5 shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-[var(--teal)]" />
           <span>4 protocoles cliniques actifs</span>
+=======
+        <span className="text-[11px] font-bold text-[#007599] bg-[#F0F9F8] px-3 py-1 rounded-full border border-[#D6E8E8] flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-[#007599]" />
+          <span>Passerelle GSM Orange BF Active</span>
+>>>>>>> omai/dev
         </span>
       </div>
 
@@ -79,9 +85,15 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                     type="checkbox"
                     checked={rule.actif}
                     onChange={() => onToggleRule(rule.id)}
+<<<<<<< HEAD
                     className="w-4 h-4 text-[var(--orange)] rounded border-gray-300 focus:ring-[var(--orange)] cursor-pointer"
                   />
                   <span className={`text-[11px] font-bold ${rule.actif ? 'text-[var(--orange)]' : 'text-[var(--muted)]'}`}>
+=======
+                    className="w-4 h-4 text-[#007599] rounded border-gray-300 focus:ring-[#007599] cursor-pointer"
+                  />
+                  <span className={`text-[11px] font-bold ${rule.actif ? 'text-[#007599]' : 'text-[#536B70]'}`}>
+>>>>>>> omai/dev
                     {rule.actif ? 'Actif' : 'Pause'}
                   </span>
                 </label>
@@ -90,8 +102,13 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
               {/* Onglets de langues pour prévisualisation */}
               <div className="rule-message-box space-y-2">
                 <div className="flex items-center justify-between text-xs flex-wrap gap-2">
+<<<<<<< HEAD
                   <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wide flex items-center gap-1">
                     <Globe className="w-3 h-3 text-[var(--orange)]" />
+=======
+                  <span className="text-[10px] font-bold text-[#536B70] uppercase tracking-wide flex items-center gap-1">
+                    <Globe className="w-3 h-3 text-[#007599]" />
+>>>>>>> omai/dev
                     <span>Aperçu du SMS dans la langue de la femme :</span>
                   </span>
 
@@ -103,8 +120,13 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                         onClick={() => setRuleLang(rule.id, l)}
                         className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all capitalize ${
                           activeLang === l
+<<<<<<< HEAD
                             ? 'bg-[var(--teal)] text-white shadow-xs'
                             : 'bg-white text-[var(--muted)] hover:bg-[var(--cream)] border border-[var(--line)]'
+=======
+                            ? 'bg-[#007599] text-white shadow-xs'
+                            : 'bg-white text-[#536B70] hover:bg-[#F1F5F9]'
+>>>>>>> omai/dev
                         }`}
                       >
                         {l === 'moore' ? 'Mooré' : l === 'dioula' ? 'Dioula' : l === 'fulfulde' ? 'Fulfuldé' : 'Français'}
@@ -113,7 +135,11 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                   </div>
                 </div>
 
+<<<<<<< HEAD
                 <p className="text-xs text-[var(--ink)] font-mono leading-relaxed bg-white p-2.5 rounded border border-[#FED7AA]">
+=======
+                <p className="text-xs text-[#17343B] font-mono leading-relaxed bg-white p-2.5 rounded border border-[#D6E8E8]">
+>>>>>>> omai/dev
                   {msgPreview}
                 </p>
 
@@ -125,8 +151,13 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
 
               {/* Métadonnées & Statistiques */}
               <div className="rule-meta-row">
+<<<<<<< HEAD
                 <div className="flex items-center gap-1.5">
                   <Smartphone className="w-3.5 h-3.5 text-[var(--orange)]" />
+=======
+                <div className="flex items-center gap-1">
+                  <Smartphone className="w-3.5 h-3.5 text-[#007599]" />
+>>>>>>> omai/dev
                   <span>
                     <strong>{rule.totalEnvoyes}</strong> SMS diffusés
                   </span>
@@ -148,11 +179,19 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                   onClick={() => onTriggerRuleSimulation(rule)}
                   className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs ${
                     rule.actif
+<<<<<<< HEAD
                       ? 'bg-[var(--ink)] text-white hover:bg-[var(--teal)]'
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <Send className="w-3.5 h-3.5 text-[var(--orange)]" />
+=======
+                      ? 'bg-[#007599] text-white hover:bg-[#005C75]'
+                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <Send className="w-3.5 h-3.5 text-white" />
+>>>>>>> omai/dev
                   <span>⚡ Déclencher la vague ({rule.ageMin}-{rule.ageMax} ans) maintenant</span>
                 </button>
               </div>

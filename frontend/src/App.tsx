@@ -41,7 +41,6 @@ import type { Beneficiaire, BeneficiairesKPIs, ExamenCliniqueDetails } from './t
 import { DashboardView } from './components/dashboard';
 import { AgentMyCampaignsView } from './components/agentCampaigns';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
-import { NetworkStatusBadge } from './components/common/NetworkStatusBadge';
 import {
   campaignApi,
   centreApi,
@@ -49,10 +48,12 @@ import {
   solidarityApi,
   partnerApi,
   authApi,
+  statsApi,
   mapBackendUserToContext,
   type BackendUser,
 } from './services/api';
 import { PredictiveHealthDashboard } from './components/predictive';
+import { AdminCentreTeamView } from './components/admin/AdminCentreTeamView';
 import './App.css';
 
 const TAB_PATH_MAP: Record<string, string> = {
@@ -62,6 +63,7 @@ const TAB_PATH_MAP: Record<string, string> = {
   beneficiaries: '/beneficiaries',
   messages: '/messages',
   impact: '/solidarity',
+  centre_admin: '/centre-admin',
   predictive: '/predictive',
   settings: '/settings',
   help: '/help',
@@ -76,6 +78,7 @@ const PATH_TAB_MAP: Record<string, string> = {
   '/messages': 'messages',
   '/solidarity': 'impact',
   '/impact': 'impact',
+  '/centre-admin': 'centre_admin',
   '/predictive': 'predictive',
   '/settings': 'settings',
   '/help': 'help',
@@ -109,13 +112,7 @@ export function App() {
   // Hook de connectivité & Offline-First (Module 3)
   const {
     isOnline,
-    isSimulatedOffline,
-    backendAvailable,
-    backendLatencyMs,
-    pendingSyncCount,
-    isSyncing,
     toggleSimulatedOffline,
-    syncNow,
   } = useNetworkStatus();
 
   // État des données du Module 1 (Campagnes réelles du Backend Spring Boot et Logs SMS)
@@ -431,6 +428,7 @@ export function App() {
     let isMounted = true;
     async function hydrateData() {
       try {
+<<<<<<< HEAD
         const [
           loadedCampagnes,
           loadedCentres,
@@ -446,6 +444,18 @@ export function App() {
           partnerApi.getPartenaires(),
           campaignApi.getSmsLogs(),
         ]);
+=======
+        const [loadedCampagnes, loadedCentres, loadedPatients, loadedDemandes, loadedPartenaires, loadedLogs, loadedStats] =
+          await Promise.all([
+            campaignApi.getCampagnes(),
+            centreApi.getCentres(),
+            patientApi.getPatientes(),
+            solidarityApi.getDemandesAide(),
+            partnerApi.getPartenaires(),
+            campaignApi.getSmsLogs().catch(() => []),
+            statsApi.getDashboard().catch(() => null),
+          ]);
+>>>>>>> omai/dev
 
         if (isMounted) {
           if (Array.isArray(loadedCampagnes)) {
@@ -454,6 +464,7 @@ export function App() {
           if (Array.isArray(loadedCentres)) {
             setCentresList(loadedCentres);
           }
+<<<<<<< HEAD
           if (Array.isArray(loadedPatients)) {
             setBeneficiairesList(loadedPatients);
             setBeneficiairesKpis({
@@ -487,6 +498,36 @@ export function App() {
           }
           if (Array.isArray(loadedSmsLogs)) {
             setSmsLogs(loadedSmsLogs);
+=======
+          if (loadedPatients?.length) {
+            setBeneficiairesList(loadedPatients);
+          }
+          if (loadedDemandes?.length) {
+            setDemandesAide(loadedDemandes);
+          }
+          if (loadedPartenaires?.length) {
+            setPartenairesList(loadedPartenaires);
+          }
+          if (loadedLogs?.length) {
+            setSmsLogs(loadedLogs);
+          }
+          if (loadedStats) {
+            setBeneficiairesKpis({
+              totalPatientes: loadedStats.totalPatientes,
+              depistagesEffectues: loadedStats.totalEvaluations,
+              casRisqueEleve: loadedStats.totalCasEleves,
+              casRisqueModere: loadedStats.totalCasModeres,
+              femmesPdiOuVulnerables: (loadedPatients || []).filter(
+                (p) => p.statutVulnerabilite === 'PDI' || p.statutVulnerabilite === 'Vulnerable'
+              ).length || 2,
+              aidesAttribueesCount: loadedStats.totalBonsEmis,
+            });
+            setFondsSolidarite((prev) => ({
+              ...prev,
+              montantDisponible: loadedStats.totalFondsDisponiblesXof || prev.montantDisponible,
+              nombreAidesAttribuees: loadedStats.totalBonsEmis,
+            }));
+>>>>>>> omai/dev
           }
         }
       } catch (err) {
@@ -1320,6 +1361,7 @@ export function App() {
 
         {/* Content View Area */}
         <div className="scene-content-area">
+<<<<<<< HEAD
           {/* Top Bar avec Statut Réseau Orange & Synchronisation (Module 3) */}
           <header className="flex items-center justify-between px-6 py-2.5 bg-white/90 backdrop-blur-md border-b border-[#D6E8E8] sticky top-0 z-30 shadow-[0_1px_4px_rgba(23,52,59,0.03)]">
             <div className="flex items-center gap-2">
@@ -1350,6 +1392,8 @@ export function App() {
               }}
             />
           </header>
+=======
+>>>>>>> omai/dev
 
           {!isOnline && (
             <div className="mx-6 mt-3.5 p-3.5 bg-amber-50 border border-amber-300 rounded-2xl flex items-center justify-between text-xs text-amber-900 shadow-sm animate-fadeIn">
@@ -1371,6 +1415,7 @@ export function App() {
 
           <main className="scene-content" aria-label="Espace de travail">
             {activeTab === 'campaigns' ? (
+<<<<<<< HEAD
               /* Module 1 : Gestion des campagnes de sensibilisation */
               <CampaignsPage
                 campagnes={campagnes}
@@ -1388,6 +1433,44 @@ export function App() {
                 initialViewingCampaign={viewingCampaign}
                 onCloseInitialViewing={() => setViewingCampaign(null)}
               />
+=======
+              /* Module 1 : Gestion des campagnes de sensibilisation (Réservé Administrateur) */
+              (currentUser?.role === 'responsable' || currentUser?.roleTitre?.toLowerCase().includes('sage-femme')) ? (
+                <div className="scene-welcome-card" style={{ padding: '36px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#17343B', marginBottom: '8px' }}>
+                    Accès Réservé à l'Administration
+                  </h3>
+                  <p style={{ color: '#64748B', fontSize: '14px', maxWidth: '480px', margin: '0 auto 20px auto' }}>
+                    La planification et la création des campagnes de dépistage sont gérées par l'Administrateur du centre.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('beneficiaries')}
+                    className="btn-create-campaign"
+                    style={{ margin: '0 auto' }}
+                  >
+                    Accéder aux Dossiers Patientes & Triage →
+                  </button>
+                </div>
+              ) : (
+                <CampaignsPage
+                  campagnes={campagnes}
+                  centres={centresList}
+                  agents={MOCK_AGENTS}
+                  currentUser={currentUser}
+                  personnes={personnes}
+                  smsLogs={smsLogs}
+                  onSaveCampaign={handleSaveCampaign}
+                  onValidationDecision={handleValidationDecision}
+                  onAddPersonne={handleAddPersonne}
+                  onTriggerPushSms={handleTriggerPushSms}
+                  initialCreateOpen={isCreateModalOpen}
+                  onCloseInitialCreate={() => setIsCreateModalOpen(false)}
+                  initialViewingCampaign={viewingCampaign}
+                  onCloseInitialViewing={() => setViewingCampaign(null)}
+                />
+              )
+>>>>>>> omai/dev
             ) : activeTab === 'my_campaigns' ? (
               /* Espace Agent : Mes Campagnes & Fiche de création patiente */
               <AgentMyCampaignsView
@@ -1553,6 +1636,13 @@ export function App() {
                 onTriggerAgeWave={handleTriggerAgeWave}
                 onTriggerPostCampaignFollowup={handleTriggerPostCampaignFollowup}
                 onSendQuickPush={handleSendQuickPush}
+              />
+            ) : activeTab === 'centre_admin' ? (
+              /* Espace Contrôle Administrateur de Centre : Gestion Sages-Femmes & Dotations */
+              <AdminCentreTeamView
+                currentUser={currentUser}
+                centres={centresList}
+                onShowToast={showToast}
               />
             ) : activeTab === 'predictive' ? (
               /* Tableau de Bord Prédictif National pour le Ministère de la Santé (Data for Good) */
