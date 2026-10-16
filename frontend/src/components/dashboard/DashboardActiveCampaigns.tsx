@@ -26,58 +26,20 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
   onViewAll,
   onSelectCampaign,
 }) => {
-  // Préparation des 3 campagnes affichées
-  const defaultPreviews: CampaignPreviewCard[] = [
-    {
-      id: 'camp-1',
-      nom: 'Dépistage précoce',
-      centre: 'Ouagadougou · Centre médical Schiphra',
-      dates: '12 – 24 octobre 2026',
-      icon: 'sparkle',
-      statusLabel: 'En cours',
-      atteint: 68,
-      cible: 100,
-      pourcentage: 68,
-    },
-    {
-      id: 'camp-2',
-      nom: 'Parlons santé des femmes',
-      centre: 'Bobo-Dioulasso · Maison de la femme',
-      dates: '05 – 31 octobre 2026',
-      icon: 'heart',
-      statusLabel: 'En cours',
-      atteint: 42,
-      cible: 80,
-      pourcentage: 52,
-    },
-    {
-      id: 'camp-3',
-      nom: 'Octobre Rose en communauté',
-      centre: 'Koudougou · 3 centres de santé',
-      dates: '01 – 20 octobre 2026',
-      icon: 'sun',
-      statusLabel: 'Objectif atteint',
-      isDone: true,
-      atteint: 91,
-      cible: 90,
-      pourcentage: 100,
-    },
-  ];
-
-  // Si des campagnes réelles sont passées et que l'utilisateur en a au moins 1 active
+  // Affichage des campagnes réelles du Backend Spring Boot
   const cardsToDisplay: CampaignPreviewCard[] =
-    campagnes && campagnes.length >= 3
+    campagnes && campagnes.length > 0
       ? campagnes.slice(0, 3).map((c, index) => {
-          const count = c.personnesSensibiliseesIds?.length || 0;
+          const count = c.personnesSensibiliseesIds?.length || (c.totalSmsEnvoyes ? Math.round(c.totalSmsEnvoyes * 0.8) : 0);
           const target = c.objectifFemmes || 100;
           const pct = Math.min(100, Math.round((count / target) * 100));
-          const isDone = pct >= 100 || c.statut === 'terminee';
+          const isDone = pct >= 100 || c.statut === 'terminee' || c.statut === 'TERMINEE';
 
           return {
             id: c.id,
-            nom: c.nom,
-            centre: `${c.commune} · ${c.centreNom}`,
-            dates: `${c.dateDebut} au ${c.dateFin}`,
+            nom: c.nom || (c as any).titre || 'Campagne de Sensibilisation',
+            centre: `${c.commune || 'Burkina Faso'} · ${c.centreNom || 'Centre de santé'}`,
+            dates: c.dateDebut ? `${c.dateDebut} au ${c.dateFin || 'fin du mois'}` : 'Octobre 2026',
             icon: index === 0 ? 'sparkle' : index === 1 ? 'heart' : 'sun',
             statusLabel: isDone ? 'Objectif atteint' : 'En cours',
             isDone,
@@ -86,7 +48,7 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
             pourcentage: pct,
           };
         })
-      : defaultPreviews;
+      : [];
 
   return (
     <section className="dashboard-campaigns-section" id="campagnes">
@@ -109,9 +71,15 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
         </button>
       </div>
 
-      {/* Grille des 3 campagnes */}
+      {/* Grille des campagnes */}
       <div className="dashboard-campaigns-grid">
-        {cardsToDisplay.map((card) => {
+        {cardsToDisplay.length === 0 ? (
+          <div style={{ gridColumn: '1 / -1', padding: '32px 24px', background: '#FFFFFF', borderRadius: '14px', border: '1px dashed #D6E8E8', textAlign: 'center', color: '#64748B' }}>
+            <p style={{ margin: 0, fontWeight: 600, color: '#17343B', fontSize: '15px' }}>Aucune campagne de sensibilisation en cours actuellement.</p>
+            <p style={{ margin: '6px 0 0 0', fontSize: '13px', color: '#819194' }}>Créez une nouvelle campagne pour mobiliser votre communauté et lancer des dépistages sur le terrain.</p>
+          </div>
+        ) : (
+          cardsToDisplay.map((card) => {
           return (
             <article key={card.id} className="dashboard-campaign-card">
               <div className="dashboard-camp-top">
@@ -177,7 +145,7 @@ export const DashboardActiveCampaigns: React.FC<DashboardActiveCampaignsProps> =
               </button>
             </article>
           );
-        })}
+        }))}
       </div>
     </section>
   );

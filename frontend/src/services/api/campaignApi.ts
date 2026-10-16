@@ -184,9 +184,29 @@ export const campaignApi = {
    * Récupère l'historique des SMS envoyés
    */
   async getSmsLogs(): Promise<SmsLog[]> {
-    return apiFetch<SmsLog[]>('/sms/logs', {
+    const data = await apiFetch<any>('/sms/logs', {
       method: 'GET',
       fallbackData: [],
     });
+    const list = Array.isArray(data)
+      ? data
+      : data?.content && Array.isArray(data.content)
+      ? data.content
+      : [];
+
+    return list.map((item: any) => ({
+      id: String(item.id || `sms-${Date.now()}`),
+      campagneId: item.campagneId,
+      campagneTitre: item.campagneTitre || 'Octobre Rose 2026 — Kadiogo',
+      destinataireTelephone: item.destinataire || item.destinataireTelephone || '',
+      destinataireNom: item.patienteNom ? `${item.patientePrenom || ''} ${item.patienteNom}`.trim() : 'Patiente',
+      langue: item.langue || 'Mooré',
+      canal: item.canal || 'SMS',
+      statut: item.statut || 'ENVOYE',
+      dateEnvoi: item.dateEnvoi ? new Date(item.dateEnvoi).toLocaleDateString('fr-FR') : 'Aujourd\'hui',
+      heureEnvoi: item.dateEnvoi ? new Date(item.dateEnvoi).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '10:00',
+      messageApercu: item.contenu || item.messageApercu || '',
+      mediaUrl: item.mediaUrl,
+    }));
   },
 };

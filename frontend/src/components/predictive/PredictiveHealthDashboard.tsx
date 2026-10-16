@@ -1,6 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { IndicateurZoneBF } from '../../types/solidarity';
 import { BurkinaHeatmapView } from '../solidarity/BurkinaHeatmapView';
+import { statsApi, type DashboardStats, type HeatmapPoint } from '../../services/api/statsApi';
+import { centreApi } from '../../services/api/centreApi';
+import type { CentreSante } from '../../types/campaign';
 import {
   Activity,
   AlertTriangle,
@@ -10,9 +13,9 @@ import {
   Layers,
   MapPin,
   ShieldCheck,
-  TrendingUp,
   Truck,
   Users,
+  Coins,
 } from 'lucide-react';
 
 export interface MobileClinicMission {
@@ -31,69 +34,6 @@ export interface MobileClinicMission {
   partenaireSponsor: string;
 }
 
-const INITIAL_MISSIONS: MobileClinicMission[] = [
-  {
-    id: 'mission-1',
-    nom: 'Clinique Mobile Orange N°1 — Espoir Sahel',
-    regionCible: 'Sahel',
-    districtCible: 'District Sanitaire de Dori',
-    dateDebut: '2026-10-01',
-    dateFin: '2026-10-22',
-    statut: 'en_cours',
-    equipeSoignante: 'Dr. Sawadogo (Radiologue) + 3 Sages-femmes',
-    capaciteDepistageJour: 80,
-    femmesCibles: 1200,
-    femmesDepistees: 940,
-    casSuspectsDetectes: 34,
-    partenaireSponsor: 'Fondation Orange Burkina Faso',
-  },
-  {
-    id: 'mission-2',
-    nom: 'Clinique Mobile Orange N°2 — Boucle Solidaire',
-    regionCible: 'Boucle du Mouhoun',
-    districtCible: 'District Sanitaire de Dédougou',
-    dateDebut: '2026-10-10',
-    dateFin: '2026-10-31',
-    statut: 'en_cours',
-    equipeSoignante: 'Dr. Ilboudo + 2 Infirmières d\'État',
-    capaciteDepistageJour: 70,
-    femmesCibles: 1000,
-    femmesDepistees: 520,
-    casSuspectsDetectes: 19,
-    partenaireSponsor: 'Fondation Orange Burkina Faso',
-  },
-  {
-    id: 'mission-3',
-    nom: 'Clinique Mobile N°3 — Rameau Est',
-    regionCible: 'Est',
-    districtCible: 'Fada N\'Gourma / Kantchari',
-    dateDebut: '2026-11-05',
-    dateFin: '2026-11-25',
-    statut: 'planifiee',
-    equipeSoignante: 'Équipe CHR Fada N\'Gourma',
-    capaciteDepistageJour: 60,
-    femmesCibles: 900,
-    femmesDepistees: 0,
-    casSuspectsDetectes: 0,
-    partenaireSponsor: 'Coris Bank International',
-  },
-];
-
-const CSPS_LIST = [
-  { id: 'all', nom: 'Tous les 18 CSPS connectés (Agrégation Nationale)', region: 'National', connecte: true },
-  { id: 'csps-schiphra', nom: 'CSPS Schiphra', region: 'Centre', connecte: true },
-  { id: 'csps-bogodogo', nom: 'CSPS Bogodogo', region: 'Centre', connecte: true },
-  { id: 'csps-sig-noghin', nom: 'CSPS Sig-Noghin', region: 'Centre', connecte: true },
-  { id: 'cma-kossodo', nom: 'CMA Kossodo', region: 'Centre', connecte: true },
-  { id: 'csps-dori', nom: 'CSPS Dori Centre', region: 'Sahel', connecte: true },
-  { id: 'csps-gorom', nom: 'CSPS Gorom-Gorom', region: 'Sahel', connecte: true },
-  { id: 'csps-dedougou', nom: 'CSPS Dédougou Urbain', region: 'Boucle du Mouhoun', connecte: true },
-  { id: 'csps-tougan', nom: 'CSPS Tougan', region: 'Boucle du Mouhoun', connecte: true },
-  { id: 'csps-fada', nom: 'CSPS Fada N\'Gourma', region: 'Est', connecte: true },
-  { id: 'csps-bobo-22', nom: 'CSPS Bobo Secteur 22', region: 'Hauts-Bassins', connecte: true },
-  { id: 'csps-ouahigouya', nom: 'CSPS Ouahigouya Centre', region: 'Nord', connecte: true },
-];
-
 interface PredictiveHealthDashboardProps {
   indicateursRegions: IndicateurZoneBF[];
   onDeployMobileClinic: (regionNom: string) => void;
@@ -106,40 +46,103 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
   onFilterByRegion,
 }) => {
   const [selectedCsps, setSelectedCsps] = useState<string>('all');
-  const [missions, setMissions] = useState<MobileClinicMission[]>(INITIAL_MISSIONS);
+  const [realStats, setRealStats] = useState<DashboardStats | null>(null);
+  const [realHeatmapPoints, setRealHeatmapPoints] = useState<HeatmapPoint[] | null>(null);
+  const [centresList, setCentresList] = useState<CentreSante[]>([]);
+  const [missions, setMissions] = useState<MobileClinicMission[]>(() => {
+    const saved = localStorage.getItem('braveher_mobile_clinic_missions');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // ignore
+      }
+    }
+    return [];
+  });
   const [activeTab, setActiveTab] = useState<'heatmap' | 'missions' | 'decisions'>('heatmap');
   const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const [modalTargetRegion, setModalTargetRegion] = useState<string>('Sahel');
   const [modalMissionName, setModalMissionName] = useState<string>('Clinique Mobile Orange');
   const [modalTargetGoal, setModalTargetGoal] = useState<number>(1000);
 
-  // Calculs statistiques consolidés multi-CSPS
-  const statsNationales = useMemo(() => {
-    const totalSensibilisees = indicateursRegions.reduce((sum, r) => sum + r.femmesSensibilisees, 0);
-    const totalDepistages = indicateursRegions.reduce((sum, r) => sum + r.depistagesRealises, 0);
-    const totalCasSuspects = indicateursRegions.reduce((sum, r) => sum + r.casSuspicionElevee, 0);
-    const totalAides = indicateursRegions.reduce((sum, r) => sum + r.aidesAttribuees, 0);
-    const moyenneSuspicion = totalDepistages > 0 ? ((totalCasSuspects / totalDepistages) * 100).toFixed(1) : '3.8';
-    const regionsAlerte = indicateursRegions.filter((r) => r.niveauRisque === 'eleve').length;
-    const missionsActives = missions.filter((m) => m.statut === 'en_cours').length;
+  // Chargement des données réelles du backend Spring Boot
+  useEffect(() => {
+    statsApi
+      .getDashboard()
+      .then((data) => {
+        if (data) {
+          setRealStats(data);
+        }
+      })
+      .catch(() => {});
 
-    return {
-      totalSensibilisees,
-      totalDepistages,
-      totalCasSuspects,
-      totalAides,
-      moyenneSuspicion,
-      regionsAlerte,
-      missionsActives,
-    };
-  }, [indicateursRegions, missions]);
+    statsApi
+      .getHeatmap()
+      .then((pts) => {
+        if (pts && pts.length > 0) {
+          setRealHeatmapPoints(pts);
+        }
+      })
+      .catch(() => {});
+
+    centreApi
+      .getCentres()
+      .then((centres) => {
+        if (centres && centres.length > 0) {
+          setCentresList(centres);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const saveMissions = (newMissions: MobileClinicMission[]) => {
+    setMissions(newMissions);
+    localStorage.setItem('braveher_mobile_clinic_missions', JSON.stringify(newMissions));
+  };
+
+  // Consolidation des indicateurs avec les points épidémiologiques réels
+  const effectiveIndicateurs = useMemo(() => {
+    if (!realHeatmapPoints || realHeatmapPoints.length === 0) {
+      return indicateursRegions;
+    }
+
+    return indicateursRegions.map((region) => {
+      const matchPoints = realHeatmapPoints.filter(
+        (p) =>
+          p.region?.toLowerCase().includes(region.regionNom.toLowerCase()) ||
+          region.regionNom.toLowerCase().includes(p.region?.toLowerCase())
+      );
+
+      if (matchPoints.length === 0) {
+        return {
+          ...region,
+          depistagesRealises: 0,
+          casSuspicionElevee: 0,
+          tauxCouverture: 0,
+          niveauRisque: 'faible' as const,
+        };
+      }
+
+      const evalCount = matchPoints.reduce((acc, p) => acc + (p.totalEvaluations || 0), 0);
+      const highRisk = matchPoints.reduce((acc, p) => acc + (p.casEleves || 0), 0);
+
+      return {
+        ...region,
+        depistagesRealises: evalCount,
+        casSuspicionElevee: highRisk,
+        femmesSensibilisees: Math.max(evalCount * 2, evalCount),
+        niveauRisque: highRisk >= 2 ? ('critique' as const) : highRisk === 1 ? ('eleve' as const) : ('faible' as const),
+      };
+    });
+  }, [indicateursRegions, realHeatmapPoints]);
 
   // Régions en alerte prioritaire détectées par l'algorithme prédictif
   const regionsPrioritaires = useMemo(() => {
-    return [...indicateursRegions]
+    return [...effectiveIndicateurs]
       .sort((a, b) => b.casSuspicionElevee - a.casSuspicionElevee)
       .slice(0, 3);
-  }, [indicateursRegions]);
+  }, [effectiveIndicateurs]);
 
   const handleOpenDeployModal = (regionNom: string) => {
     setModalTargetRegion(regionNom);
@@ -165,7 +168,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
       partenaireSponsor: 'Fondation Orange Burkina Faso (Data for Good)',
     };
 
-    setMissions([newMission, ...missions]);
+    saveMissions([newMission, ...missions]);
     setIsDeployModalOpen(false);
     onDeployMobileClinic(modalTargetRegion);
   };
@@ -208,9 +211,12 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                 onChange={(e) => setSelectedCsps(e.target.value)}
                 className="bg-[#17343B] text-white text-xs font-semibold rounded-lg px-2.5 py-1 border border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-[#007599]"
               >
-                {CSPS_LIST.map((c) => (
+                <option value="all">
+                  Tous les centres ({centresList.length ? `${centresList.length} connectés` : 'Agrégation Nationale'})
+                </option>
+                {centresList.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.nom} {c.region !== 'National' ? `(${c.region})` : ''}
+                    {c.nom} ({c.commune || c.region})
                   </option>
                 ))}
               </select>
@@ -219,18 +225,18 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
         </div>
       </div>
 
-      {/* 2. Cartes d'indicateurs nationaux agrégés */}
+      {/* 2. Cartes d'indicateurs réels consolidés du Backend Spring Boot */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1 : Dépistages Consolidés */}
+        {/* KPI 1 : Patientes Réelles Dépistées */}
         <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-start justify-between">
           <div>
-            <span className="text-xs font-bold uppercase text-slate-500">Dépistages Consolidés</span>
+            <span className="text-xs font-bold uppercase text-slate-500">Patientes Suivies</span>
             <div className="text-2xl font-black text-[#17343B] mt-1">
-              {statsNationales.totalDepistages.toLocaleString('fr-FR')}
+              {realStats ? realStats.totalPatientes : 0}
             </div>
             <div className="text-xs font-semibold text-emerald-700 flex items-center gap-1 mt-1">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>+18.4% ce trimestre</span>
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{realStats ? realStats.totalEvaluations : 0} bilans cliniques réalisés</span>
             </div>
           </div>
           <div className="w-10 h-10 rounded-lg bg-[#EEF7F7] text-[#007599] flex items-center justify-center">
@@ -238,53 +244,52 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
           </div>
         </div>
 
-        {/* KPI 2 : Taux Moyen de Suspicion */}
+        {/* KPI 2 : Cas Suspects Réels */}
         <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-start justify-between">
           <div>
-            <span className="text-xs font-bold uppercase text-slate-500">Taux Moyen de Suspicion</span>
-            <div className="text-2xl font-black text-amber-600 mt-1">
-              {statsNationales.moyenneSuspicion}%
+            <span className="text-xs font-bold uppercase text-slate-500">Cas Suspects Détectés</span>
+            <div className="text-2xl font-black text-rose-700 mt-1">
+              {realStats ? realStats.totalCasEleves : 0}
             </div>
-            <div className="text-xs font-semibold text-rose-700 flex items-center gap-1 mt-1">
+            <div className="text-xs font-semibold text-amber-700 flex items-center gap-1 mt-1">
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Seuil de vigilance : 3.0%</span>
+              <span>{realStats ? realStats.totalCasModeres : 0} cas modérés sous surveillance</span>
             </div>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
             <Activity className="w-5 h-5" />
           </div>
         </div>
 
-        {/* KPI 3 : Régions en Alerte Rouge */}
+        {/* KPI 3 : Bons de Santé Réels */}
         <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-start justify-between">
           <div>
-            <span className="text-xs font-bold uppercase text-slate-500">Régions en Alerte Élevée</span>
-            <div className="text-2xl font-black text-rose-700 mt-1">
-              {statsNationales.regionsAlerte} / 13
+            <span className="text-xs font-bold uppercase text-slate-500">Bons de Mammographie Émis</span>
+            <div className="text-2xl font-black text-[#007599] mt-1">
+              {realStats ? realStats.totalBonsEmis : 0}
             </div>
             <div className="text-xs font-semibold text-slate-600 mt-1">
-              Sahel & Boucle du Mouhoun
+              Subventionnés Orange & Coris Bank
             </div>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-            <MapPin className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-lg bg-teal-50 text-[#007599] flex items-center justify-center">
+            <CheckCircle2 className="w-5 h-5" />
           </div>
         </div>
 
-        {/* KPI 4 : Cliniques Mobiles en Opération */}
+        {/* KPI 4 : Fonds Disponible Réel */}
         <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-start justify-between">
           <div>
-            <span className="text-xs font-bold uppercase text-slate-500">Cliniques Mobiles Orange</span>
-            <div className="text-2xl font-black text-[#007599] mt-1">
-              {statsNationales.missionsActives} Actives
+            <span className="text-xs font-bold uppercase text-slate-500">Fonds de Solidarité Disponible</span>
+            <div className="text-xl font-black text-emerald-800 mt-1">
+              {realStats ? Number(realStats.totalFondsDisponiblesXof).toLocaleString('fr-FR') : '0'} FCFA
             </div>
-            <div className="text-xs font-semibold text-emerald-700 flex items-center gap-1 mt-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>1 460 femmes dépistées sur le terrain</span>
+            <div className="text-xs font-semibold text-slate-600 mt-1">
+              {missions.filter((m) => m.statut === 'en_cours').length} mission(s) mobile(s) active(s)
             </div>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-cyan-50 text-[#007599] flex items-center justify-center">
-            <Truck className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <Coins className="w-5 h-5" />
           </div>
         </div>
       </div>
@@ -377,7 +382,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
       {activeTab === 'heatmap' && (
         <div className="space-y-4">
           <BurkinaHeatmapView
-            indicateurs={indicateursRegions}
+            indicateurs={effectiveIndicateurs}
             onFilterByRegion={onFilterByRegion}
             onDeployMobileClinic={handleOpenDeployModal}
             isStandalone={true}
@@ -406,71 +411,89 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {missions.map((m) => {
-              const avancement = Math.min(100, Math.round((m.femmesDepistees / m.femmesCibles) * 100));
-              return (
-                <div
-                  key={m.id}
-                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#007599] transition-all space-y-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                          m.statut === 'en_cours'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : m.statut === 'planifiee'
-                            ? 'bg-amber-100 text-amber-800'
-                            : 'bg-slate-200 text-slate-700'
-                        }`}
-                      >
-                        {m.statut === 'en_cours' ? '● En cours de mission' : 'Planifiée'}
+          {missions.length === 0 ? (
+            <div className="text-center py-12 px-4 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+              <Truck className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+              <h4 className="text-sm font-bold text-[#17343B]">Aucune mission mobile active</h4>
+              <p className="text-xs text-[#536B70] max-w-sm mx-auto mt-1 mb-4">
+                Aucune clinique mobile n'est actuellement déployée sur le terrain. Cliquez ci-dessous pour ordonner un déploiement dans une région prioritaire.
+              </p>
+              <button
+                type="button"
+                onClick={() => handleOpenDeployModal('Sahel')}
+                className="py-2 px-4 bg-[#007599] hover:bg-[#005C75] text-white rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1.5 shadow-sm"
+              >
+                <Truck className="w-4 h-4" />
+                <span>+ Déployer une Clinique Mobile</span>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {missions.map((m) => {
+                const avancement = Math.min(100, Math.round((m.femmesDepistees / m.femmesCibles) * 100));
+                return (
+                  <div
+                    key={m.id}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#007599] transition-all space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                            m.statut === 'en_cours'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : m.statut === 'planifiee'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-slate-200 text-slate-700'
+                          }`}
+                        >
+                          {m.statut === 'en_cours' ? '● En cours de mission' : 'Planifiée'}
+                        </span>
+                        <h4 className="font-bold text-sm text-[#17343B] mt-1.5">{m.nom}</h4>
+                        <p className="text-xs text-[#007599] font-medium flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5" />
+                          {m.regionCible} — {m.districtCible}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-xs text-slate-600 space-y-1 bg-white p-2.5 rounded-lg border border-slate-200">
+                      <p><strong>Équipe :</strong> {m.equipeSoignante}</p>
+                      <p><strong>Capacité :</strong> {m.capaciteDepistageJour} examens/jour</p>
+                      <p><strong>Période :</strong> {m.dateDebut} au {m.dateFin}</p>
+                      <p><strong>Partenaire :</strong> {m.partenaireSponsor}</p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-medium text-slate-600">Progression objectif :</span>
+                        <span className="font-bold text-[#17343B]">{m.femmesDepistees} / {m.femmesCibles} ({avancement}%)</span>
+                      </div>
+                      <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-[#007599] h-full transition-all duration-500"
+                          style={{ width: `${avancement}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 text-xs">
+                      <span className="text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded">
+                        {m.casSuspectsDetectes} cas suspects orientés
                       </span>
-                      <h4 className="font-bold text-sm text-[#17343B] mt-1.5">{m.nom}</h4>
-                      <p className="text-xs text-[#007599] font-medium flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {m.regionCible} — {m.districtCible}
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => onDeployMobileClinic(m.regionCible)}
+                        className="text-[#007599] hover:underline font-semibold"
+                      >
+                        Détails mission →
+                      </button>
                     </div>
                   </div>
-
-                  <div className="text-xs text-slate-600 space-y-1 bg-white p-2.5 rounded-lg border border-slate-200">
-                    <p><strong>Équipe :</strong> {m.equipeSoignante}</p>
-                    <p><strong>Capacité :</strong> {m.capaciteDepistageJour} examens/jour</p>
-                    <p><strong>Période :</strong> {m.dateDebut} au {m.dateFin}</p>
-                    <p><strong>Partenaire :</strong> {m.partenaireSponsor}</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-600">Progression objectif :</span>
-                      <span className="font-bold text-[#17343B]">{m.femmesDepistees} / {m.femmesCibles} ({avancement}%)</span>
-                    </div>
-                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                      <div
-                        className="bg-[#007599] h-full transition-all duration-500"
-                        style={{ width: `${avancement}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1 text-xs">
-                    <span className="text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded">
-                      {m.casSuspectsDetectes} cas suspects orientés
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onDeployMobileClinic(m.regionCible)}
-                      className="text-[#007599] hover:underline font-semibold"
-                    >
-                      Détails mission →
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

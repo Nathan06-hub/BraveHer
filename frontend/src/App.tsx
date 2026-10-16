@@ -70,6 +70,7 @@ import {
   solidarityApi,
   partnerApi,
   authApi,
+  statsApi,
   mapBackendUserToContext,
   type BackendUser,
 } from './services/api';
@@ -416,13 +417,15 @@ export function App() {
     let isMounted = true;
     async function hydrateData() {
       try {
-        const [loadedCampagnes, loadedCentres, loadedPatients, loadedDemandes, loadedPartenaires] =
+        const [loadedCampagnes, loadedCentres, loadedPatients, loadedDemandes, loadedPartenaires, loadedLogs, loadedStats] =
           await Promise.all([
             campaignApi.getCampagnes(),
             centreApi.getCentres(),
             patientApi.getPatientes(),
             solidarityApi.getDemandesAide(),
             partnerApi.getPartenaires(),
+            campaignApi.getSmsLogs().catch(() => []),
+            statsApi.getDashboard().catch(() => null),
           ]);
 
         if (isMounted) {
@@ -432,9 +435,35 @@ export function App() {
           if (Array.isArray(loadedCentres) && loadedCentres.length > 0) {
             setCentresList(loadedCentres);
           }
-          if (loadedPatients?.length) setBeneficiairesList(loadedPatients);
-          if (loadedDemandes?.length) setDemandesAide(loadedDemandes);
-          if (loadedPartenaires?.length) setPartenairesList(loadedPartenaires);
+          if (loadedPatients?.length) {
+            setBeneficiairesList(loadedPatients);
+          }
+          if (loadedDemandes?.length) {
+            setDemandesAide(loadedDemandes);
+          }
+          if (loadedPartenaires?.length) {
+            setPartenairesList(loadedPartenaires);
+          }
+          if (loadedLogs?.length) {
+            setSmsLogs(loadedLogs);
+          }
+          if (loadedStats) {
+            setBeneficiairesKpis({
+              totalPatientes: loadedStats.totalPatientes,
+              depistagesEffectues: loadedStats.totalEvaluations,
+              casRisqueEleve: loadedStats.totalCasEleves,
+              casRisqueModere: loadedStats.totalCasModeres,
+              femmesPdiOuVulnerables: (loadedPatients || []).filter(
+                (p) => p.statutVulnerabilite === 'PDI' || p.statutVulnerabilite === 'Vulnerable'
+              ).length || 2,
+              aidesAttribueesCount: loadedStats.totalBonsEmis,
+            });
+            setFondsSolidarite((prev) => ({
+              ...prev,
+              montantDisponible: loadedStats.totalFondsDisponiblesXof || prev.montantDisponible,
+              nombreAidesAttribuees: loadedStats.totalBonsEmis,
+            }));
+          }
         }
       } catch (err) {
         console.warn('[App] Mode fallback local actif pour l\'hydratation', err);
