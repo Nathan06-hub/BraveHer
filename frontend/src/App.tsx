@@ -1352,23 +1352,42 @@ export function App() {
 
           <main className="scene-content" aria-label="Espace de travail">
             {activeTab === 'campaigns' ? (
-              /* Module 1 : Gestion des campagnes de sensibilisation */
-              <CampaignsPage
-                campagnes={campagnes}
-                centres={centresList}
-                agents={MOCK_AGENTS}
-                currentUser={currentUser}
-                personnes={personnes}
-                smsLogs={smsLogs}
-                onSaveCampaign={handleSaveCampaign}
-                onValidationDecision={handleValidationDecision}
-                onAddPersonne={handleAddPersonne}
-                onTriggerPushSms={handleTriggerPushSms}
-                initialCreateOpen={isCreateModalOpen}
-                onCloseInitialCreate={() => setIsCreateModalOpen(false)}
-                initialViewingCampaign={viewingCampaign}
-                onCloseInitialViewing={() => setViewingCampaign(null)}
-              />
+              /* Module 1 : Gestion des campagnes de sensibilisation (Réservé Administrateur) */
+              (currentUser?.role === 'responsable' || currentUser?.roleTitre?.toLowerCase().includes('sage-femme')) ? (
+                <div className="scene-welcome-card" style={{ padding: '36px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#17343B', marginBottom: '8px' }}>
+                    Accès Réservé à l'Administration
+                  </h3>
+                  <p style={{ color: '#64748B', fontSize: '14px', maxWidth: '480px', margin: '0 auto 20px auto' }}>
+                    La planification et la création des campagnes de dépistage sont gérées par l'Administrateur du centre.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('beneficiaries')}
+                    className="btn-create-campaign"
+                    style={{ margin: '0 auto' }}
+                  >
+                    Accéder aux Dossiers Patientes & Triage →
+                  </button>
+                </div>
+              ) : (
+                <CampaignsPage
+                  campagnes={campagnes}
+                  centres={centresList}
+                  agents={MOCK_AGENTS}
+                  currentUser={currentUser}
+                  personnes={personnes}
+                  smsLogs={smsLogs}
+                  onSaveCampaign={handleSaveCampaign}
+                  onValidationDecision={handleValidationDecision}
+                  onAddPersonne={handleAddPersonne}
+                  onTriggerPushSms={handleTriggerPushSms}
+                  initialCreateOpen={isCreateModalOpen}
+                  onCloseInitialCreate={() => setIsCreateModalOpen(false)}
+                  initialViewingCampaign={viewingCampaign}
+                  onCloseInitialViewing={() => setViewingCampaign(null)}
+                />
+              )
             ) : activeTab === 'my_campaigns' ? (
               /* Espace Agent : Mes Campagnes & Fiche de création patiente */
               <AgentMyCampaignsView

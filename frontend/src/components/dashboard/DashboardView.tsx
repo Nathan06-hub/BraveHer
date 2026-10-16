@@ -119,18 +119,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         />
       </section>
 
-      {/* 4. Section des Campagnes actives en cours */}
-      <DashboardActiveCampaigns
-        campagnes={campagnes}
-        onViewAll={() => onNavigateTab?.('campaigns')}
-        onSelectCampaign={(id) => {
-          if (onViewCampaign) {
-            onViewCampaign(id);
-          } else {
-            onNavigateTab?.('campaigns');
-          }
-        }}
-      />
+      {/* 4. Section des Campagnes actives en cours (réservée à l'administrateur) */}
+      {!isSageFemme && (
+        <DashboardActiveCampaigns
+          campagnes={campagnes}
+          onViewAll={() => onNavigateTab?.('campaigns')}
+          onSelectCampaign={(id) => {
+            if (onViewCampaign) {
+              onViewCampaign(id);
+            } else {
+              onNavigateTab?.('campaigns');
+            }
+          }}
+        />
+      )}
 
       {/* 5. Pied de page avec statut en direct */}
       <DashboardFooter />

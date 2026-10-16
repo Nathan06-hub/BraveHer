@@ -175,10 +175,11 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     currentUser?.role === 'SAGE_FEMME' ||
     currentUser?.roleTitre?.toLowerCase().includes('sage-femme');
 
-  // Filtrage des onglets : la Sage-femme n'a pas besoin du Pilotage Ministère,
-  // de la diffusion massive Push SMS, ni de la gestion administrative du centre
+  // Filtrage des onglets : la Sage-femme n'a pas besoin de la page Campagnes (gestion réservée à l'administrateur),
+  // ni du Pilotage Ministère, ni du Push SMS Orange massif, ni de la gestion administrative du centre
   const visibleNavItems = mainNavItems.filter((item) => {
     if (isSageFemme) {
+      if (item.id === 'campaigns') return false;
       if (item.id === 'predictive') return false;
       if (item.id === 'centre_admin') return false;
       if (item.id === 'messages') return false;
