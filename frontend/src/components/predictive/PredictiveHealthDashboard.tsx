@@ -180,7 +180,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
               <span className="px-3 py-1 bg-white/15 backdrop-blur-sm rounded-full text-xs font-bold tracking-wider uppercase text-amber-200 border border-white/20">
                 Ministère de la Santé du Burkina Faso
               </span>
-              <span className="px-3 py-1 bg-[#FF7900] text-white rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
+              <span className="px-3 py-1 bg-white/20 text-cyan-100 border border-white/30 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
                 Orange Data for Good
               </span>
               <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-200 rounded-full text-xs font-semibold border border-emerald-400/30">
@@ -203,7 +203,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 min-w-[280px] space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor="csps-select" className="text-xs font-bold uppercase tracking-wider text-cyan-200 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-[#FF7900]" />
+                <Building2 className="w-3.5 h-3.5 text-cyan-300" />
                 Réseau des CSPS Connectés
               </label>
               <span className="text-[11px] font-semibold text-emerald-300 flex items-center gap-1">
@@ -216,7 +216,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
               id="csps-select"
               value={selectedCsps}
               onChange={(e) => setSelectedCsps(e.target.value)}
-              className="w-full bg-[#17343B] text-white text-xs font-medium rounded-lg px-3 py-2 border border-cyan-500/40 focus:outline-none focus:ring-2 focus:ring-[#FF7900]"
+              className="w-full bg-[#17343B] text-white text-xs font-medium rounded-lg px-3 py-2 border border-cyan-500/40 focus:outline-none focus:ring-2 focus:ring-[#007599]"
             >
               {CSPS_LIST.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -257,7 +257,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
         <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-start justify-between">
           <div>
             <span className="text-xs font-bold uppercase text-slate-500">Taux Moyen de Suspicion</span>
-            <div className="text-2xl font-black text-[#FF7900] mt-1">
+            <div className="text-2xl font-black text-amber-600 mt-1">
               {statsNationales.moyenneSuspicion}%
             </div>
             <div className="text-xs font-semibold text-rose-700 flex items-center gap-1 mt-1">
@@ -265,7 +265,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
               <span>Seuil de vigilance : 3.0%</span>
             </div>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-orange-50 text-[#FF7900] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
             <Activity className="w-5 h-5" />
           </div>
         </div>
@@ -305,11 +305,11 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
       </div>
 
       {/* 3. Section Recommandation Prédictive Stratégique : Déploiement de Cliniques Mobiles */}
-      <div className="bg-gradient-to-br from-amber-50 to-[#FFF9F0] border-2 border-[#FF7900]/40 rounded-2xl p-6 shadow-sm">
+      <div className="bg-gradient-to-br from-[#F0F9F8] to-white border border-[#D6E8E8] rounded-2xl p-6 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF7900] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-              <AlertTriangle className="w-3.5 h-3.5 text-white" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#007599] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+              <AlertTriangle className="w-3.5 h-3.5 text-[#7DE2D1]" />
               Recommandation Stratégique Ministère × Orange Data for Good
             </div>
 
@@ -324,15 +324,15 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="bg-white/80 p-3 rounded-lg border border-amber-200">
+              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
                 <span className="text-[11px] font-bold text-slate-500 uppercase block">Cible d'Intervention</span>
                 <span className="text-sm font-black text-[#17343B]">2 500 Femmes Isolées</span>
               </div>
-              <div className="bg-white/80 p-3 rounded-lg border border-amber-200">
+              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
                 <span className="text-[11px] font-bold text-slate-500 uppercase block">Diagnostics Précoces Estimés</span>
                 <span className="text-sm font-black text-rose-700">~45 Cas Infiltrants Évités</span>
               </div>
-              <div className="bg-white/80 p-3 rounded-lg border border-amber-200">
+              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
                 <span className="text-[11px] font-bold text-slate-500 uppercase block">Économie de Santé Projetée</span>
                 <span className="text-sm font-black text-emerald-800">42 500 000 FCFA</span>
               </div>
@@ -344,7 +344,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
             <button
               type="button"
               onClick={() => handleOpenDeployModal('Sahel')}
-              className="py-3 px-5 bg-[#FF7900] hover:bg-[#E06A00] text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              className="py-3 px-5 bg-[#007599] hover:bg-[#005C75] text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
             >
               <Truck className="w-5 h-5 text-white" />
               <span>Déployer Clinique Mobile Orange</span>
@@ -430,7 +430,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
             <button
               type="button"
               onClick={() => handleOpenDeployModal('Centre-Nord')}
-              className="py-2 px-3 bg-[#FF7900] hover:bg-[#E06A00] text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+              className="py-2 px-3 bg-[#007599] hover:bg-[#005C75] text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
             >
               <Truck className="w-4 h-4" />
               <span>Nouvelle Mission</span>
@@ -443,7 +443,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
               return (
                 <div
                   key={m.id}
-                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#FF7900] transition-all space-y-3"
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#007599] transition-all space-y-3"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -480,7 +480,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                     </div>
                     <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-[#FF7900] h-full transition-all duration-500"
+                        className="bg-[#007599] h-full transition-all duration-500"
                         style={{ width: `${avancement}%` }}
                       ></div>
                     </div>
@@ -557,7 +557,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                       <button
                         type="button"
                         onClick={() => handleOpenDeployModal(r.regionNom)}
-                        className="py-1.5 px-3 bg-[#FF7900] hover:bg-[#E06A00] text-white rounded-lg font-bold text-xs transition-all inline-flex items-center gap-1"
+                        className="py-1.5 px-3 bg-[#007599] hover:bg-[#005C75] text-white rounded-lg font-bold text-xs transition-all inline-flex items-center gap-1"
                       >
                         <Truck className="w-3.5 h-3.5" />
                         <span>Déployer Clinique Mobile</span>
@@ -577,7 +577,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-start justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 text-[#FF7900] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-teal-50 text-[#007599] flex items-center justify-center">
                   <Truck className="w-6 h-6" />
                 </div>
                 <div>
@@ -607,7 +607,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                   type="text"
                   value={modalMissionName}
                   onChange={(e) => setModalMissionName(e.target.value)}
-                  className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-[#FF7900]"
+                  className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-[#007599]"
                   required
                 />
               </div>
@@ -620,7 +620,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                   <select
                     value={modalTargetRegion}
                     onChange={(e) => setModalTargetRegion(e.target.value)}
-                    className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-[#FF7900]"
+                    className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-[#007599]"
                   >
                     {indicateursRegions.map((r) => (
                       <option key={r.regionId} value={r.regionNom}>
@@ -641,15 +641,15 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                     min={200}
                     max={5000}
                     step={100}
-                    className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-[#FF7900]"
+                    className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-[#007599]"
                     required
                   />
                 </div>
               </div>
 
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-1">
-                <p className="font-bold flex items-center gap-1">
-                  <ShieldCheck className="w-4 h-4 text-[#FF7900]" />
+              <div className="p-3 bg-[#F0F9F8] rounded-xl border border-[#D6E8E8] text-xs text-[#17343B] space-y-1">
+                <p className="font-bold flex items-center gap-1 text-[#007599]">
+                  <ShieldCheck className="w-4 h-4 text-[#007599]" />
                   Financement & Logistique 100% pris en charge :
                 </p>
                 <p>
@@ -667,7 +667,7 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#FF7900] hover:bg-[#E06A00] text-white rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
+                  className="px-5 py-2 bg-[#007599] hover:bg-[#005C75] text-white rounded-lg text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
                 >
                   <Truck className="w-4 h-4" />
                   <span>Confirmer le Déploiement Terrain</span>
