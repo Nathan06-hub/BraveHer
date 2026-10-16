@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Logo } from '../ui';
 import type { CurrentUserContext } from '../../types/campaign';
+import { NavBrandHeader } from './NavBrandHeader';
+import { NavListItem } from './NavListItem';
+import { NavUserProfile } from './NavUserProfile';
 import './sidebarNavbar.css';
 
 export interface NavItem {
@@ -20,6 +22,7 @@ export interface SidebarNavbarProps {
   onLogout?: () => void;
   currentUser?: CurrentUserContext | null;
   className?: string;
+  activeCampaignsCount?: number;
 }
 
 export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
@@ -32,11 +35,12 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
   onLogout,
   currentUser,
   className = '',
+  activeCampaignsCount,
 }) => {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  const isCollapsed = controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed;
+  const isCollapsed =
+    controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed;
 
   const handleToggle = () => {
     if (onToggleCollapse) {
@@ -80,7 +84,7 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     {
       id: 'campaigns',
       label: 'Campagnes',
-      badge: '8',
+      badge: activeCampaignsCount !== undefined ? String(activeCampaignsCount) : '8',
       icon: (
         <svg viewBox="0 0 24 24">
           <rect x="4" y="3.5" width="16" height="17" rx="2" />
@@ -91,7 +95,6 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     {
       id: 'my_campaigns',
       label: 'Mes Campagnes',
-      badge: 'Agent',
       icon: (
         <svg viewBox="0 0 24 24">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -103,7 +106,6 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     {
       id: 'beneficiaries',
       label: 'Bénéficiaires & Patientes',
-      badge: 'M2',
       icon: (
         <svg viewBox="0 0 24 24">
           <circle cx="9" cy="8" r="3.3" />
@@ -114,7 +116,6 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     {
       id: 'messages',
       label: 'Push SMS Orange',
-      badge: 'Hub',
       icon: (
         <svg viewBox="0 0 24 24">
           <path d="M4 5.5h16v12H9l-5 3v-15Z" />
@@ -125,7 +126,6 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     {
       id: 'impact',
       label: 'Solidarité & Statistiques',
-      badge: 'M4',
       icon: (
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="8.5" />
@@ -136,7 +136,6 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
     {
       id: 'predictive',
       label: 'Pilotage Ministère (Data)',
-      badge: 'Data for Good',
       icon: (
         <svg viewBox="0 0 24 24">
           <path d="M3 3v18h18" />
@@ -177,206 +176,65 @@ export const SidebarNavbar: React.FC<SidebarNavbarProps> = ({
         } ${className}`}
         aria-label="Navigation principale"
       >
-        {/*  */}
-        <div className="nav-brand-row">
-          <Logo
-            variant="teal"
-            size="md"
-            layout={isCollapsed ? 'icon-only' : 'horizontal'}
-            onClick={() => handleItemClick('dashboard')}
-          />
+        {/* En-tête : Brand & Logo & Boutons */}
+        <NavBrandHeader
+          isCollapsed={isCollapsed}
+          onToggleCollapse={handleToggle}
+          onCloseMobile={onCloseMobile}
+          onBrandClick={() => handleItemClick('dashboard')}
+        />
 
-          {/* Desktop/Tablet Collapse Toggle Button */}
-          <button
-            className="nav-toggle-btn"
-            onClick={handleToggle}
-            aria-label={isCollapsed ? 'Développer le menu' : 'Réduire le menu'}
-            title={isCollapsed ? 'Développer le menu' : 'Réduire le menu'}
-            type="button"
-          >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="m10 3-5 5 5 5"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          {/* Mobile Close Button (✕) */}
-          <button
-            className="nav-mobile-close-btn"
-            onClick={onCloseMobile}
-            aria-label="Fermer le menu"
-            type="button"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Main Navigation items */}
-        <nav className="nav-items-list" aria-label="Liens principaux">
-          {mainNavItems.map((item) => {
-            const isActive = activeTab === item.id;
-            return (
-              <button
+        {/* Section Médiane : Navigation scrollable de manière fluide */}
+        <div className="nav-scroll-area">
+          <nav className="nav-items-list" aria-label="Liens principaux">
+            {mainNavItems.map((item) => (
+              <NavListItem
                 key={item.id}
-                className={`nav-item-btn ${isActive ? 'active' : ''}`}
-                onClick={() => handleItemClick(item.id)}
-                aria-current={isActive ? 'page' : undefined}
-                title={isCollapsed ? item.label : undefined}
-                type="button"
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-item-label">{item.label}</span>
-                {item.badge && <span className="nav-badge-pill">{item.badge}</span>}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Flexible Spacer */}
-        <div className="nav-flexible-spacer" />
-
-        {/* Profil utilisateur connecté au Backend */}
-        {currentUser && (
-          <div
-            className={`mx-1 mb-2 p-2 rounded-xl border border-[#D6E8E8] bg-[#F7FAFA] transition-all ${
-              isCollapsed ? 'flex justify-center p-1.5' : ''
-            }`}
-            title={
-              isCollapsed
-                ? `${currentUser.prenom} ${currentUser.nom} (${currentUser.roleTitre}) · ${currentUser.centreNom}`
-                : undefined
-            }
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#007599] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                {(currentUser.prenom?.[0] || 'U') + (currentUser.nom?.[0] || '')}
-              </div>
-              {!isCollapsed && (
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-[#17343B] truncate">
-                      {currentUser.prenom} {currentUser.nom}
-                    </span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  </div>
-                  <p className="text-[10px] text-[#007599] font-semibold truncate m-0 leading-tight">
-                    {currentUser.roleTitre}
-                  </p>
-                  <p className="text-[9px] text-[var(--muted)] truncate m-0 leading-tight">
-                    {currentUser.centreNom.split('(')[0].trim()}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Bottom Links: Help & Logout */}
-        <div className="nav-bottom-section">
-          <button
-            className={`nav-item-btn ${activeTab === 'help' ? 'active' : ''}`}
-            onClick={() => handleItemClick('help')}
-            title={isCollapsed ? 'Aide & support' : undefined}
-            type="button"
-          >
-            <span className="nav-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="8.5" />
-                <path d="M9.7 9a2.4 2.4 0 1 1 4.1 1.7c-1.1 1.1-1.8 1.3-1.8 2.8M12 16.8v.1" />
-              </svg>
-            </span>
-            <span className="nav-item-label">Aide & support</span>
-          </button>
-
-          <button
-            className="nav-item-btn nav-logout-btn"
-            onClick={handleLogoutClick}
-            title={isCollapsed ? 'Déconnexion' : undefined}
-            type="button"
-          >
-            <span className="nav-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4M7 12h11" />
-              </svg>
-            </span>
-            <span className="nav-item-label font-semibold">Déconnexion</span>
-          </button>
+                id={item.id}
+                label={item.label}
+                icon={item.icon}
+                badge={item.badge}
+                isActive={activeTab === item.id}
+                isCollapsed={isCollapsed}
+                onClick={handleItemClick}
+              />
+            ))}
+          </nav>
         </div>
 
-        {/* Theme Toggle Row */}
-        <div className="nav-theme-row">
-          <button
-            className={`nav-theme-btn ${theme === 'light' ? 'selected' : ''}`}
-            onClick={() => setTheme('light')}
-            aria-label="Thème clair"
-            title="Thème clair"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="3.5" />
-              <path d="M12 2.5v2M12 19.5v2M4.1 4.1l1.4 1.4m13 13 1.4 1.4M2.5 12h2m15 0h2M4.1 19.9l1.4-1.4m13-13 1.4-1.4" />
-            </svg>
-          </button>
-          <button
-            className={`nav-theme-btn ${theme === 'dark' ? 'selected' : ''}`}
-            onClick={() => setTheme('dark')}
-            aria-label="Thème sombre"
-            title="Thème sombre"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24">
-              <path d="M19.5 15.3A8 8 0 0 1 8.7 4.5 8.5 8.5 0 1 0 19.5 15.3Z" />
-            </svg>
-          </button>
+        {/* Pied de navigation fixe : Aide & Profil avec déconnexion intégrée façon maquette */}
+        <div className="nav-fixed-footer">
+          {/* Action Aide & support */}
+          <div className="nav-bottom-section">
+            <NavListItem
+              id="help"
+              label="Aide & support"
+              isActive={activeTab === 'help'}
+              isCollapsed={isCollapsed}
+              onClick={handleItemClick}
+              icon={
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="8.5" />
+                  <path d="M9.7 9a2.4 2.4 0 1 1 4.1 1.7c-1.1 1.1-1.8 1.3-1.8 2.8M12 16.8v.1" />
+                </svg>
+              }
+            />
+          </div>
+
+          {/* Profil utilisateur connecté avec bouton déconnexion [→ à droite comme sur la maquette */}
+          <NavUserProfile
+            currentUser={currentUser ?? null}
+            isCollapsed={isCollapsed}
+            onLogout={handleLogoutClick}
+          />
         </div>
       </aside>
     </>
   );
 };
 
-export interface MobileNavTopbarProps {
-  onOpenMenu: () => void;
-  brandTitle?: string;
-  brandSubtitle?: string;
-}
-
-export const MobileNavTopbar: React.FC<MobileNavTopbarProps> = ({
-  onOpenMenu,
-  brandTitle = 'Soutien Rose',
-  brandSubtitle = 'Burkina Faso',
-}) => {
-  return (
-    <header className="mobile-nav-topbar">
-      <button
-        type="button"
-        className="mobile-menu-trigger-btn"
-        onClick={onOpenMenu}
-        aria-label="Ouvrir le menu de navigation"
-      >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-      </button>
-
-      <Logo
-        variant="teal"
-        size="sm"
-        layout="horizontal"
-        title={brandTitle}
-        subtitle={brandSubtitle}
-      />
-    </header>
-  );
-};
+// Re-export MobileNavTopbar for backward compatibility
+export { MobileNavTopbar } from './MobileNavTopbar';
+export type { MobileNavTopbarProps } from './MobileNavTopbar';
 
 export default SidebarNavbar;

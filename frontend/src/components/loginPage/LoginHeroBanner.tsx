@@ -56,13 +56,13 @@ export const LoginHeroBanner: React.FC<LoginHeroBannerProps> = ({
 
       {/* Brand Header using reusable Logo */}
       <div className="relative z-10">
-        <Logo variant="on-dark" size="xl" layout="horizontal" />
+        <Logo variant="on-dark" size="lg" layout="horizontal" />
       </div>
 
       {/* Story Copy */}
       <div className="story-copy relative z-10 max-w-[500px] my-[74px] mb-[60px]">
         {/* Eyebrow */}
-        <div className="eyebrow flex items-center gap-[9px] text-[#E4F5F6] text-[12px] font-[650] tracking-[0.14em] uppercase">
+        <div className="eyebrow flex items-center gap-[9px] text-[#E4F5F6] text-[10px] font-[650] tracking-[0.14em] uppercase">
           <span className="w-6 h-[3px] bg-[var(--rose)] inline-block shrink-0" />
           <span>Prendre soin, ensemble</span>
         </div>
@@ -76,21 +76,10 @@ export const LoginHeroBanner: React.FC<LoginHeroBannerProps> = ({
         </h1>
 
         {/* Description */}
-        <p className="max-w-[400px] m-0 text-[#E5F2F4] text-[16px] leading-[1.75]">
+        <p className="max-w-[400px] m-0 text-[#E5F2F4] text-[14px] leading-[1.75]">
           Un espace de confiance pour les équipes de santé qui accompagnent le dépistage et la prévention du cancer du sein.
         </p>
 
-        {/* Quote */}
-        {quote && (
-          <div className="quote mt-[52px] p-[18px_20px] max-w-[650px] border-l-2 border-[var(--rose)] text-[var(--paper)] font-serif text-[16px] leading-[1.5] bg-white/5 rounded-r-[6px] backdrop-blur-[2px]">
-            {quote}
-            {quoteAuthor && (
-              <span className="block mt-[9px] text-[#D5EEF2] font-sans text-[13px] font-medium tracking-wide">
-                — {quoteAuthor}
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Story Foot */}

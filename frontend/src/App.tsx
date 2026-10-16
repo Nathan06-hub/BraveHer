@@ -148,6 +148,13 @@ export function App() {
     MOCK_PERSONNES_SENSIBILISEES
   );
   const [smsLogs, setSmsLogs] = useState<SmsLog[]>(MOCK_SMS_LOGS);
+
+  // Nombre réel de campagnes actives (statut EN_COURS) issues du Backend Spring Boot
+  const activeCampaignsCount = useMemo(() => {
+    return campagnes.filter(
+      (c) => c.statut === 'EN_COURS' || c.statut === 'en_cours'
+    ).length;
+  }, [campagnes]);
   const [automationRules, setAutomationRules] = useState<RegleAutomatisationAge[]>(
     MOCK_REGLES_AUTOMATISATION_AGE
   );
@@ -1152,6 +1159,15 @@ export function App() {
         }
       });
     }
+
+    // Rafraîchir les campagnes depuis le Backend pour garantir des données actives à jour
+    campaignApi
+      .getCampagnes()
+      .then((camps) => {
+        if (camps?.length) setCampagnes(camps);
+      })
+      .catch(console.warn);
+
     navigateToView('dashboard');
     showToast('Bienvenue ! Connexion réussie au backend.');
   }, [navigateToView]);
@@ -1194,6 +1210,7 @@ export function App() {
           onCloseMobile={() => setIsMobileMenuOpen(false)}
           onLogout={handleLogout}
           currentUser={currentUser}
+          activeCampaignsCount={activeCampaignsCount}
         />
 
         {/* Content View Area */}

@@ -1,13 +1,14 @@
 /* SidebarNavbar styles adapted to BraveHer colors (Teal & Rose) - Responsive & Docked */
 
 .sidebar-navbar {
-  width: 300px;
+  width: 275px;
   height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
   position: sticky;
   top: 0;
   left: 0;
-  padding: 24px 14px 18px;
+  padding: 18px 12px 14px;
   display: flex;
   flex-direction: column;
   border: none;
@@ -15,7 +16,7 @@
   border-radius: 0;
   background: #ffffff;
   box-shadow: 2px 0 16px rgba(0, 117, 153, 0.04);
-  transition: width 0.28s ease, padding 0.28s ease, left 0.28s ease;
+  transition: width 0.26s cubic-bezier(0.4, 0, 0.2, 1), padding 0.26s ease, left 0.26s ease;
   overflow: hidden;
   box-sizing: border-box;
   user-select: none;
@@ -24,63 +25,30 @@
 }
 
 .sidebar-navbar.collapsed {
-  width: 75px;
-  padding-inline: 11px;
+  width: 74px;
+  padding-inline: 10px;
 }
 
+/* ==========================================================================
+   1. Brand & Header Row
+   ========================================================================== */
 .nav-brand-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 2px 4px 24px;
-  min-height: 70px;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 4px 18px;
+  min-height: 50px;
   position: relative;
   width: 100%;
-}
-
-.nav-brand-mark {
-  flex: 0 0 45px;
-  width: 45px;
-  height: 45px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  color: #ffffff;
-  font-family: Georgia, 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 700;
-  background: #007599;
-  box-shadow: 0 3px 8px rgba(0, 117, 153, 0.25);
-  shrink: 0;
-}
-
-.nav-brand-name {
-  font-size: 17px;
-  font-weight: 750;
-  letter-spacing: -0.2px;
-  white-space: nowrap;
-  color: #17343B;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.nav-brand-name small {
-  font-size: 11px;
-  color: #536B70;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 2px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .nav-toggle-btn {
-  margin-left: auto;
-  flex: 0 0 23px;
-  width: 23px;
-  height: 23px;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
   border: 1px solid #D6E8E8;
@@ -88,7 +56,7 @@
   color: #536B70;
   background: #ffffff;
   cursor: pointer;
-  transition: transform 0.25s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, color 0.2s ease;
   padding: 0;
 }
 
@@ -104,10 +72,9 @@
 /* Close button for mobile drawer */
 .nav-mobile-close-btn {
   display: none;
-  margin-left: auto;
-  flex: 0 0 28px;
-  width: 28px;
-  height: 28px;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
   border: 1px solid #D6E8E8;
   border-radius: 50%;
   background: #F0F9F8;
@@ -123,147 +90,247 @@
   color: #007599;
 }
 
+/* ==========================================================================
+   2. Scrollable Middle Navigation
+   ========================================================================== */
+.nav-scroll-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: 4px 1px;
+  margin: 0 -4px;
+}
+
+.nav-scroll-area::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
 .nav-items-list {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   margin: 0;
-  padding: 0;
+  padding: 0 4px;
   list-style: none;
 }
 
 .nav-item-btn {
-  min-height: 39px;
+  min-height: 44px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 15px 11px;
+  gap: 14px;
+  padding: 8px 12px;
   border: 0;
   background: transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   color: #536B70;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 550;
   white-space: nowrap;
   width: 100%;
   text-align: left;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, transform 0.18s, box-shadow 0.18s;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
   box-sizing: border-box;
+  position: relative;
 }
 
 .nav-item-btn:hover {
-  background: #e7f4f3;
+  background: #f0f7f6;
   color: #005C75;
   transform: translateX(1px);
 }
 
 .nav-item-btn.active {
   color: #ffffff;
-  background: #007599 ;
-  box-shadow: 0 5px 12px rgba(0, 117, 153, 0.22);
+  background: #007599;
+  border-radius: 14px;
+  font-weight: 600;
 }
 
 .nav-icon {
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
   display: grid;
   place-items: center;
 }
 
 .nav-icon svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.7;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .nav-badge-pill {
   margin-left: auto;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 12px;
   background: #FCE5ED;
-  color: #a34d69;
-  font-size: 15px;
+  color: #D93B6E;
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
 .nav-item-btn.active .nav-badge-pill {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.28);
   color: #ffffff;
 }
 
-.nav-flexible-spacer {
-  flex: 1;
-  min-height: 24px;
+/* ==========================================================================
+   3. Fixed Bottom Section (Profile, Help, Logout)
+   ========================================================================== */
+.nav-fixed-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #EAF2F2;
+  position: relative;
+  background: #ffffff;
 }
 
-.nav-bottom-section {
-  display: grid;
-  gap: 5px;
-  margin-bottom: 17px;
-}
-
-.nav-logout-btn {
-  color: #C62828 !important;
-}
-
-.nav-logout-btn:hover {
-  background: #FCE5ED !important;
-  color: #9a1d1d !important;
-}
-
-.nav-theme-row {
+/* User Card Connected - Identique à la maquette */
+.nav-user-card {
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 1px solid #D6E8E8;
+  background: #F8FAFA;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.nav-theme-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid #D6E8E8;
+.nav-user-card:hover {
+  border-color: #B8DCDC;
+  background: #F0F7F7;
+}
+
+.nav-user-card.collapsed {
+  justify-content: center;
+  padding: 8px 4px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.nav-user-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-user-avatar {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
+  background: linear-gradient(135deg, #007599, #005c75);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0, 117, 153, 0.2);
+}
+
+.nav-user-status-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+.nav-user-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.nav-user-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #17343B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.nav-user-verified-badge {
+  flex-shrink: 0;
+}
+
+.nav-user-role {
+  margin: 1px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6C8287;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+/* Bouton Déconnexion intégré à droite de la carte profil façon maquette */
+.nav-user-logout-btn {
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
   color: #536B70;
-  background: #ffffff;
   cursor: pointer;
   padding: 0;
-  transition: all 0.2s ease;
+  flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
 }
 
-.nav-theme-btn:hover {
-  background: #e7f4f3;
-  color: #007599;
+.nav-user-logout-btn:hover {
+  background: #FCE5ED;
+  color: #C62828;
+  transform: translateX(1px);
 }
 
-.nav-theme-btn.selected {
-  background: #007599;
-  color: #ffffff;
-  border-color: #007599;
-  box-shadow: 0 5px 12px rgba(0, 117, 153, 0.22);
+/* Bottom Actions */
+.nav-bottom-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.nav-theme-btn svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 
-/* Collapsed layout overrides */
-.sidebar-navbar.collapsed .nav-brand-name,
+/* ==========================================================================
+   4. Collapsed Mode Overrides & Floating Tooltips
+   ========================================================================== */
 .sidebar-navbar.collapsed .nav-item-label,
 .sidebar-navbar.collapsed .nav-badge-pill,
-.sidebar-navbar.collapsed .theme-extra-label {
+.sidebar-navbar.collapsed .nav-user-info,
+.sidebar-navbar.collapsed .nav-user-logout-btn {
   display: none !important;
 }
 
@@ -274,30 +341,77 @@
 
 .sidebar-navbar.collapsed .nav-brand-row .nav-toggle-btn {
   position: absolute;
-  transform: translate(25px, 17px) rotate(180deg);
+  right: -6px;
+  top: 14px;
 }
 
 .sidebar-navbar.collapsed .nav-item-btn {
   justify-content: center;
-  padding: 0;
+  padding: 9px 0;
+  width: 100%;
 }
 
 .sidebar-navbar.collapsed .nav-bottom-section .nav-item-btn {
   justify-content: center;
+  padding: 9px 0;
 }
 
-.sidebar-navbar.collapsed .nav-theme-row {
-  justify-content: center;
+/* Floating Tooltip via CSS pseudo-element for Collapsed Mode */
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-navbar.collapsed .nav-item-btn[data-tooltip]:hover::after,
+  .sidebar-navbar.collapsed .nav-user-card[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 14px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #17343B;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    z-index: 120;
+    pointer-events: none;
+    animation: navTooltipFadeIn 0.16s ease-out;
+  }
+
+  .sidebar-navbar.collapsed .nav-item-btn[data-tooltip]:hover::before,
+  .sidebar-navbar.collapsed .nav-user-card[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 5px 6px 5px 0;
+    border-style: solid;
+    border-color: transparent #17343B transparent transparent;
+    z-index: 120;
+    pointer-events: none;
+    animation: navTooltipFadeIn 0.16s ease-out;
+  }
 }
 
-.sidebar-navbar.collapsed .nav-theme-btn {
-  width: 36px;
+@keyframes navTooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
 }
 
-/* Mobile Nav Topbar Header (hidden on desktop) */
+/* ==========================================================================
+   5. Mobile Topbar Header (visible on <768px)
+   ========================================================================== */
 .mobile-nav-topbar {
   display: none;
-  height: 58px;
+  height: 60px;
   width: 100%;
   background: #ffffff;
   border-bottom: 1px solid #D6E8E8;
@@ -311,65 +425,51 @@
 }
 
 .mobile-menu-trigger-btn {
-  width: 38px;
-  height: 38px;
+  width: 44px; /* Ergonomic 44px minimum touch target */
+  height: 44px;
   display: grid;
   place-items: center;
   border: 1px solid #D6E8E8;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #F0F9F8;
   color: #007599;
   cursor: pointer;
   padding: 0;
+  transition: background 0.18s ease, transform 0.15s ease;
 }
 
-.mobile-topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.mobile-menu-trigger-btn:active {
+  transform: scale(0.96);
+  background: #e2f0ee;
 }
 
-.mobile-topbar-mark {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: #007599;
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.mobile-topbar-text {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Mobile Backdrop */
+/* Mobile Backdrop Scrim */
 .nav-mobile-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(16, 45, 51, 0.45);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 95;
-  animation: fadeIn 0.2s ease-out;
+  animation: navFadeIn 0.2s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes navFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* Responsive Breakpoint: Tablet (768px - 1024px) */
+/* ==========================================================================
+   6. Responsive Breakpoints
+   ========================================================================== */
+/* Tablet (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 769px) {
   .sidebar-navbar:not(.collapsed) {
-    width: 210px;
+    width: 230px;
   }
 }
 
-/* Responsive Breakpoint: Mobile (< 768px) */
+/* Mobile (< 768px) */
 @media (max-width: 768px) {
   .mobile-nav-topbar {
     display: flex;
@@ -378,12 +478,13 @@
   .sidebar-navbar {
     position: fixed;
     top: 0;
-    left: -290px;
-    width: 260px !important;
+    left: -310px;
+    width: 280px !important;
     height: 100vh;
+    height: 100dvh;
     z-index: 100;
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.18);
-    transition: left 0.28s ease !important;
+    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.22);
+    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .sidebar-navbar.mobile-open {
@@ -398,31 +499,25 @@
     display: grid;
   }
 
-  .sidebar-navbar .nav-brand-name {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  .sidebar-navbar .nav-brand-name small {
-    display: block !important;
-    margin-top: 2px !important;
-  }
-
   .sidebar-navbar .nav-item-label,
-  .sidebar-navbar .nav-badge-pill {
+  .sidebar-navbar .nav-badge-pill,
+  .sidebar-navbar .nav-user-info {
     display: initial !important;
   }
 
   .sidebar-navbar .nav-brand-row {
-    justify-content: flex-start !important;
+    justify-content: space-between !important;
   }
 
   .sidebar-navbar .nav-item-btn {
     justify-content: flex-start !important;
-    padding: 0 11px !important;
+    padding: 10px 12px !important;
   }
 
-  .sidebar-navbar .nav-theme-row {
+  .sidebar-navbar .nav-user-card {
     justify-content: flex-start !important;
+    padding: 8px 10px !important;
+    background: #F7FAFA !important;
+    border: 1px solid #D6E8E8 !important;
   }
 }
