@@ -298,7 +298,7 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
           type="button"
           className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
             selectedMetric === 'aidesAttribuees'
-              ? 'bg-[#FF7900] text-white shadow-sm'
+              ? 'bg-[#007599] text-white shadow-sm'
               : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
           }`}
           onClick={() => setSelectedMetric('aidesAttribuees')}
@@ -411,7 +411,7 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
                     selectedMetric === 'casSuspicionElevee'
                       ? 'linear-gradient(90deg, #FDF2F6 0%, #E11D48 100%)'
                       : selectedMetric === 'aidesAttribuees'
-                      ? 'linear-gradient(90deg, #FFF7ED 0%, #FF7900 100%)'
+                      ? 'linear-gradient(90deg, #F0F9F8 0%, #007599 100%)'
                       : 'linear-gradient(90deg, #EEF7F7 0%, #007599 100%)',
                 }}
               />
@@ -542,7 +542,7 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
               <button
                 type="button"
                 onClick={() => onDeployMobileClinic(activeRegion.regionNom)}
-                className="w-full mt-2 py-2 px-3 bg-[#FF7900] hover:bg-[#E06A00] text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                className="w-full mt-2 py-2 px-3 bg-[#0F4A57] hover:bg-[#005C75] text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
               >
                 <Truck className="w-4 h-4" />
                 <span>Déployer Clinique Mobile Orange ({activeRegion.regionNom})</span>

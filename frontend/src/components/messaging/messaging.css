@@ -9,7 +9,7 @@
 
 /* En-tête avec branding Orange BF */
 .messaging-header-card {
-  background: linear-gradient(135deg, #17343B 0%, #1e454e 60%, #FF7900 160%);
+  background: linear-gradient(135deg, #17343B 0%, #0F4A57 50%, #007599 100%);
   border-radius: 1.25rem;
   padding: 1.75rem 2rem;
   color: #FFFFFF;
@@ -25,7 +25,7 @@
   right: -5%;
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(255, 121, 0, 0.25) 0%, rgba(255, 121, 0, 0) 70%);
+  background: radial-gradient(circle, rgba(125, 226, 209, 0.25) 0%, rgba(0, 117, 153, 0) 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -47,7 +47,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #FFB370;
+  color: #7DE2D1;
   margin-bottom: 0.75rem;
 }
 
@@ -94,13 +94,13 @@
 }
 
 .messaging-tab-btn:hover {
-  color: #FF7900;
-  background: #FFF9F5;
+  color: #007599;
+  background: #F0F9F8;
 }
 
 .messaging-tab-btn.active {
-  color: #FF7900;
-  border-bottom-color: #FF7900;
+  color: #007599;
+  border-bottom-color: #007599;
   background: #FFFFFF;
 }
 
@@ -120,8 +120,8 @@
 }
 
 .gateway-kpi-card:hover {
-  border-color: #FFD8B8;
-  box-shadow: 0 4px 12px rgba(255, 121, 0, 0.08);
+  border-color: #A3D9E2;
+  box-shadow: 0 4px 12px rgba(0, 117, 153, 0.08);
 }
 
 .gateway-kpi-label {
@@ -168,8 +168,8 @@
 }
 
 .automation-rule-card.active {
-  border-color: #FFD8B8;
-  box-shadow: 0 4px 14px rgba(255, 121, 0, 0.06);
+  border-color: #A3D9E2;
+  box-shadow: 0 4px 14px rgba(0, 117, 153, 0.06);
 }
 
 .automation-rule-card.inactive {
@@ -188,9 +188,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: #FFF4EB;
-  color: #C2410C;
-  border: 1px solid #FFD8B8;
+  background: #F0F9F8;
+  color: #007599;
+  border: 1px solid #D6E8E8;
   padding: 0.25rem 0.65rem;
   border-radius: 9999px;
   font-size: 0.6875rem;
@@ -223,8 +223,8 @@
 }
 
 .rule-message-box {
-  background: #FFF9F5;
-  border: 1px solid #FFE1CC;
+  background: #F8FAFB;
+  border: 1px solid #E2E8F0;
   border-radius: 0.75rem;
   padding: 0.85rem;
 }

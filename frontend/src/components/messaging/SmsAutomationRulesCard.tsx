@@ -41,8 +41,8 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
           </p>
         </div>
 
-        <span className="text-[11px] font-bold text-[#FF7900] bg-[#FFF4EB] px-3 py-1 rounded-full border border-[#FFD8B8] flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-[#FF7900]" />
+        <span className="text-[11px] font-bold text-[#007599] bg-[#F0F9F8] px-3 py-1 rounded-full border border-[#D6E8E8] flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-[#007599]" />
           <span>Passerelle GSM Orange BF Active</span>
         </span>
       </div>
@@ -78,9 +78,9 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                     type="checkbox"
                     checked={rule.actif}
                     onChange={() => onToggleRule(rule.id)}
-                    className="w-4 h-4 text-[#FF7900] rounded border-gray-300 focus:ring-[#FF7900] cursor-pointer"
+                    className="w-4 h-4 text-[#007599] rounded border-gray-300 focus:ring-[#007599] cursor-pointer"
                   />
-                  <span className={`text-[11px] font-bold ${rule.actif ? 'text-[#FF7900]' : 'text-[#536B70]'}`}>
+                  <span className={`text-[11px] font-bold ${rule.actif ? 'text-[#007599]' : 'text-[#536B70]'}`}>
                     {rule.actif ? 'Actif' : 'Pause'}
                   </span>
                 </label>
@@ -90,7 +90,7 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
               <div className="rule-message-box space-y-2">
                 <div className="flex items-center justify-between text-xs flex-wrap gap-2">
                   <span className="text-[10px] font-bold text-[#536B70] uppercase tracking-wide flex items-center gap-1">
-                    <Globe className="w-3 h-3 text-[#FF7900]" />
+                    <Globe className="w-3 h-3 text-[#007599]" />
                     <span>Aperçu du SMS dans la langue de la femme :</span>
                   </span>
 
@@ -102,7 +102,7 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                         onClick={() => setRuleLang(rule.id, l)}
                         className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all capitalize ${
                           activeLang === l
-                            ? 'bg-[#FF7900] text-white shadow-xs'
+                            ? 'bg-[#007599] text-white shadow-xs'
                             : 'bg-white text-[#536B70] hover:bg-[#F1F5F9]'
                         }`}
                       >
@@ -112,7 +112,7 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                   </div>
                 </div>
 
-                <p className="text-xs text-[#17343B] font-mono leading-relaxed bg-white p-2.5 rounded border border-[#FFE1CC]">
+                <p className="text-xs text-[#17343B] font-mono leading-relaxed bg-white p-2.5 rounded border border-[#D6E8E8]">
                   {msgPreview}
                 </p>
 
@@ -125,7 +125,7 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
               {/* Métadonnées & Statistiques */}
               <div className="rule-meta-row">
                 <div className="flex items-center gap-1">
-                  <Smartphone className="w-3.5 h-3.5 text-[#FF7900]" />
+                  <Smartphone className="w-3.5 h-3.5 text-[#007599]" />
                   <span>
                     <strong>{rule.totalEnvoyes}</strong> SMS diffusés
                   </span>
@@ -147,11 +147,11 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
                   onClick={() => onTriggerRuleSimulation(rule)}
                   className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm ${
                     rule.actif
-                      ? 'bg-[#17343B] text-white hover:bg-[#007599]'
+                      ? 'bg-[#007599] text-white hover:bg-[#005C75]'
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  <Send className="w-3.5 h-3.5 text-[#FF7900]" />
+                  <Send className="w-3.5 h-3.5 text-white" />
                   <span>⚡ Déclencher la vague ({rule.ageMin}-{rule.ageMax} ans) maintenant</span>
                 </button>
               </div>

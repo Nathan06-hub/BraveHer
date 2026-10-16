@@ -5,6 +5,7 @@
 
 import { apiFetch } from './httpClient';
 import type { Campagne, SmsLog, StatutCampagne } from '../../types/campaign';
+import { MOCK_CAMPAGNES } from '../../data/mockCampaignData';
 
 function normalizeCampagne(raw: any): Campagne {
   if (!raw) return raw;
@@ -55,7 +56,7 @@ export const campaignApi = {
   async getCampagnes(): Promise<Campagne[]> {
     const data = await apiFetch<any>('/campagnes', {
       method: 'GET',
-      fallbackData: [],
+      fallbackData: MOCK_CAMPAGNES,
     });
     const list = Array.isArray(data)
       ? data

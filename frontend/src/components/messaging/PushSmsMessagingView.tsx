@@ -113,7 +113,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <span className="messaging-gateway-badge">
-                <Radio className="w-3.5 h-3.5 text-[#FF7900] animate-pulse" />
+                <Radio className="w-3.5 h-3.5 text-[#7DE2D1] animate-pulse" />
                 Passerelle GSM Universelle · Orange Burkina Faso
               </span>
               <h1 className="messaging-title">
@@ -137,7 +137,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsQuickPushModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] transition-all shadow-md flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#007599] hover:bg-[#005C75] transition-all shadow-md flex items-center gap-2"
               >
                 <Send className="w-4 h-4 text-white" />
                 <span>⚡ Nouveau Push SMS Immédiat</span>
@@ -193,7 +193,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
           <div className="gateway-kpi-grid">
             <div className="gateway-kpi-card">
               <span className="gateway-kpi-label">Solde Crédits SMS Orange</span>
-              <div className="gateway-kpi-value text-[#FF7900]">
+              <div className="gateway-kpi-value text-[#007599]">
                 4 850 <span className="text-xs font-normal text-[#536B70]">crédits</span>
               </div>
               <span className="gateway-kpi-sub">Recharge subventionnée Orange Money</span>
@@ -280,9 +280,9 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
             </div>
 
             {/* Boîte 2 : Raccourcis d'actions */}
-            <div className="bg-gradient-to-br from-[#FFF9F5] to-white p-4 rounded-xl border border-[#FFD8B8] flex flex-col justify-between">
+            <div className="bg-gradient-to-br from-[#F0F9F8] to-white p-4 rounded-xl border border-[#D6E8E8] flex flex-col justify-between">
               <div>
-                <span className="text-[10px] font-bold text-[#FF7900] uppercase tracking-wider block mb-1">
+                <span className="text-[10px] font-bold text-[#007599] uppercase tracking-wider block mb-1">
                   Accès Rapides & Actions Automatisées
                 </span>
                 <h4 className="text-sm font-bold text-[#17343B] mb-2">
@@ -297,10 +297,10 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveSubTab('automation')}
-                  className="w-full py-2 px-3 rounded-lg text-xs font-bold text-[#17343B] bg-white hover:bg-[#F8FAFB] border border-[#FFD8B8] flex items-center justify-between transition-all"
+                  className="w-full py-2 px-3 rounded-lg text-xs font-bold text-[#17343B] bg-white hover:bg-[#F8FAFB] border border-[#D6E8E8] flex items-center justify-between transition-all"
                 >
                   <span className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#FF7900]" />
+                    <Calendar className="w-4 h-4 text-[#007599]" />
                     <span>Gérer les règles récurrentes (20 ans, 40 ans...)</span>
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#536B70]" />
@@ -309,7 +309,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsFollowupModalOpen(true)}
-                  className="w-full py-2 px-3 rounded-lg text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] flex items-center justify-between transition-all shadow-xs"
+                  className="w-full py-2 px-3 rounded-lg text-xs font-bold text-white bg-[#007599] hover:bg-[#005C75] flex items-center justify-between transition-all shadow-xs"
                 >
                   <span className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-white" />
@@ -348,7 +348,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
             <button
               type="button"
               onClick={() => setIsFollowupModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] transition-all shadow-sm flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#007599] hover:bg-[#005C75] transition-all shadow-sm flex items-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Programmer une Relance Groupée</span>
@@ -390,7 +390,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsFollowupModalOpen(true)}
-                    className="w-full py-1.5 px-3 rounded-lg text-xs font-bold text-[#FF7900] bg-[#FFF4EB] hover:bg-[#FFE8D6] transition-colors border border-[#FFD8B8] flex items-center justify-center gap-1.5"
+                    className="w-full py-1.5 px-3 rounded-lg text-xs font-bold text-[#007599] bg-[#F0F9F8] hover:bg-[#E0F2F1] transition-colors border border-[#D6E8E8] flex items-center justify-center gap-1.5"
                   >
                     <Send className="w-3 h-3" />
                     <span>Déclencher relance pour cette campagne</span>
@@ -500,7 +500,7 @@ export const PushSmsMessagingView: React.FC<PushSmsMessagingViewProps> = ({
                         </td>
 
                         <td>
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#FF7900] bg-[#FFF4EB] px-2 py-0.5 rounded-md border border-[#FFD8B8]">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#007599] bg-[#F0F9F8] px-2 py-0.5 rounded-md border border-[#D6E8E8]">
                             {log.operateur || 'Orange BF'}
                           </span>
                         </td>

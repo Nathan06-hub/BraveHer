@@ -286,7 +286,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FF7900] text-white uppercase tracking-wider flex items-center gap-1 shadow-sm">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/15 text-[#7DE2D1] border border-white/20 uppercase tracking-wider flex items-center gap-1 shadow-sm backdrop-blur-xs">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Espace Contrôle Administrateur
               </span>
@@ -316,7 +316,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
             <button
               type="button"
               onClick={() => setIsAddGrantModalOpen(true)}
-              className="px-4 py-2.5 bg-[#FF7900] hover:bg-[#E06A00] text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md transition-all active:scale-95"
+              className="px-4 py-2.5 bg-[#007599] hover:bg-[#005C75] text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md transition-all active:scale-95"
             >
               <Coins className="w-4 h-4" />
               <span>+ Enregistrer Dotation Annuelle</span>
@@ -351,12 +351,12 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
               Bons de Santé Prêts à Émettre
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold text-[#FF7900]">{totalBonsDisponibles}</span>
+              <span className="text-2xl font-bold text-[#007599]">{totalBonsDisponibles}</span>
               <span className="text-xs text-slate-500">bons (25 000 F)</span>
             </div>
             <span className="text-[11px] text-slate-400">Financés par Orange & Coris</span>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF7900]">
+          <div className="w-11 h-11 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-[#007599]">
             <Award className="w-5 h-5" />
           </div>
         </div>
@@ -526,7 +526,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                       </td>
 
                       <td className="p-3.5 text-center">
-                        <span className="font-bold text-[#FF7900] text-sm">
+                        <span className="font-bold text-[#007599] text-sm">
                           {sf.bonsEmis}
                         </span>
                         <span className="text-[10px] text-slate-400 block">Orange / Coris</span>
@@ -560,7 +560,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
             <button
               type="button"
               onClick={() => setIsAddGrantModalOpen(true)}
-              className="px-3.5 py-2 bg-[#FF7900] hover:bg-[#E06A00] text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shrink-0 shadow-sm"
+              className="px-3.5 py-2 bg-[#007599] hover:bg-[#005C75] text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shrink-0 shadow-sm"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Enregistrer une Dotation Annuelle</span>
@@ -581,14 +581,14 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                 <div
                   key={dot.id}
                   className={`bg-white rounded-2xl p-5 border shadow-sm space-y-4 transition-all hover:shadow-md ${
-                    isOrange ? 'border-orange-200' : 'border-blue-200'
+                    isOrange ? 'border-teal-200' : 'border-blue-200'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${
-                          isOrange ? 'bg-[#FF7900]' : 'bg-[#004B87]'
+                          isOrange ? 'bg-[#007599]' : 'bg-[#004B87]'
                         }`}
                       >
                         {isOrange ? (
@@ -610,7 +610,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                     <span
                       className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
                         isOrange
-                          ? 'bg-orange-50 text-[#C2410C] border border-orange-200'
+                          ? 'bg-teal-50 text-[#005C75] border border-teal-200'
                           : 'bg-blue-50 text-[#004B87] border border-blue-200'
                       }`}
                     >
@@ -632,7 +632,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                     <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
-                          isOrange ? 'bg-[#FF7900]' : 'bg-[#004B87]'
+                          isOrange ? 'bg-[#007599]' : 'bg-[#004B87]'
                         }`}
                         style={{ width: `${percentUtilise}%` }}
                       />
@@ -795,7 +795,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative space-y-4">
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="text-[11px] font-bold text-[#FF7900] uppercase tracking-wider block">
+                <span className="text-[11px] font-bold text-[#007599] uppercase tracking-wider block">
                   Financement & Solidarité
                 </span>
                 <h3 className="text-lg font-bold text-[#17343B] font-serif">
@@ -828,11 +828,11 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                     }}
                     className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
                       grantStructure === 'Orange'
-                        ? 'border-[#FF7900] bg-orange-50 text-[#C2410C] font-bold ring-2 ring-orange-200'
+                        ? 'border-[#007599] bg-teal-50 text-[#005C75] font-bold ring-2 ring-teal-200'
                         : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
-                    <Smartphone className="w-5 h-5 text-[#FF7900]" />
+                    <Smartphone className="w-5 h-5 text-[#007599]" />
                     <span className="text-xs">Fondation Orange BF</span>
                   </button>
 
@@ -865,7 +865,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                   step={50000}
                   value={grantMontant}
                   onChange={(e) => setGrantMontant(Number(e.target.value))}
-                  className="w-full text-sm font-bold p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#FF7900]"
+                  className="w-full text-sm font-bold p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#007599]"
                 />
                 <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">
                   Permet de financer environ {Math.floor(grantMontant / 25000)} bons de mammographie d'urgence (à 25 000 FCFA/bon).
@@ -913,7 +913,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] rounded-lg shadow-sm"
+                  className="px-4 py-2 text-xs font-bold text-white bg-[#007599] hover:bg-[#005C75] rounded-lg shadow-sm"
                 >
                   Enregistrer la Dotation
                 </button>

@@ -64,10 +64,10 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
 
   return (
     <div className="modal-backdrop z-[110]" role="dialog" aria-modal="true">
-      <div className="modal-content max-w-lg bg-white rounded-2xl shadow-2xl p-6 border border-[#FFD8B8] space-y-4 animate-in fade-in">
+      <div className="modal-content max-w-lg bg-white rounded-2xl shadow-2xl p-6 border border-[#D6E8E8] space-y-4 animate-in fade-in">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#FF7900] text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-[#007599] text-white flex items-center justify-center font-bold shadow-sm">
               <Radio className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
@@ -88,7 +88,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 bg-[#FFF9F5] p-3 rounded-xl border border-[#FFD8B8]">
+        <div className="grid grid-cols-2 gap-3 bg-[#F0F9F8] p-3 rounded-xl border border-[#D6E8E8]">
           <div>
             <label className="text-[11px] font-bold text-[#536B70] uppercase tracking-wide block mb-1">
               Commune :
@@ -132,7 +132,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
                 onClick={() => handleTemplate(l)}
                 className={`py-1.5 px-2 text-xs font-bold rounded-lg border transition-all ${
                   langue === l
-                    ? 'bg-[#FF7900] text-white border-[#FF7900] shadow-sm'
+                    ? 'bg-[#007599] text-white border-[#007599] shadow-sm'
                     : 'bg-[#F8FAFB] text-[#17343B] border-[#D6E8E8] hover:bg-[#F1F5F9]'
                 }`}
               >
@@ -165,7 +165,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
 
         <div className="flex items-center justify-between text-xs text-[#536B70] bg-[#F8FAFB] p-2.5 rounded-lg border border-[#D6E8E8]">
           <span className="flex items-center gap-1">
-            <Smartphone className="w-3.5 h-3.5 text-[#FF7900]" />
+            <Smartphone className="w-3.5 h-3.5 text-[#007599]" />
             <span>Passerelle GSM Orange BF</span>
           </span>
           <span>~ 300 à 450 téléphones cibles</span>
@@ -182,7 +182,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
           <button
             type="button"
             onClick={handleSend}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#FF7900] hover:bg-[#E06A00] transition-colors shadow-md flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#007599] hover:bg-[#005C75] transition-colors shadow-md flex items-center gap-1.5"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Diffuser immédiatement via Orange BF</span>
