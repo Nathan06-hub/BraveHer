@@ -172,64 +172,49 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 1. En-tête Institutionnel & Data for Good */}
-      <div className="bg-gradient-to-r from-[#17343B] via-[#0F4A57] to-[#007599] rounded-2xl p-6 text-white shadow-lg border border-[#2D6A78]">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 bg-white/15 backdrop-blur-sm rounded-full text-xs font-bold tracking-wider uppercase text-amber-200 border border-white/20">
-                Ministère de la Santé du Burkina Faso
+      {/* 1. En-tête Institutionnel & Filtre CSPS */}
+      <div className="bg-gradient-to-r from-[#17343B] via-[#0F4A57] to-[#007599] rounded-2xl p-5 text-white shadow-md border border-[#2D6A78]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 bg-white/15 backdrop-blur-sm rounded-full text-[11px] font-bold tracking-wider uppercase text-cyan-200 border border-white/20">
+                Ministère de la Santé · Burkina Faso
               </span>
-              <span className="px-3 py-1 bg-white/20 text-cyan-100 border border-white/30 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm">
-                Orange Data for Good
-              </span>
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-200 rounded-full text-xs font-semibold border border-emerald-400/30">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                Données Anonymisées & Conformes Santé Publique
+              <span className="flex items-center gap-1 px-2.5 py-0.5 bg-emerald-500/20 text-emerald-200 rounded-full text-[11px] font-semibold border border-emerald-400/30">
+                <ShieldCheck className="w-3 h-3 text-emerald-300" />
+                Données Anonymisées
               </span>
             </div>
 
-            <h1 className="text-2xl lg:text-3xl font-bold font-serif tracking-tight text-white">
-              Tableau de Bord Prédictif & Pilotage Stratégique National
+            <h1 className="text-xl lg:text-2xl font-bold font-serif tracking-tight text-white">
+              Tableau de Bord Épidémiologique & Pilotage Stratégique
             </h1>
 
-            <p className="text-sm text-cyan-100/90 max-w-3xl leading-relaxed">
-              Consolidation épidémiologique en temps réel des flux de dépistage anonymisés de tous les CSPS connectés. 
-              Visualisez les hotspots territoriaux et orientez les ressources médicales d'Orange (cliniques mobiles, dotations de mammographie gratuite).
+            <p className="text-xs text-cyan-100/80 max-w-2xl leading-relaxed">
+              Consolidation en temps réel des flux de dépistage anonymisés et orientation des ressources médicales.
             </p>
           </div>
 
-          {/* Filtre Sélecteur Multi-CSPS */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 min-w-[280px] space-y-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="csps-select" className="text-xs font-bold uppercase tracking-wider text-cyan-200 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-cyan-300" />
-                Réseau des CSPS Connectés
+          {/* Filtre Sélecteur Multi-CSPS compact */}
+          <div className="bg-white/10 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-white/15 flex items-center gap-2.5 shrink-0">
+            <Building2 className="w-4 h-4 text-cyan-300 shrink-0" />
+            <div>
+              <label htmlFor="csps-select" className="text-[10px] font-bold uppercase tracking-wider text-cyan-200 block">
+                Périmètre d'analyse
               </label>
-              <span className="text-[11px] font-semibold text-emerald-300 flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                18 Connectés
-              </span>
+              <select
+                id="csps-select"
+                value={selectedCsps}
+                onChange={(e) => setSelectedCsps(e.target.value)}
+                className="bg-[#17343B] text-white text-xs font-semibold rounded-lg px-2.5 py-1 border border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-[#007599]"
+              >
+                {CSPS_LIST.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nom} {c.region !== 'National' ? `(${c.region})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
-
-            <select
-              id="csps-select"
-              value={selectedCsps}
-              onChange={(e) => setSelectedCsps(e.target.value)}
-              className="w-full bg-[#17343B] text-white text-xs font-medium rounded-lg px-3 py-2 border border-cyan-500/40 focus:outline-none focus:ring-2 focus:ring-[#007599]"
-            >
-              {CSPS_LIST.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nom} {c.region !== 'National' ? `(${c.region})` : ''}
-                </option>
-              ))}
-            </select>
-
-            <p className="text-[11px] text-cyan-200/70 italic">
-              {selectedCsps === 'all'
-                ? 'Données consolidées à l’échelle des 13 régions du Burkina Faso'
-                : `Focalisation sur les données transmises par ${CSPS_LIST.find((c) => c.id === selectedCsps)?.nom}`}
-            </p>
           </div>
         </div>
       </div>
@@ -304,61 +289,45 @@ export const PredictiveHealthDashboard: React.FC<PredictiveHealthDashboardProps>
         </div>
       </div>
 
-      {/* 3. Section Recommandation Prédictive Stratégique : Déploiement de Cliniques Mobiles */}
-      <div className="bg-gradient-to-br from-[#F0F9F8] to-white border border-[#D6E8E8] rounded-2xl p-6 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#007599] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-              <AlertTriangle className="w-3.5 h-3.5 text-[#7DE2D1]" />
-              Recommandation Stratégique Ministère × Orange Data for Good
+      {/* 3. Bandeau d'Alerte Stratégique & Déploiement */}
+      <div className="bg-[#F0F9F8] border border-[#D6E8E8] rounded-xl p-4 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-lg bg-teal-100/70 text-[#007599] flex items-center justify-center shrink-0 mt-0.5">
+            <AlertTriangle className="w-4 h-4 text-[#007599]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#007599] bg-teal-50 px-2 py-0.5 rounded border border-teal-100">
+                Alerte Déploiement
+              </span>
+              <span className="text-xs font-bold text-[#17343B]">
+                Pic de suspicion anormal détecté en zone rurale (Sahel & Boucle du Mouhoun)
+              </span>
             </div>
-
-            <h3 className="text-xl font-bold text-[#17343B]">
-              Alerte de Déploiement : Pic de suspicion anormal détecté dans les zones rurales
-            </h3>
-
-            <p className="text-xs text-[#536B70] leading-relaxed">
-              L'analyse croisée des bilans cliniques issus des CSPS montre une concentration alarmante de nodules adhérents 
-              et de scores IA &gt; 70% dans les régions du <strong>Sahel (Dori)</strong> et de la <strong>Boucle du Mouhoun (Dédougou)</strong>, 
-              couplée à un déficit d'équipements de mammographie fixe.
+            <p className="text-xs text-slate-600 mt-0.5">
+              Forte concentration de scores élevés couplée à un déficit d'équipements de mammographie fixe.
             </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-                <span className="text-[11px] font-bold text-slate-500 uppercase block">Cible d'Intervention</span>
-                <span className="text-sm font-black text-[#17343B]">2 500 Femmes Isolées</span>
-              </div>
-              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-                <span className="text-[11px] font-bold text-slate-500 uppercase block">Diagnostics Précoces Estimés</span>
-                <span className="text-sm font-black text-rose-700">~45 Cas Infiltrants Évités</span>
-              </div>
-              <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-                <span className="text-[11px] font-bold text-slate-500 uppercase block">Économie de Santé Projetée</span>
-                <span className="text-sm font-black text-emerald-800">42 500 000 FCFA</span>
-              </div>
-            </div>
           </div>
+        </div>
 
-          {/* Bouton d'action directe de déploiement */}
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-3 min-w-[260px]">
-            <button
-              type="button"
-              onClick={() => handleOpenDeployModal('Sahel')}
-              className="py-3 px-5 bg-[#007599] hover:bg-[#005C75] text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-            >
-              <Truck className="w-5 h-5 text-white" />
-              <span>Déployer Clinique Mobile Orange</span>
-            </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleOpenDeployModal('Sahel')}
+            className="py-2 px-3.5 bg-[#007599] hover:bg-[#005C75] text-white rounded-lg font-bold text-xs shadow-xs transition-all flex items-center gap-1.5"
+          >
+            <Truck className="w-4 h-4" />
+            <span>Déployer Clinique Mobile</span>
+          </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab('missions')}
-              className="py-2.5 px-4 bg-white hover:bg-slate-50 text-[#17343B] border border-slate-300 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-1.5"
-            >
-              <Clock className="w-4 h-4 text-slate-500" />
-              <span>Consulter les Missions en Cours ({missions.length})</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('missions')}
+            className="py-2 px-3 bg-white hover:bg-slate-50 text-[#17343B] border border-slate-200 rounded-lg font-semibold text-xs transition-all flex items-center gap-1"
+          >
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
+            <span>Missions ({missions.length})</span>
+          </button>
         </div>
       </div>
 

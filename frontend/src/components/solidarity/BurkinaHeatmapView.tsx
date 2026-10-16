@@ -223,35 +223,37 @@ export const BurkinaHeatmapView: React.FC<BurkinaHeatmapViewProps> = ({
 
   return (
     <div className="inpage-view-container">
-      {/* En-tête In-Page sans modal */}
-      <div className="inpage-header">
-        <div className="flex items-center gap-3">
-          {onBack && (
-            <button
-              type="button"
-              className="inpage-back-btn"
-              onClick={onBack}
-              aria-label="Retour aux demandes"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Retour</span>
-            </button>
-          )}
-          <div>
-            <span className="modal-eyebrow">
-              {isStandalone ? 'MINISTÈRE DE LA SANTÉ & ORANGE DATA FOR GOOD' : 'MODULE 4 · PILOTAGE ÉPIDÉMIOLOGIQUE TERRITORIAL'}
+      {/* En-tête In-Page (masqué si standalone dans le dashboard prédictif pour éviter la surcharge) */}
+      {!isStandalone && (
+        <div className="inpage-header">
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <button
+                type="button"
+                className="inpage-back-btn"
+                onClick={onBack}
+                aria-label="Retour aux demandes"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Retour</span>
+              </button>
+            )}
+            <div>
+              <span className="modal-eyebrow">
+                MODULE 4 · PILOTAGE ÉPIDÉMIOLOGIQUE TERRITORIAL
+              </span>
+              <h2 className="text-xl font-bold text-[#17343B] font-serif">
+                Cartographie & Tendances de Dépistage au Burkina Faso
+              </h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-2.5 py-1 bg-[#EEF7F7] text-[#007599] rounded-full border border-[#B2DDDD]">
+              13 Régions Sanitaires Déployées
             </span>
-            <h2 className="text-xl font-bold text-[#17343B] font-serif">
-              Cartographie & Tendances de Dépistage au Burkina Faso
-            </h2>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold px-2.5 py-1 bg-[#EEF7F7] text-[#007599] rounded-full border border-[#B2DDDD]">
-            13 Régions Sanitaires Déployées
-          </span>
-        </div>
-      </div>
+      )}
 
       {/* Barre de métriques épidémiologiques */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-[#D6E8E8]">
