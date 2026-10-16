@@ -74,6 +74,7 @@ import {
   type BackendUser,
 } from './services/api';
 import { PredictiveHealthDashboard } from './components/predictive';
+import { AdminCentreTeamView } from './components/admin/AdminCentreTeamView';
 import './App.css';
 
 const TAB_PATH_MAP: Record<string, string> = {
@@ -83,6 +84,7 @@ const TAB_PATH_MAP: Record<string, string> = {
   beneficiaries: '/beneficiaries',
   messages: '/messages',
   impact: '/solidarity',
+  centre_admin: '/centre-admin',
   predictive: '/predictive',
   settings: '/settings',
   help: '/help',
@@ -97,6 +99,7 @@ const PATH_TAB_MAP: Record<string, string> = {
   '/messages': 'messages',
   '/solidarity': 'impact',
   '/impact': 'impact',
+  '/centre-admin': 'centre_admin',
   '/predictive': 'predictive',
   '/settings': 'settings',
   '/help': 'help',
@@ -1549,6 +1552,13 @@ export function App() {
                 onTriggerAgeWave={handleTriggerAgeWave}
                 onTriggerPostCampaignFollowup={handleTriggerPostCampaignFollowup}
                 onSendQuickPush={handleSendQuickPush}
+              />
+            ) : activeTab === 'centre_admin' ? (
+              /* Espace Contrôle Administrateur de Centre : Gestion Sages-Femmes & Dotations */
+              <AdminCentreTeamView
+                currentUser={currentUser}
+                centres={centresList}
+                onShowToast={showToast}
               />
             ) : activeTab === 'predictive' ? (
               /* Tableau de Bord Prédictif National pour le Ministère de la Santé (Data for Good) */
