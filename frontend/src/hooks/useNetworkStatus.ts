@@ -1,5 +1,5 @@
 // Hook de Gestion de Connectivité & Synchronisation Réseau (Module 3)
-// Soutien Rose Burkina Faso
+// Brave_her Burkina Faso
 
 import { useState, useEffect, useCallback } from 'react';
 import { offlineStorage, type SyncQueueAction } from '../services/offlineStorage';
@@ -112,17 +112,8 @@ export function useNetworkStatus(): NetworkStatusState {
         failed = pendingSyncCount;
       }
     } else {
-      // Mode Fallback local / Démo
-      const actions = await offlineStorage.getPendingActions();
-      for (const action of actions) {
-        try {
-          await new Promise((r) => setTimeout(r, 300));
-          await offlineStorage.removeAction(action.id);
-          success++;
-        } catch {
-          failed++;
-        }
-      }
+      // Ne jamais déclarer synchronisées des mutations non reçues par l'API.
+      failed = await offlineStorage.countPending();
     }
 
     await refreshPending();
@@ -130,7 +121,7 @@ export function useNetworkStatus(): NetworkStatusState {
     setLastSyncTime(new Date());
 
     return { success, failed };
-  }, [isOnline, backendAvailable, pendingSyncCount, refreshPending]);
+  }, [isOnline, backendAvailable, refreshPending]);
 
   // Ajouter une action hors-ligne
   const enqueueOfflineAction = useCallback(

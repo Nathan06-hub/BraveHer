@@ -38,13 +38,13 @@ export const SmsAutomationRulesCard: React.FC<SmsAutomationRulesCardProps> = ({
             Moteur de règles récurrentes selon l'âge (Cycle de vie féminin)
           </h3>
           <p className="text-xs text-[var(--muted)]">
-            Sensibilisation continue sans connexion Internet : les rappels d'auto-examen et de dépistage sont envoyés automatiquement dans la langue maternelle de chaque femme.
+            Règles de rappel configurables en plusieurs langues. L’envoi réel nécessite une passerelle SMS connectée; cette vue de démonstration ne transmet pas de messages.
           </p>
         </div>
 
         <span className="text-[11px] font-bold text-[#007599] bg-[#F0F9F8] px-3 py-1 rounded-full border border-[#D6E8E8] flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-[#007599]" />
-          <span>4 protocoles cliniques actifs</span>
+          <span>Règles de rappel de démonstration</span>
         </span>
       </div>
 

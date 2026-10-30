@@ -15,7 +15,7 @@ describe('Moteur de Score Clinique IA - Barème Officiel 15 Points', () => {
     expect(res.scoreIA).toBe(0);
     expect(res.niveauRisque).toBe('FAIBLE');
     expect(res.alerteBonSante).toBe(false);
-    expect(res.conduiteATenir).toContain('auto-palpation');
+    expect(res.conduiteATenir.toLowerCase()).toContain('ce résultat n’est pas un diagnostic');
     expect(res.detailsBareme).toHaveLength(8);
   });
 
@@ -145,7 +145,7 @@ describe('Moteur de Score Clinique IA - Barème Officiel 15 Points', () => {
       const res3 = calculerScoreEvaluation(true, false, { agePatiente: 35 });
       expect(res3.pointsObtenus).toBe(3);
       expect(res3.niveauRisque).toBe('MODERE');
-      expect(res3.conduiteATenir).toContain('15 à 30 jours');
+      expect(res3.conduiteATenir).toContain('règle logicielle non validée');
 
       // Ex: Ecoulement (+2) + Asymétrie (+2) = 4 points
       const res4 = calculerScoreEvaluation(false, false, {
@@ -167,7 +167,7 @@ describe('Moteur de Score Clinique IA - Barème Officiel 15 Points', () => {
       expect(res5.niveauRisque).toBe('ELEVE');
       expect(res5.scoreIA).toBeGreaterThanOrEqual(70);
       expect(res5.alerteBonSante).toBe(true);
-      expect(res5.conduiteATenir).toContain('Mammographie');
+      expect(res5.conduiteATenir).toContain('n’est ni un diagnostic');
     });
 
     it('doit déclencher Risque ÉLEVÉ d\'urgence si Nodule + Peau d\'orange même à 6 points', () => {

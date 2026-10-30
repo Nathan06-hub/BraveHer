@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,15 +56,22 @@ public class EvaluationService {
         // Idempotence : si l'évaluation avec ce clientUuid existe déjà, on la renvoie directement
         if (evaluationRepository.existsByClientUuid(clientUuid)) {
             log.info("Évaluation idempotente détectée pour clientUuid {}", clientUuid);
-            return evaluationRepository.findAll().stream()
-                    .filter(e -> clientUuid.equals(e.getClientUuid()))
-                    .findFirst()
+            var existing = "ADMIN".equals(connecte.role())
+                    ? evaluationRepository.findByClientUuid(clientUuid)
+                    : connecte.centreId() == null ? java.util.Optional.<Evaluation>empty()
+                    : evaluationRepository.findByClientUuidAndCentreId(clientUuid, connecte.centreId());
+            return existing
                     .map(EvaluationResponse::from)
-                    .orElseThrow();
+                    .orElseThrow(() -> new AccessDeniedException("Cette évaluation n'appartient pas à votre centre de santé"));
         }
 
         Patiente patiente = patienteRepository.findById(request.patienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patiente", request.patienteId()));
+
+        if (!"ADMIN".equals(connecte.role())
+                && (connecte.centreId() == null || !patienteRepository.existsByIdAndCentreId(request.patienteId(), connecte.centreId()))) {
+            throw new AccessDeniedException("Cette patiente n'appartient pas à votre centre de santé");
+        }
 
         Utilisateur agent = utilisateurRepository.findById(connecte.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", connecte.id()));
@@ -107,8 +115,13 @@ public class EvaluationService {
     }
 
     @Transactional(readOnly = true)
-    public Page<EvaluationResponse> lister(NiveauSuspicion niveau, UUID centreId, Pageable pageable) {
+    public Page<EvaluationResponse> lister(NiveauSuspicion niveau, UUID centreId, Pageable pageable, UtilisateurConnecte connecte) {
+        if (!"ADMIN".equals(connecte.role())) {
+            if (connecte.centreId() == null) throw new AccessDeniedException("Aucun centre de santé n'est associé à ce compte");
+            centreId = connecte.centreId();
+        }
         if (niveau != null) {
+            if (centreId != null) return evaluationRepository.findByNiveauAndCentreId(niveau, centreId, pageable).map(EvaluationResponse::from);
             return evaluationRepository.findByNiveau(niveau, pageable).map(EvaluationResponse::from);
         }
         if (centreId != null) {
@@ -118,16 +131,30 @@ public class EvaluationService {
     }
 
     @Transactional(readOnly = true)
-    public List<EvaluationResponse> parPatiente(UUID patienteId) {
-        return evaluationRepository.findByPatienteIdOrderByDateEvaluationDesc(patienteId)
+    public List<EvaluationResponse> parPatiente(UUID patienteId, UtilisateurConnecte connecte) {
+        UUID centreId = centreAutorise(connecte);
+        if (centreId != null && !patienteRepository.existsByIdAndCentreId(patienteId, centreId)) {
+            throw new ResourceNotFoundException("Patiente", patienteId);
+        }
+        var evaluations = centreId == null
+                ? evaluationRepository.findByPatienteIdOrderByDateEvaluationDesc(patienteId)
+                : evaluationRepository.findByPatienteIdAndCentreIdOrderByDateEvaluationDesc(patienteId, centreId);
+        return evaluations
                 .stream().map(EvaluationResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public EvaluationResponse obtenirParId(UUID id) {
-        return evaluationRepository.findById(id)
+    public EvaluationResponse obtenirParId(UUID id, UtilisateurConnecte connecte) {
+        UUID centreId = centreAutorise(connecte);
+        return (centreId == null ? evaluationRepository.findById(id) : evaluationRepository.findByIdAndCentreId(id, centreId))
                 .map(EvaluationResponse::from)
                 .orElseThrow(() -> new ResourceNotFoundException("Évaluation", id));
+    }
+
+    private UUID centreAutorise(UtilisateurConnecte connecte) {
+        if ("ADMIN".equals(connecte.role())) return null;
+        if (connecte.centreId() == null) throw new AccessDeniedException("Aucun centre de santé n'est associé à ce compte");
+        return connecte.centreId();
     }
 
     public IndicateursCliniques toEntity(IndicateursRequest req) {

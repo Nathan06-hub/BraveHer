@@ -1,6 +1,6 @@
 /**
  * Service API Centres de Santé
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';

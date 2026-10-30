@@ -51,7 +51,7 @@ class TriageEngineTest {
 
         assertThat(res.score()).isGreaterThanOrEqualTo(6);
         assertThat(res.niveau()).isEqualTo(NiveauSuspicion.ELEVE);
-        assertThat(res.recommandation()).contains("Suspicion ÉLEVÉE");
+        assertThat(res.recommandation()).contains("règle logicielle non validée").contains("pas un diagnostic");
     }
 
     @Test

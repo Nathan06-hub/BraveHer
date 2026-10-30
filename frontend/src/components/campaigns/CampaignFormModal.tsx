@@ -62,7 +62,7 @@ export const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
   );
   const [message, setMessage] = useState(
     initialData?.message ||
-      'Yaa yéelé ! Dépistage précoce gratuit du cancer du sein dans votre secteur avec Soutien Rose. Protégez votre santé !'
+      'Yaa yéelé ! Dépistage précoce gratuit du cancer du sein dans votre secteur avec Brave_her. Protégez votre santé !'
   );
   // SMS Orange DÉSACTIVÉ par défaut conformément aux instructions
   const [activerPushSms, setActiverPushSms] = useState<boolean>(
@@ -187,7 +187,7 @@ export const CampaignFormModal: React.FC<CampaignFormModalProps> = ({
       description: description.trim() || 'Sensibilisation et dépistage du cancer du sein.',
       secteurCible: finalSecteurs.join(', '),
       secteurs: finalSecteurs,
-      message: message.trim() || 'Dépistage précoce gratuit du cancer du sein avec Soutien Rose.',
+      message: message.trim() || 'Dépistage précoce gratuit du cancer du sein avec Brave_her.',
       commune,
       dateDebut,
       dateFin,

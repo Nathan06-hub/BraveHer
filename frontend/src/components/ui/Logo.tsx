@@ -24,7 +24,7 @@ export const Logo: React.FC<LogoProps> = ({
   layout = 'horizontal',
   size = 'md',
   shape = 'squircle',
-  title = 'Soutien Rose',
+  title = 'Brave_her',
   subtitle = 'Burkina Faso',
   badge,
   href,

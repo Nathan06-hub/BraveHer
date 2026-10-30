@@ -19,5 +19,6 @@ public record PatienteRequest(
         @NotBlank(message = "La région est obligatoire") String region,
         boolean vulnerable,
         boolean deplaceeInterne,
-        UUID centreId
+        UUID centreId,
+        UUID id
 ) {}

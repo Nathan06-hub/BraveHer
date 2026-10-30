@@ -74,12 +74,12 @@ public class DataSeeder implements ApplicationRunner {
         CentreSante djibo = centre("CSPS de Djibo", TypeCentre.CSPS, "Sahel", "Soum", "Djibo", 14.1020, -1.6280);
 
         // --- Utilisateurs (mot de passe commun de démo) ---
-        utilisateur("Kaboré", "Admin", "+22670000001", "admin@soutienrose.bf", Role.ADMIN, null);
-        Utilisateur sageFemme = utilisateur("Ouédraogo", "Awa", "+22670000002", "awa.ouedraogo@soutienrose.bf", Role.SAGE_FEMME, tanghin);
+        utilisateur("Kaboré", "Admin", "+22670000001", "admin@example.org", Role.ADMIN, null);
+        Utilisateur sageFemme = utilisateur("Ouédraogo", "Awa", "+22670000002", "awa.ouedraogo@example.org", Role.SAGE_FEMME, tanghin);
         utilisateur("Sawadogo", "Issouf", "+22670000003", null, Role.AGENT_SANTE, tanghin);
         utilisateur("Traoré", "Mariam", "+22670000004", null, Role.AGENT_SANTE, koro);
         utilisateur("Zongo", "Pascal", "+22670000005", "ministere@sante.gov.bf", Role.MINISTERE, null);
-        utilisateur("Compaoré", "Fatimata", "+22670000006", "fatimata.compaore@soutienrose.bf", Role.SAGE_FEMME, koro);
+        utilisateur("Compaoré", "Fatimata", "+22670000006", "fatimata.compaore@example.org", Role.SAGE_FEMME, koro);
 
         // --- Patientes : mix téléphone classique (SMS) / smartphone (WhatsApp) et langues ---
         Patiente p1 = patiente("Ouédraogo", "Salimata", 46, "+22676110001", false, Langue.MOORE, "Ouagadougou", "Centre", true, false, tanghin);
@@ -155,7 +155,7 @@ public class DataSeeder implements ApplicationRunner {
         logWa.setCanal(CanalNotification.WHATSAPP);
         logWa.setLangue(p2.getLangue());
         logWa.setContenu("Dépistage gratuit du cancer du sein ce samedi au CSPS de Tanghin. Consultez le guide vidéo joint !");
-        logWa.setMediaUrl("https://cdn.soutienrose.bf/video/guide_autopalpation_fr.mp4");
+        logWa.setMediaUrl(null);
         logWa.setStatut(StatutSms.SIMULE);
         logWa.setMessageIdExterne("WA-DEMO02");
         logWa.setDateEnvoi(java.time.LocalDateTime.now().minusMinutes(45));

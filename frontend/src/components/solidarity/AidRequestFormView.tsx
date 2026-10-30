@@ -460,9 +460,9 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
                     className="mt-1"
                   />
                   <div>
-                    <strong className="block text-xs text-red-900">Urgent (48h - 72h)</strong>
+                    <strong className="block text-xs text-red-900">Priorité à confirmer rapidement</strong>
                     <span className="text-[11px] text-red-700 leading-tight block mt-0.5">
-                      Forte suspicion clinique, nodule dur indolore adhérent, écoulement unilatéral sanglant.
+                      Signes rapportés dans la demande. Un professionnel de santé confirme la priorité et le délai selon le protocole en vigueur.
                     </span>
                   </div>
                 </label>
@@ -483,9 +483,9 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
                     className="mt-1"
                   />
                   <div>
-                    <strong className="block text-xs text-amber-900">Élevé (&lt; 7 jours)</strong>
+                    <strong className="block text-xs text-amber-900">Suivi prioritaire à confirmer</strong>
                     <span className="text-[11px] text-amber-700 leading-tight block mt-0.5">
-                      Anomalie palpatoire, mastodynie localisée persistante ou antécédent familial direct.
+                      Les signes renseignés sont à faire évaluer par un professionnel, qui détermine l’orientation et le délai.
                     </span>
                   </div>
                 </label>
@@ -506,9 +506,9 @@ export const AidRequestFormView: React.FC<AidRequestFormViewProps> = ({
                     className="mt-1"
                   />
                   <div>
-                    <strong className="block text-xs text-blue-900">Standard (Dépistage ciblé)</strong>
+                    <strong className="block text-xs text-blue-900">Suivi courant à confirmer</strong>
                     <span className="text-[11px] text-blue-700 leading-tight block mt-0.5">
-                      Femme vulnérable de 45 à 74 ans sans symptôme aigu, dans le cadre du dépistage précoce.
+                      Choix administratif indicatif; il ne remplace pas l’évaluation clinique ni le protocole national.
                     </span>
                   </div>
                 </label>

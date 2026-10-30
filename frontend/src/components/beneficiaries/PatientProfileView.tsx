@@ -152,7 +152,7 @@ export const PatientProfileView: React.FC<PatientProfileViewProps> = ({
                       <Sparkles className="w-4 h-4 text-[#007599]" />
                       <div>
                         <strong className="text-xs text-[#17343B] block">
-                          Évaluation Officielle Mermaid · Score IA : {evaluation.scoreIA}% {evaluation.pointsObtenus !== undefined ? `(${evaluation.pointsObtenus} / 15 pts)` : ''}
+                          Évaluation clinique · Score de triage : {evaluation.scoreIA}/100 {evaluation.pointsObtenus !== undefined ? `(${evaluation.pointsObtenus} / 15 pts)` : ''}
                         </strong>
                         <span className="text-[11px] text-[#536B70]">
                           Niveau de risque sénologique : <b>{evaluation.niveauRisque}</b> · Barème officiel 15 pts

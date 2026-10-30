@@ -84,6 +84,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [recognitionInstance, setRecognitionInstance] = useState<any>(null);
+  const [speechMessage, setSpeechMessage] = useState<string | null>(null);
 
   // Initialisation Web Speech API
   useEffect(() => {
@@ -104,7 +105,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
         }
         if (transcript.trim()) {
           setObservationsVocales((prev) => `${prev} ${transcript}`.trim());
-          // Analyse sémantique intelligente (NLP simple)
+          // Détection simple de mots-clés; les champs préremplis restent à vérifier.
           const lower = transcript.toLowerCase();
           if (lower.includes('dur') || lower.includes('adhérent') || lower.includes('pierre')) {
             setConsistanceNodule('dur_adherent');
@@ -125,6 +126,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
 
       recog.onerror = () => {
         setIsRecording(false);
+        setSpeechMessage('Dictée indisponible. Autorisez le microphone ou saisissez les observations.');
       };
 
       recog.onend = () => {
@@ -143,16 +145,16 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
       }
       setIsRecording(false);
     } else {
-      setIsRecording(true);
+      setSpeechMessage(null);
       if (recognitionInstance) {
         try {
           recognitionInstance.start();
+          setIsRecording(true);
         } catch {
-          // Simulation fallback si permission refusée
-          simulateVoiceDictation();
+          setSpeechMessage('La dictée n’a pas démarré. Vérifiez l’autorisation du microphone.');
         }
       } else {
-        simulateVoiceDictation();
+        setSpeechMessage('La dictée vocale n’est pas disponible dans ce navigateur. Saisissez le texte ou chargez l’exemple de démonstration.');
       }
     }
   };
@@ -172,7 +174,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
     }, 1500);
   };
 
-  // Moteur d'évaluation du risque IA (Conforme à la Grille Officielle de 15 points)
+  // Système déterministe d'aide au triage selon la grille locale configurée (15 points).
   const calculateRisk = (): {
     score: number;
     niveau: NiveauSuspicion;
@@ -266,7 +268,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold text-[#007599] bg-[#E6F4F7] px-2 py-0.5 rounded-full">
-                TRIAGE CLINIQUE PAR IA
+                TRIAGE CLINIQUE PAR RÈGLES
               </span>
               <span className="text-xs text-[#64748B]">Dossier #{patient.numeroDossier}</span>
             </div>
@@ -338,7 +340,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Colonne Gauche & Centrale : Examen & Palpation */}
           <div className="lg:col-span-2 space-y-5">
-            {/* 1. Dictée Vocale Speech-to-Text (Cahier des Charges Module 2) */}
+            {/* 1. Dictée vocale navigateur et exemple de démonstration */}
             <div className="inpage-card border-2 border-[#007599]/20">
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#D6E8E8]">
                 <div className="flex items-center gap-2">
@@ -347,12 +349,12 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-[#17343B]">
-                      Dictée Médicale Assistée par IA (Speech-to-Text)
+                      Dictée vocale et notes cliniques
                     </h3>
                     <span className="text-[11px] text-[#64748B]">
                       {speechSupported
                         ? 'Microphone navigateur actif — dictez vos observations cliniques.'
-                        : 'Mode assistance vocale avec transcription sémantique.'}
+                        : 'Dictée indisponible; vous pouvez saisir les notes ou charger l’exemple.'}
                     </span>
                   </div>
                 </div>
@@ -376,6 +378,8 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                 </button>
               </div>
 
+              {speechMessage && <p role="status" className="mt-2 text-xs text-amber-800">{speechMessage}</p>}
+
               <textarea
                 rows={3}
                 value={observationsVocales}
@@ -383,6 +387,12 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                 placeholder="Exemple dicté : « Patiente présentant un nodule dur rétro-aréolaire droit de 2cm avec rétraction cutanée... »"
                 className="w-full px-3 py-2 text-xs border border-[#CBD5E1] rounded-lg focus:outline-none focus:border-[#007599]"
               />
+              <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[#536B70]">
+                <span>La détection de mots-clés repose sur des règles simples. Relisez les notes; elle ne pose pas de diagnostic.</span>
+                <button type="button" className="underline" onClick={simulateVoiceDictation}>
+                  Charger l’exemple de démonstration
+                </button>
+              </div>
             </div>
 
             {/* 2. Palpation Mammaire & Nodules */}
@@ -605,9 +615,9 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
             </div>
           </div>
 
-          {/* Colonne Droite : Score IA, Recommandation & Orientation Solidarité */}
+          {/* Colonne Droite : score de triage, recommandation et orientation */}
           <div className="space-y-5">
-            {/* Carte Score de Risque IA */}
+            {/* Carte du score de triage déterministe */}
             <div
               className={`inpage-card border-2 ${
                 riskResult.niveau === 'eleve'
@@ -620,7 +630,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
               <div className="flex items-center gap-2 pb-3 mb-3 border-b border-[#D6E8E8]">
                 <Sparkles className="w-4 h-4 text-[#007599]" />
                 <h3 className="text-sm font-bold text-[#17343B]">
-                  Résultat du Triage IA
+                  Système expert à règles — aide au triage
                 </h3>
               </div>
 
@@ -634,7 +644,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                       : 'bg-emerald-100 text-emerald-800 ring-4 ring-emerald-200'
                   }`}
                 >
-                  {riskResult.score}%
+                  {riskResult.score}/100
                 </div>
                 <h4 className="text-base font-bold text-[#17343B]">
                   {riskResult.niveau === 'eleve'
@@ -644,7 +654,7 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                     : '🟢 Examen Normal'}
                 </h4>
                 <span className="text-xs font-bold text-[#007599]">
-                  Total : {riskResult.pointsObtenus} / 15 points (Grille Officielle)
+                  Total : {riskResult.pointsObtenus} / 15 points (grille configurée)
                 </span>
               </div>
 
@@ -676,15 +686,19 @@ export const PatientTriageView: React.FC<PatientTriageViewProps> = ({
                 {riskResult.conduite}
               </div>
 
-              {/* Prise en Charge Urgente & Demande de Don Automatique */}
+              <p className="mt-3 text-[11px] text-slate-600">
+                Ce score ne constitue pas un diagnostic. Le soignant vérifie l’examen et décide de l’orientation.
+              </p>
+
+              {/* Orientation prioritaire; aucune aide financière n'est émise automatiquement. */}
               {(riskResult.urgence || riskResult.niveau === 'eleve') && (
                 <div className="mt-4 p-3.5 bg-gradient-to-r from-rose-50 to-orange-50 rounded-xl border border-rose-200 space-y-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-rose-800">
                     <CreditCard className="w-4 h-4 text-rose-600" />
-                    <span>⚡ Priorité URGENTE · Demande de Don Automatique</span>
+                    <span>Orientation clinique prioritaire</span>
                   </div>
                   <p className="text-[11px] text-[#475569] leading-relaxed">
-                    Forte suspicion clinique détectée (score {riskResult.score}/100) : <strong>une demande de don & bon solidaire Orange Money (25 000 FCFA) sera envoyée automatiquement</strong> dès validation de ce formulaire.
+                    Les signes renseignés justifient une évaluation par un professionnel. Toute demande d’aide solidaire doit être créée et validée séparément; aucun paiement n’est déclenché par ce formulaire.
                   </p>
                 </div>
               )}

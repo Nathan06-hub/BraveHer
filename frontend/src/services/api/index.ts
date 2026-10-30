@@ -1,6 +1,6 @@
 /**
  * Point d'accès unifié aux Services API Backend Spring Boot
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 export * from './httpClient';

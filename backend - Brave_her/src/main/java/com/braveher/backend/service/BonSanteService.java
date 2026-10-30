@@ -8,6 +8,8 @@ import com.braveher.backend.integration.orange.OrangeMoneyGateway;
 import com.braveher.backend.model.entity.*;
 import com.braveher.backend.model.enums.StatutBon;
 import com.braveher.backend.repository.*;
+import com.braveher.backend.security.UtilisateurConnecte;
+import org.springframework.security.access.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +48,13 @@ public class BonSanteService {
     }
 
     @Transactional
-    public BonSanteResponse emettreBon(BonSanteRequest req) {
+    public BonSanteResponse emettreBon(BonSanteRequest req, UtilisateurConnecte connecte) {
         Patiente patiente = patienteRepository.findById(req.patienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patiente", req.patienteId()));
+        UUID centreAutorise = centreAutorise(connecte);
+        if (centreAutorise != null && !patienteRepository.existsByIdAndCentreId(req.patienteId(), centreAutorise)) {
+            throw new AccessDeniedException("Cette patiente n'appartient pas à votre centre de santé");
+        }
 
         // Choix du fonds : fonds spécifié ou premier fonds actif disposant d'assez de solde
         FondsParrainage fonds;
@@ -66,19 +72,16 @@ public class BonSanteService {
         fonds.debiter(req.montant());
         fondsRepository.save(fonds);
 
-        CentreSante centre = req.centreId() != null
+        CentreSante centre = centreAutorise != null
+                ? centreRepository.findById(centreAutorise).orElseThrow()
+                : req.centreId() != null
                 ? centreRepository.findById(req.centreId()).orElse(patiente.getCentre())
                 : (patiente.getCentre() != null ? patiente.getCentre() : centreRepository.findAll().stream().findFirst().orElse(null));
-
-        // Paiement Orange Money simulé
-        String tel = patiente.getTelephone() != null ? patiente.getTelephone() : "+22670000000";
-        String txOm = orangeMoneyGateway.initierPaiement(tel, req.montant(), "BON-" + patiente.getCodeAnonyme());
 
         BonSante bon = new BonSante();
         bon.setCode(genererCodeUnique());
         bon.setMontant(req.montant());
         bon.setStatut(StatutBon.EMIS);
-        bon.setTransactionOrangeMoney(txOm);
         bon.setDateEmission(LocalDateTime.now());
         bon.setPatiente(patiente);
         bon.setFonds(fonds);
@@ -96,13 +99,27 @@ public class BonSanteService {
     }
 
     @Transactional
-    public BonSanteResponse utiliserBon(String code) {
+    public BonSanteResponse utiliserBon(String code, UtilisateurConnecte connecte) {
         BonSante bon = bonSanteRepository.findByCode(code.trim().toUpperCase())
                 .orElseThrow(() -> new ResourceNotFoundException("Bon de santé", code));
 
         if (bon.getStatut() != StatutBon.EMIS) {
             throw new BusinessException("Le bon de santé " + code + " n'est plus valide (statut: " + bon.getStatut() + ")");
         }
+        UUID centreAutorise = centreAutorise(connecte);
+        if (centreAutorise != null && !centreAutorise.equals(bon.getCentre().getId())) {
+            throw new AccessDeniedException("Ce bon n'est pas rattaché à votre centre de santé");
+        }
+
+        String compteMarchand = bon.getCentre().getCompteMarchandPaiement();
+        if (compteMarchand == null || compteMarchand.isBlank()) {
+            throw new BusinessException("Aucun compte marchand n'est configuré pour le centre destinataire");
+        }
+
+        // Le tiers-payant est versé au centre lors de la validation du bon, jamais à la patiente.
+        String transaction = orangeMoneyGateway.initierPaiement(
+                compteMarchand, bon.getMontant(), "BON-" + bon.getCode());
+        bon.setTransactionOrangeMoney(transaction);
 
         bon.setStatut(StatutBon.UTILISE);
         bon.setDateUtilisation(LocalDateTime.now());
@@ -112,13 +129,27 @@ public class BonSanteService {
     }
 
     @Transactional(readOnly = true)
-    public List<BonSanteResponse> listerTous() {
-        return bonSanteRepository.findAll().stream().map(BonSanteResponse::from).toList();
+    public List<BonSanteResponse> listerTous(UtilisateurConnecte connecte) {
+        UUID centreId = centreAutorise(connecte);
+        var bons = centreId == null ? bonSanteRepository.findAll() : bonSanteRepository.findByCentreId(centreId);
+        return bons.stream().map(BonSanteResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<BonSanteResponse> parPatiente(UUID patienteId) {
-        return bonSanteRepository.findByPatienteId(patienteId).stream().map(BonSanteResponse::from).toList();
+    public List<BonSanteResponse> parPatiente(UUID patienteId, UtilisateurConnecte connecte) {
+        UUID centreId = centreAutorise(connecte);
+        if (centreId != null && !patienteRepository.existsByIdAndCentreId(patienteId, centreId)) {
+            throw new ResourceNotFoundException("Patiente", patienteId);
+        }
+        var bons = centreId == null ? bonSanteRepository.findByPatienteId(patienteId)
+                : bonSanteRepository.findByPatienteIdAndCentreId(patienteId, centreId);
+        return bons.stream().map(BonSanteResponse::from).toList();
+    }
+
+    private UUID centreAutorise(UtilisateurConnecte connecte) {
+        if ("ADMIN".equals(connecte.role()) || "MINISTERE".equals(connecte.role())) return null;
+        if (connecte.centreId() == null) throw new AccessDeniedException("Aucun centre de santé n'est associé à ce compte");
+        return connecte.centreId();
     }
 
     private String genererCodeUnique() {

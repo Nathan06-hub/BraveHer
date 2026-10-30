@@ -1,6 +1,6 @@
 /**
  * Service API Partenaires, Parrainage & Simulateur Webhooks (Module 4)
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';

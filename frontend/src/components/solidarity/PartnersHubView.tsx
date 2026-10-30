@@ -717,7 +717,7 @@ export const PartnersHubView: React.FC<PartnersHubViewProps> = ({
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-amber-900">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div className="text-xs leading-relaxed">
-              <strong>Parrainage ciblé des urgences cliniques :</strong> Ces demandes d'aide concernent des femmes présentant un score d'intelligence artificielle élevé (nodule palpable suspect, mastite suspecte, adénopathie). Elles sont soumises directement à un partenaire partenaire pour prise en charge immédiate via l'émission d'un <em>Bon de Santé Orange Money</em>.
+              <strong>Parrainage ciblé des urgences cliniques :</strong> Ces demandes d'aide concernent des femmes présentant un score de triage élevé (nodule palpable suspect, mastite suspecte, adénopathie). Elles sont soumises directement à un partenaire partenaire pour prise en charge immédiate via l'émission d'un <em>Bon de Santé Orange Money</em>.
             </div>
           </div>
 
@@ -740,7 +740,7 @@ export const PartnersHubView: React.FC<PartnersHubViewProps> = ({
                         📍 {appel.commune}
                       </span>
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                        Score IA : {appel.scoreIA}% (Risque Élevé)
+                        Score de triage : {appel.scoreIA}/100 (Risque Élevé)
                       </span>
                     </div>
 

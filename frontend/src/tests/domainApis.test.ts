@@ -7,6 +7,7 @@ import {
   partnerApi,
   syncApi,
 } from '../services/api';
+import { offlineStorage } from '../services/offlineStorage';
 
 describe('Services API Domaine Métier (Modules 1 à 4)', () => {
   beforeEach(() => {
@@ -91,8 +92,12 @@ describe('Services API Domaine Métier (Modules 1 à 4)', () => {
   });
 
   describe('Module 3 : syncApi', () => {
-    it('doit traiter un lot d\'actions de synchronisation', async () => {
-      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Connection refused')));
+    it('rejoue une action sur sa route d\'origine', async () => {
+      const fetchMock = vi.fn().mockResolvedValue(new Response('{}', {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }));
+      vi.stubGlobal('fetch', fetchMock);
       const res = await syncApi.pushSyncBatch([
         {
           id: 'sync-1',
@@ -109,6 +114,55 @@ describe('Services API Domaine Métier (Modules 1 à 4)', () => {
       ]);
       expect(res.totalTraite).toBe(1);
       expect(res.syncedIds).toContain('sync-1');
+      expect(res.echecsIds).toEqual([]);
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/patientes',
+        expect.objectContaining({ method: 'POST', body: JSON.stringify({ nom: 'Test' }) }),
+      );
+    });
+
+    it('crée la patiente avant de rejouer son évaluation, même si la file est désordonnée', async () => {
+      const patientId = '123e4567-e89b-12d3-a456-426614174000';
+      const fetchMock = vi.fn()
+        .mockResolvedValueOnce(new Response(JSON.stringify({ id: patientId }), {
+          status: 200, headers: { 'Content-Type': 'application/json' },
+        }))
+        .mockResolvedValueOnce(new Response('{}', {
+          status: 200, headers: { 'Content-Type': 'application/json' },
+        }));
+      vi.stubGlobal('fetch', fetchMock);
+      vi.spyOn(offlineStorage, 'getServerId').mockResolvedValue(undefined);
+      vi.spyOn(offlineStorage, 'saveServerId').mockResolvedValue(undefined);
+      const createdAt = new Date().toISOString();
+
+      const result = await syncApi.pushSyncBatch([
+        {
+          id: 'evaluation', typeAction: 'SAVE_EVALUATION', endpoint: '/evaluations', methode: 'POST',
+          payload: { patienteId: patientId }, dateCreation: createdAt, statut: 'en_attente', tentatives: 0,
+          entiteNom: 'Évaluation', description: 'Évaluation clinique',
+        },
+        {
+          id: 'patient', typeAction: 'CREATE_PATIENT', endpoint: '/patientes', methode: 'POST',
+          payload: { id: patientId, nom: 'Test' }, dateCreation: createdAt, statut: 'en_attente', tentatives: 0,
+          entiteNom: 'Test Patient', description: 'Création', localEntityId: patientId,
+        },
+      ]);
+
+      expect(result.syncedIds).toEqual(['patient', 'evaluation']);
+      expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/patientes');
+      expect(fetchMock.mock.calls[1][0]).toBe('/api/v1/evaluations');
+      expect(fetchMock.mock.calls[1][1].body).toContain(patientId);
+    });
+
+    it('conserve les actions dont la requête échoue', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Connection refused')));
+      const res = await syncApi.pushSyncBatch([{
+        id: 'sync-failed', typeAction: 'CREATE_PATIENT', endpoint: '/patientes', methode: 'POST',
+        payload: { nom: 'Test' }, dateCreation: new Date().toISOString(), statut: 'en_attente',
+        tentatives: 0, entiteNom: 'Test', description: 'Création',
+      }]);
+      expect(res.syncedIds).toEqual([]);
+      expect(res.echecsIds).toContain('sync-failed');
     });
   });
 });

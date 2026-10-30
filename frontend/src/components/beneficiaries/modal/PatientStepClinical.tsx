@@ -89,7 +89,7 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
           </div>
           <div>
             <strong className="text-xs font-bold text-[#005C75] block">
-              Dépistage clinique & Triage assisté par IA
+              Dépistage clinique & Triage assisté par règles déterministes
             </strong>
             <span className="text-[11px] text-[#536B70]">
               Activez pour renseigner la palpation et obtenir immédiatement le score de risque
@@ -117,7 +117,7 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
             Enregistrement civil uniquement
           </strong>
           <p className="text-xs text-[#64748B] max-w-md mx-auto m-0">
-            La patiente sera enregistrée dans le système avec le statut <em>« RDV Planifié »</em>. L'examen clinique et le calcul du score IA pourront être réalisés ultérieurement sous la tente de consultation.
+            La patiente sera enregistrée dans le système avec le statut <em>« RDV Planifié »</em>. L'examen clinique et le calcul du score de triage pourront être réalisés ultérieurement sous la tente de consultation.
           </p>
         </div>
       ) : (
@@ -128,7 +128,7 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
               observations={observations}
               onObservationsChange={onObservationsChange}
               onDetectedIndicators={onApplyDetectedIndicators}
-              label="Dictée Vocale & Transcription Médicale IA"
+              label="Dictée vocale et notes cliniques"
               placeholder="Décrivez les signes palpés (ex: Nodule dur de 2 cm dans le quadrant supéro-externe gauche, douleur persistante)..."
             />
           </div>
@@ -331,13 +331,13 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
             )}
           </div>
 
-          {/* Carte Score IA en Direct */}
+          {/* Carte Score de triage en Direct */}
           <div className="p-3.5 bg-gradient-to-r from-[#F0F9F8] to-[#FFF8F5] border border-[#B3DFE5] rounded-xl flex items-center justify-between gap-3 shadow-xs">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#007599]" />
                 <strong className="text-xs font-bold text-[#17343B]">
-                  Diagnostic Assisté par IA (Triage)
+                  Diagnostic Assisté par règles déterministes (Triage)
                 </strong>
                 <ClinicalRiskBadge
                   niveau={evalResult.niveauRisque.toLowerCase() as any}
@@ -349,7 +349,7 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
               </p>
               {evalResult.niveauRisque === 'ELEVE' && (
                 <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 w-fit">
-                  <span>⚡ Priorité URGENTE : Demande de don solidaire (25 000 FCFA) transmise automatiquement</span>
+                  <span>Repérage à priorité élevée selon une règle non validée. Vérification clinique requise; aucune aide n’est déclenchée automatiquement.</span>
                 </div>
               )}
             </div>
@@ -365,7 +365,7 @@ export const PatientStepClinical: React.FC<PatientStepClinicalProps> = ({
                     : 'text-emerald-700'
                 }`}
               >
-                {evalResult.scoreIA}%
+                {evalResult.scoreIA}/100
               </span>
             </div>
           </div>

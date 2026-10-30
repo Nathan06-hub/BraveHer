@@ -74,7 +74,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
         nom: 'Ouédraogo',
         prenom: 'Awa',
         telephone: '+226 70 00 00 02',
-        email: 'awa.ouedraogo@soutienrose.bf',
+        email: 'awa.ouedraogo@example.org',
         centreId: currentCentreId,
         centreNom: currentCentreNom,
         statut: 'ACTIF',
@@ -87,7 +87,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
         nom: 'Compaoré',
         prenom: 'Fatimata',
         telephone: '+226 70 00 00 06',
-        email: 'fatimata.compaore@soutienrose.bf',
+        email: 'fatimata.compaore@example.org',
         centreId: currentCentreId,
         centreNom: currentCentreNom,
         statut: 'EN_MISSION',
@@ -100,7 +100,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
         nom: 'Sawadogo',
         prenom: 'Mariam',
         telephone: '+226 76 11 22 33',
-        email: 'mariam.sawadogo@soutienrose.bf',
+        email: 'mariam.sawadogo@example.org',
         centreId: currentCentreId,
         centreNom: currentCentreNom,
         statut: 'ACTIF',
@@ -728,7 +728,7 @@ export const AdminCentreTeamView: React.FC<AdminCentreTeamViewProps> = ({
                   required
                   value={sfEmail}
                   onChange={(e) => setSfEmail(e.target.value)}
-                  placeholder="awa.ouedraogo@soutienrose.bf"
+                  placeholder="awa.ouedraogo@example.org"
                   className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#007599]"
                 />
               </div>

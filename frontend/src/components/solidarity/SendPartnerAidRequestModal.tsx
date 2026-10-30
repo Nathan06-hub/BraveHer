@@ -208,7 +208,7 @@ export const SendPartnerAidRequestModal: React.FC<SendPartnerAidRequestModalProp
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white text-[#B8456C]">
                   Parrainage Direct
                 </span>
-                <span className="text-xs text-pink-100">Cas Clinique Grave (Score IA &gt; 70%)</span>
+                <span className="text-xs text-pink-100">Cas Clinique Grave (Score de triage &gt; 70%)</span>
               </div>
               <h3 className="text-lg font-bold text-white mt-0.5">
                 Demande de Parrainage auprès d’un Mécène
@@ -231,7 +231,7 @@ export const SendPartnerAidRequestModal: React.FC<SendPartnerAidRequestModalProp
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-start gap-3 text-amber-900 text-xs">
             <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <strong>Protection des données médicales :</strong> Le dossier transmis au partenaire mécène est anonymisé conformément au RGPD de la santé. Seules les données cliniques, le score IA et la commune sont partagés.
+              <strong>Protection des données médicales :</strong> Le dossier transmis au partenaire mécène est anonymisé conformément au RGPD de la santé. Seules les données cliniques, le score de triage et la commune sont partagés.
             </div>
           </div>
 
@@ -252,7 +252,7 @@ export const SendPartnerAidRequestModal: React.FC<SendPartnerAidRequestModalProp
                       ({preselectedPatient.age} ans)
                     </span>
                     <span className="text-xs px-2 py-0.5 rounded-full font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                      Score IA : {preselectedPatient.scoreIA}%
+                      Score de triage : {preselectedPatient.scoreIA}/100
                     </span>
                   </div>
                   <span className="text-xs text-slate-600 block mt-1">
@@ -282,7 +282,7 @@ export const SendPartnerAidRequestModal: React.FC<SendPartnerAidRequestModalProp
                           </strong>
                           <span className="text-xs text-slate-500">({c.age} ans)</span>
                           <span className="text-[11px] px-2 py-0.2 rounded-full font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                            Score IA : {c.scoreIA}%
+                            Score de triage : {c.scoreIA}/100
                           </span>
                           <span className="text-[11px] text-slate-500">📍 {c.commune}</span>
                         </div>

@@ -102,7 +102,7 @@ export const IncomingDonationApiModal: React.FC<IncomingDonationApiModalProps> =
       },
       metadata: {
         note: message,
-        platform: 'Soutien Rose BFK — Hackathon Orange',
+        platform: 'Brave_her BFK — démonstration',
       },
     };
   }, [currentPartner, referenceGenerated, effectiveAmount, typeDon, affectation, message]);

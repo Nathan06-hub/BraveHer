@@ -44,8 +44,8 @@ public class NotificationService {
         String contenuAjuste = traduireOuAdapter(message, patiente);
 
         if (canal == CanalNotification.WHATSAPP) {
-            // Message enrichi WhatsApp (avec mémo vocal ou vidéo explicative par défaut si non spécifié)
-            String media = mediaUrl != null ? mediaUrl : defaultMediaForLanguage(patiente);
+            // Média facultatif : aucun catalogue audio/vidéo n'est configuré dans ce prototype.
+            String media = mediaUrl;
             messageId = whatsAppGateway.envoyerMessage(patiente.getTelephone(), contenuAjuste, media, patiente.getLangue());
         } else {
             // SMS Orange classique (texte court)
@@ -57,7 +57,7 @@ public class NotificationService {
         logEntry.setCanal(canal);
         logEntry.setLangue(patiente.getLangue());
         logEntry.setContenu(contenuAjuste);
-        logEntry.setMediaUrl(canal == CanalNotification.WHATSAPP ? (mediaUrl != null ? mediaUrl : defaultMediaForLanguage(patiente)) : null);
+        logEntry.setMediaUrl(canal == CanalNotification.WHATSAPP ? mediaUrl : null);
         logEntry.setStatut(StatutSms.SIMULE);
         logEntry.setMessageIdExterne(messageId);
         logEntry.setDateEnvoi(LocalDateTime.now());
@@ -65,15 +65,6 @@ public class NotificationService {
         logEntry.setCampagne(campagne);
 
         return smsLogRepository.save(logEntry);
-    }
-
-    private String defaultMediaForLanguage(Patiente patiente) {
-        return switch (patiente.getLangue()) {
-            case MOORE -> "https://cdn.soutienrose.bf/audio/sensibilisation_moore.mp3";
-            case DIOULA -> "https://cdn.soutienrose.bf/audio/sensibilisation_dioula.mp3";
-            case FULFULDE -> "https://cdn.soutienrose.bf/audio/sensibilisation_fulfulde.mp3";
-            case FRANCAIS -> "https://cdn.soutienrose.bf/video/guide_autopalpation_fr.mp4";
-        };
     }
 
     private String traduireOuAdapter(String messageOriginal, Patiente patiente) {

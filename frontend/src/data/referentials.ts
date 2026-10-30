@@ -1,6 +1,6 @@
 /**
  * Référentiels Officiels et Données de Référence du Burkina Faso
- * Soutien Rose — Ministère de la Santé & Passerelle Orange BF
+ * Brave_her — Ministère de la Santé & Passerelle Orange BF
  * 
  * Ce fichier regroupe les données de référence institutionnelles stables
  * (Communes, Hôpitaux d'imagerie CHU, Régions administratives et Protocoles médicaux par âge).

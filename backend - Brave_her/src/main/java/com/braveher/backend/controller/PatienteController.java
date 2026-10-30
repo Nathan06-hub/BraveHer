@@ -10,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import com.braveher.backend.security.UtilisateurConnecte;
 
 import java.util.Map;
 import java.util.UUID;
@@ -28,39 +31,41 @@ public class PatienteController {
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
     public Page<PatienteResponse> rechercher(
             @RequestParam(required = false) String q,
-            Pageable pageable
+            Pageable pageable,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return patienteService.rechercher(q, pageable);
+        return patienteService.rechercher(q, pageable, UtilisateurConnecte.from(jwt));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
-    public PatienteResponse detail(@PathVariable UUID id) {
-        return patienteService.obtenirParId(id);
+    public PatienteResponse detail(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        return patienteService.obtenirParId(id, UtilisateurConnecte.from(jwt));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
-    public PatienteResponse creer(@Valid @RequestBody PatienteRequest request) {
-        return patienteService.creer(request);
+    public PatienteResponse creer(@Valid @RequestBody PatienteRequest request, @AuthenticationPrincipal Jwt jwt) {
+        return patienteService.creer(request, UtilisateurConnecte.from(jwt));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
-    public PatienteResponse modifier(@PathVariable UUID id, @Valid @RequestBody PatienteRequest request) {
-        return patienteService.modifier(id, request);
+    public PatienteResponse modifier(@PathVariable UUID id, @Valid @RequestBody PatienteRequest request, @AuthenticationPrincipal Jwt jwt) {
+        return patienteService.modifier(id, request, UtilisateurConnecte.from(jwt));
     }
 
     @PostMapping("/{id}/notifications")
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
     public Map<String, Object> notifier(
             @PathVariable UUID id,
-            @RequestBody(required = false) Map<String, String> body
+            @RequestBody(required = false) Map<String, String> body,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         String msg = body != null ? body.get("message") : null;
         String media = body != null ? body.get("mediaUrl") : null;
-        SmsLog log = patienteService.notifier(id, msg, media);
+        SmsLog log = patienteService.notifier(id, msg, media, UtilisateurConnecte.from(jwt));
         return Map.of(
                 "success", log != null,
                 "canal", log != null ? log.getCanal().name() : "NON_JOIGNABLE",

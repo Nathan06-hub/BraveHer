@@ -1,6 +1,6 @@
 /**
  * Service d'authentification connecté au Backend Spring Boot (port 8084 via proxy Vite)
- * Plateforme Soutien Rose Burkina Faso
+ * Plateforme Brave_her Burkina Faso
  */
 
 import type { CurrentUserContext, UserRole } from '../../types/campaign';

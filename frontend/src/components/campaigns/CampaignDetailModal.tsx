@@ -32,9 +32,8 @@ import {
   Smartphone,
 } from 'lucide-react';
 
-interface CampaignDetailModalProps {
-  isOpen: boolean;
-  campagne: Campagne | null;
+interface CampaignDetailContentProps {
+  campagne: Campagne;
   allAgents: AgentSante[];
   allPersonnes: PersonneSensibilisee[];
   allSmsLogs?: SmsLog[];
@@ -44,8 +43,7 @@ interface CampaignDetailModalProps {
   onTriggerPushSms?: (campagneId: string, langue: LanguePatiente, customMessage?: string) => void;
 }
 
-export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
-  isOpen,
+const CampaignDetailContent: React.FC<CampaignDetailContentProps> = ({
   campagne,
   allAgents,
   allPersonnes,
@@ -55,8 +53,6 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
   onAddPersonne,
   onTriggerPushSms,
 }) => {
-  if (!isOpen || !campagne) return null;
-
   const [activeTab, setActiveTab] = useState<'overview' | 'beneficiaries' | 'sms_orange'>('overview');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showSmsTriggerModal, setShowSmsTriggerModal] = useState(false);
@@ -678,12 +674,12 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Signes cliniques & Évaluation IA rapide */}
+                  {/* Signes cliniques & Évaluation selon les règles rapide */}
                   <div className="p-3 bg-[#EEF7F7] rounded-lg border border-[#B2DDDD] space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-[#17343B] flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-[#007599]" />
-                        <span>Signes cliniques rapides (Évaluation IA)</span>
+                        <span>Signes cliniques rapides (Évaluation selon les règles)</span>
                       </span>
                       <span
                         className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
@@ -694,7 +690,7 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
                             : 'bg-emerald-600 text-white'
                         }`}
                       >
-                        Score IA : {quickScore.scoreIA}% ({quickScore.pointsObtenus} / 15 pts)
+                        Score de triage : {quickScore.scoreIA}/100 ({quickScore.pointsObtenus} / 15 pts)
                       </span>
                     </div>
 
@@ -1180,5 +1176,20 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
       )}
     </div>
   );
+};
+
+export const CampaignDetailModal: React.FC<{
+  isOpen: boolean;
+  campagne: Campagne | null;
+  allAgents: AgentSante[];
+  allPersonnes: PersonneSensibilisee[];
+  allSmsLogs?: SmsLog[];
+  currentUser: CurrentUserContext;
+  onClose: () => void;
+  onAddPersonne: (personne: Omit<PersonneSensibilisee, 'id'>) => void;
+  onTriggerPushSms?: (campagneId: string, langue: LanguePatiente, customMessage?: string) => void;
+}> = (props) => {
+  if (!props.isOpen || !props.campagne) return null;
+  return <CampaignDetailContent {...props} campagne={props.campagne} />;
 };
 

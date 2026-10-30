@@ -1,6 +1,6 @@
 /**
  * Service API Solidarité, Bons de Santé & Orange Money (Module 4)
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';

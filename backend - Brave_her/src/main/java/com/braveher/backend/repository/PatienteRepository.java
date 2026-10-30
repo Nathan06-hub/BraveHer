@@ -19,6 +19,20 @@ public interface PatienteRepository extends JpaRepository<Patiente, UUID> {
 
     Page<Patiente> findByCentreId(UUID centreId, Pageable pageable);
 
+    Optional<Patiente> findByIdAndCentreId(UUID id, UUID centreId);
+
+    boolean existsByIdAndCentreId(UUID id, UUID centreId);
+
+    @Query("""
+            select p from Patiente p
+            where p.centre.id = :centreId and (
+                lower(p.nom) like lower(concat('%', :q, '%'))
+                or lower(p.prenom) like lower(concat('%', :q, '%'))
+                or p.codeAnonyme = upper(:q)
+                or p.telephone like concat('%', :q, '%'))
+            """)
+    Page<Patiente> rechercherParCentre(@Param("q") String q, @Param("centreId") UUID centreId, Pageable pageable);
+
     /**
      * Ciblage d'une campagne : région obligatoire, commune et langue optionnelles (null = toutes).
      * Seules les patientes joignables (téléphone renseigné) sont retournées.

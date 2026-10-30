@@ -44,7 +44,7 @@ export const AidValidationView: React.FC<AidValidationViewProps> = ({
     demande.montantAccorde > 0 ? demande.montantAccorde : demande.coutEstime
   );
   const [commentaire, setCommentaire] = useState<string>(
-    'Dossier prioritaire validé. Prise en charge intégrale accordée au titre du Fonds de Solidarité Soutien Rose BFK.'
+    'Dossier prioritaire validé. Prise en charge intégrale accordée au titre du Fonds de Solidarité Brave_her BFK.'
   );
   const [motifRefus, setMotifRefus] = useState<string>('');
   const [refusError, setRefusError] = useState<string>('');

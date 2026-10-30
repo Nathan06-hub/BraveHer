@@ -88,7 +88,7 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
     if (detected.modificationTailleForme !== undefined) setModificationTailleForme(detected.modificationTailleForme);
   };
 
-  // Calcul dynamique et réactif du Score IA
+  // Calcul dynamique et réactif du Score de triage
   const evaluationResult = useMemo(() => {
     const autres: AutresIndicateursEvaluation = {
       seinConcerne,
@@ -146,10 +146,8 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
 
     setIsSubmitting(true);
 
-    // Détermination de l'éligibilité au Bon de Santé (Fonds Solidarité Orange Money)
-    const bonSanteDeclenche =
-      evaluationResult.niveauRisque === 'ELEVE' &&
-      (statutVulnerabilite === 'Modérée' || statutVulnerabilite === 'Élevée');
+    // L'éligibilité financière est évaluée séparément; le triage ne déclenche pas d'aide.
+    const bonSanteDeclenche = false;
 
     // Création de l'entité Evaluation officielle Mermaid
     const nouvelleEvaluation: Evaluation = {
@@ -187,13 +185,9 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
     // Préparation des observations
     let observationComplete = observations.trim();
     if (evaluationResult.niveauRisque === 'ELEVE') {
-      observationComplete = `[URGENCE IA : Risque élevé ${evaluationResult.scoreIA}% - ${evaluationResult.conduiteATenir}] ${observationComplete}`;
+      observationComplete = `[Orientation prioritaire selon les règles de triage : ${evaluationResult.scoreIA}/100 - ${evaluationResult.conduiteATenir}] ${observationComplete}`;
     } else if (evaluationResult.niveauRisque === 'MODERE') {
-      observationComplete = `[VIGILANCE IA : Risque modéré ${evaluationResult.scoreIA}%] ${observationComplete}`;
-    }
-
-    if (bonSanteDeclenche) {
-      observationComplete += ` — Bon de Santé prioritaire recommandé (Patiente vulnérable éligible au Fonds Orange Money).`;
+      observationComplete = `[Vigilance selon les règles de triage : ${evaluationResult.scoreIA}/100] ${observationComplete}`;
     }
 
     const payload: Omit<PersonneSensibilisee, 'id'> = {
@@ -241,10 +235,10 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
 
       <div className="mb-4">
         <h2 className="text-xl font-bold text-[#17343B] font-serif m-0">
-          Enrôlement Patiente & Évaluation Clinique par IA
+          Enrôlement Patiente & Évaluation Clinique par règles déterministes
         </h2>
         <p className="text-xs text-[#536B70] mt-1">
-          Saisie terrain assistée par IA avec dictée vocale et calcul instantané du score de risque par{' '}
+          Saisie terrain assistée par règles déterministes avec dictée vocale et calcul instantané du score de risque par{' '}
           <b>
             {currentUser.prenom} {currentUser.nom}
           </b>{' '}
@@ -798,11 +792,11 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
               observations={observations}
               onObservationsChange={setObservations}
               onDetectedIndicators={handleDetectedIndicators}
-              label="Dictée Vocale Speech-to-Text (Pré-remplissage IA)"
+              label="Dictée Vocale dictée vocale et notes"
               placeholder="Dictez la description de la palpation : ex. Nodule dur sein droit de 2cm, rétraction aréolaire, ganglion axillaire palpable..."
             />
 
-            {/* Panneau Dynamique d'Évaluation du Risque IA & Conduite à Tenir */}
+            {/* Panneau Dynamique d'Évaluation du Suspicion clinique & Conduite à Tenir */}
             <div
               className={`p-4 rounded-xl border transition-all ${
                 evaluationResult.niveauRisque === 'ELEVE'
@@ -825,7 +819,7 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
                   />
                   <div>
                     <h4 className="text-sm font-bold text-[#17343B] m-0">
-                      Score IA : {evaluationResult.scoreIA}% ({evaluationResult.pointsObtenus} / {evaluationResult.pointsMax} pts)
+                      Score de triage : {evaluationResult.scoreIA}/100 ({evaluationResult.pointsObtenus} / {evaluationResult.pointsMax} pts)
                     </h4>
                     <span className="text-[11px] text-[#536B70]">
                       Grille Médicale Officielle (15 pts) · calculerScore() Mermaid
@@ -866,7 +860,7 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
                       ? 'bg-amber-500'
                       : 'bg-emerald-500'
                   }`}
-                  style={{ width: `${evaluationResult.scoreIA}%` }}
+                  style={{ width: `${evaluationResult.scoreIA}/100` }}
                 />
               </div>
 
@@ -933,10 +927,10 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
                   <HeartHandshake className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                   <div className="text-xs">
                     <strong className="text-rose-900 block font-bold">
-                      Déclenchement prioritaire du Bon de Santé (Fonds Orange Money)
+                      Repérage de priorité élevée
                     </strong>
                     <p className="text-slate-600 mt-0.5 mb-0">
-                      En cas de vulnérabilité confirmée ({statutVulnerabilite}), l'évaluation déclenchera automatiquement la proposition d'un Bon de Santé solidaire pour couvrir sans délai les examens d'urgence au CHU.
+                      Les demandes de prise en charge se créent séparément et nécessitent une validation. Le repérage clinique ne garantit ni l’attribution d’un bon ni un rendez-vous.
                     </p>
                   </div>
                 </div>
@@ -965,7 +959,7 @@ export const AgentPatientCreationForm: React.FC<AgentPatientCreationFormProps> =
             <span>
               {isSubmitting
                 ? 'Enregistrement de l’évaluation...'
-                : `Enregistrer la patiente · Score ${evaluationResult.scoreIA}%`}
+                : `Enregistrer la patiente · Score ${evaluationResult.scoreIA}/100`}
             </span>
           </button>
         </div>

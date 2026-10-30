@@ -46,7 +46,7 @@ export const PatientFilters: React.FC<PatientFiltersProps> = ({
     },
     {
       id: 'risque_eleve' as PatientFilterTab,
-      label: '🔴 Risque Élevé (IA)',
+      label: '🔴 Suspicion élevée (triage)',
       count: counts.risqueEleve,
       icon: AlertTriangle,
       badgeColor: 'bg-rose-100 text-rose-700',

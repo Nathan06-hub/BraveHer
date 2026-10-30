@@ -36,4 +36,8 @@ public class CentreSante extends BaseEntity {
     private Double latitude;
 
     private Double longitude;
+
+    /** Compte marchand recevant le tiers-payant; jamais le téléphone personnel de la patiente. */
+    @Column(name = "compte_marchand_paiement", length = 40)
+    private String compteMarchandPaiement;
 }

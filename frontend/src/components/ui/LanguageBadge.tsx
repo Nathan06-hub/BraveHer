@@ -8,7 +8,7 @@ export interface LanguageBadgeProps {
   showIcon?: boolean;
 }
 
-// Configuration harmonisée avec la palette Soutien Rose & langues nationales
+// Configuration harmonisée avec la palette Brave_her & langues nationales
 const LANGUAGE_STYLES: Record<
   string,
   { bg: string; text: string; border: string; label: string }

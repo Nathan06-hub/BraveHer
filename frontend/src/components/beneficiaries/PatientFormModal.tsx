@@ -81,7 +81,7 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
     initialData?.statutVulnerabilite || 'Standard'
   );
 
-  // --- Étape 3 : Examen Clinique & Triage IA Automatique ---
+  // --- Étape 3 : Examen Clinique & Triage à règles Automatique ---
   const [activerEvaluationInitiale, setActiverEvaluationInitiale] = useState<boolean>(true);
   const [nodule, setNodule] = useState<boolean>(
     Boolean(initialData?.derniereEvaluation?.nodule || initialData?.dernierTriage?.nodulePalpable)
@@ -160,7 +160,7 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Calcul du score IA en direct (grille officielle à 15 points)
+  // Calcul du score de triage en direct (barème de triage configuré à 15 points)
   const evalResult: ResultatScoreEvaluation = useMemo(() => {
     return calculerScoreEvaluation(nodule, peauOrange, {
       seinConcerne,
@@ -469,13 +469,13 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
         <div className="modal-header">
           <div>
             <span className="modal-eyebrow">
-              SOUTIEN ROSE BFK • DOSSIER PATIENTE
+              BRAVE_HER BFK • DOSSIER PATIENTE
             </span>
             <h2 id="modal-patient-title" className="modal-title">
               {isEdit ? 'Modifier la Fiche Patiente' : 'Créer une Fiche Patiente'}
             </h2>
             <p className="text-xs text-[#536B70] mt-0.5">
-              Enregistrement d'état civil, géolocalisation et examen de dépistage assisté par IA.
+              Enregistrement d'état civil, géolocalisation et examen de dépistage assisté par règles déterministes.
             </p>
           </div>
           <button
@@ -531,7 +531,7 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
             }}
           >
             <Stethoscope className="w-4 h-4" />
-            <span>3. Triage Clinique IA</span>
+            <span>3. Triage clinique par règles</span>
             {activerEvaluationInitiale && (
               <span
                 className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
@@ -542,7 +542,7 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
                     : 'bg-emerald-100 text-emerald-700'
                 }`}
               >
-                IA : {evalResult.scoreIA}%
+                Score de triage : {evalResult.scoreIA}/100
               </span>
             )}
           </button>

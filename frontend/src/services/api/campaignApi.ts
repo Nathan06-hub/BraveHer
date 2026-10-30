@@ -1,6 +1,6 @@
 /**
  * Service API Campagnes & SMS Orange (Module 1)
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';
@@ -160,7 +160,7 @@ export const campaignApi = {
 
     const payload = {
       titre: campagne.titre || campagne.nom || 'Campagne de sensibilisation',
-      message: campagne.message || campagne.description || 'Dépistage précoce gratuit du cancer du sein avec Soutien Rose.',
+      message: campagne.message || campagne.description || 'Dépistage précoce gratuit du cancer du sein avec Brave_her.',
       region: determineRegion(campagne.commune, campagne.secteurCible),
       commune: campagne.commune || 'Ouagadougou',
       langueCible: 'FRANCAIS',

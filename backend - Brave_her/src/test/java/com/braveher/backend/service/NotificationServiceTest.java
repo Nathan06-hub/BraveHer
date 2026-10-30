@@ -58,14 +58,14 @@ class NotificationServiceTest {
     }
 
     @Test
-    @DisplayName("utiliseWhatsApp = true -> routage automatique vers WhatsAppGateway avec média enrichi")
+    @DisplayName("utiliseWhatsApp = true -> routage vers WhatsApp sans média non configuré")
     void routeToWhatsAppWhenSmartphone() {
         Patiente p = new Patiente();
         p.setTelephone("+22676000002");
         p.setUtiliseWhatsApp(true);
         p.setLangue(Langue.FRANCAIS);
 
-        when(whatsAppGateway.envoyerMessage(eq("+22676000002"), anyString(), anyString(), eq(Langue.FRANCAIS)))
+        when(whatsAppGateway.envoyerMessage(eq("+22676000002"), anyString(), isNull(), eq(Langue.FRANCAIS)))
                 .thenReturn("WA-98765");
         when(smsLogRepository.save(any(SmsLog.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -73,11 +73,11 @@ class NotificationServiceTest {
 
         assertThat(log).isNotNull();
         assertThat(log.getCanal()).isEqualTo(CanalNotification.WHATSAPP);
-        assertThat(log.getMediaUrl()).isNotNull();
+        assertThat(log.getMediaUrl()).isNull();
         assertThat(log.getStatut()).isEqualTo(StatutSms.SIMULE);
         assertThat(log.getMessageIdExterne()).isEqualTo("WA-98765");
 
-        verify(whatsAppGateway, times(1)).envoyerMessage(anyString(), anyString(), anyString(), any());
+        verify(whatsAppGateway, times(1)).envoyerMessage(anyString(), anyString(), isNull(), any());
         verify(orangeSmsGateway, never()).envoyerSms(anyString(), anyString(), any());
     }
 }

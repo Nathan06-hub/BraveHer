@@ -1,6 +1,6 @@
 /**
  * Client HTTP Universel & Résilience Hybride (Graceful Fallback)
- * Soutien Rose Burkina Faso — Hackathon Orange
+ * Brave_her Burkina Faso
  * 
  * Permet au Frontend de communiquer avec le Backend Spring Boot (port 8080 via proxy Vite)
  * tout en assurant une démo 100% stable en basculant automatiquement sur les données locales
@@ -10,7 +10,8 @@
 import { offlineStorage, type SyncQueueAction } from '../offlineStorage';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
-export const ENABLE_FALLBACK = import.meta.env.VITE_ENABLE_MOCK_FALLBACK !== 'false';
+export const ENABLE_FALLBACK = import.meta.env.VITE_ENABLE_MOCK_FALLBACK === 'true' ||
+  (!import.meta.env.PROD && import.meta.env.VITE_ENABLE_MOCK_FALLBACK !== 'false');
 
 export interface BackendHealthStatus {
   online: boolean;
@@ -27,6 +28,7 @@ export interface ApiFetchOptions<T = any> extends RequestInit {
     typeAction: SyncQueueAction['typeAction'];
     entiteNom: string;
     description: string;
+    localEntityId?: string;
   };
 }
 
@@ -210,6 +212,7 @@ export async function apiFetch<T>(
           payload,
           entiteNom: syncQueueMetadata.entiteNom,
           description: syncQueueMetadata.description,
+          localEntityId: syncQueueMetadata.localEntityId,
         });
         console.warn(`[Sync Queue] Action ${syncQueueMetadata.typeAction} mise en file d'attente locale IndexedDB.`);
       } catch (queueErr) {

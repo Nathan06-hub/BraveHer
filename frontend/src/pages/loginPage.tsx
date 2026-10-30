@@ -42,7 +42,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
   return (
     <main className="shell">
-      {/* Panneau gauche : Présentation Soutien Rose BFK */}
+      {/* Panneau gauche : Présentation Brave_her BFK */}
       <LoginHeroBanner
         quote="« Soyez attentives à votre corps ; cela peut vous sauver la vie ! »"
         quoteAuthor="Rosalie Ziba"

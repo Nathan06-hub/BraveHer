@@ -57,7 +57,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   return (
     <div className="login w-[min(100%,430px)] mx-auto text-left">
       {/* Marque mobile affichée uniquement en mobile (< 700px) */}
-      <div className="mobile-brand mb-8" aria-label="Soutien Rose, Burkina Faso">
+      <div className="mobile-brand mb-8" aria-label="Brave_her, Burkina Faso">
         <Logo variant="rose" size="lg" layout="horizontal" />
       </div>
 

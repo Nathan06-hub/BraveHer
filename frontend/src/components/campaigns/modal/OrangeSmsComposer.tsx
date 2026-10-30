@@ -23,19 +23,19 @@ interface OrangeSmsComposerProps {
 const TEMPLATES_LANGUES = [
   {
     langue: 'Mooré',
-    texte: 'Yaa yéelé ! Dépistage précoce gratuit du cancer du sein dans votre secteur avec Soutien Rose. Protégez votre santé !',
+    texte: 'Yaa yéelé ! Dépistage précoce gratuit du cancer du sein dans votre secteur avec Brave_her. Protégez votre santé !',
   },
   {
     langue: 'Dioula',
-    texte: 'Aw bismila ! Dépistage gratuit cancer du sein dans votre commune avec Soutien Rose. Kene ya ye foyi tèmè.',
+    texte: 'Aw bismila ! Dépistage gratuit cancer du sein dans votre commune avec Brave_her. Kene ya ye foyi tèmè.',
   },
   {
     langue: 'Français',
-    texte: 'Dépistage précoce gratuit du cancer du sein avec Soutien Rose. Rendez-vous dans votre centre de santé dès demain.',
+    texte: 'Dépistage précoce gratuit du cancer du sein avec Brave_her. Rendez-vous dans votre centre de santé dès demain.',
   },
   {
     langue: 'Fulfuldé',
-    texte: 'Jam waali ! Kuje cellal rewbe e Soutien Rose. War to do ngam depistage précoce gratuit.',
+    texte: 'Jam waali ! Kuje cellal rewbe e Brave_her. War to do ngam depistage précoce gratuit.',
   },
 ];
 

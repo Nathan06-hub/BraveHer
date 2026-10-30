@@ -17,6 +17,10 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, UUID> {
     /** Idempotence de la synchronisation offline. */
     boolean existsByClientUuid(UUID clientUuid);
 
+    java.util.Optional<Evaluation> findByClientUuid(UUID clientUuid);
+
+    java.util.Optional<Evaluation> findByClientUuidAndCentreId(UUID clientUuid, UUID centreId);
+
     List<Evaluation> findByClientUuidIn(Collection<UUID> clientUuids);
 
     @EntityGraph(attributePaths = {"patiente", "centre"})
@@ -25,5 +29,14 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, UUID> {
     @EntityGraph(attributePaths = {"patiente", "centre"})
     Page<Evaluation> findByCentreId(UUID centreId, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"patiente", "centre"})
+    Page<Evaluation> findByNiveauAndCentreId(NiveauSuspicion niveau, UUID centreId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"patiente", "centre"})
+    java.util.Optional<Evaluation> findByIdAndCentreId(UUID id, UUID centreId);
+
     List<Evaluation> findByPatienteIdOrderByDateEvaluationDesc(UUID patienteId);
+
+    @EntityGraph(attributePaths = {"patiente", "centre"})
+    List<Evaluation> findByPatienteIdAndCentreIdOrderByDateEvaluationDesc(UUID patienteId, UUID centreId);
 }

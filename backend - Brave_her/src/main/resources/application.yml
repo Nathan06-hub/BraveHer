@@ -22,10 +22,10 @@ server:
 app:
   security:
     jwt:
-      # >= 32 caractères (HS256). À surcharger via la variable d'environnement JWT_SECRET.
-      secret: ${JWT_SECRET:SoutienRoseBFK-dev-secret-a-changer-en-prod-2026}
+      # Secret de développement uniquement; le profil prod exige JWT_SECRET.
+      secret: ${JWT_SECRET:BraveHerBF-dev-secret-a-changer-en-prod-2026}
       expiration: ${JWT_EXPIRATION:8h}
-      issuer: soutien-rose-bfk
+      issuer: ${JWT_ISSUER:braveher-bf}
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
   seed:

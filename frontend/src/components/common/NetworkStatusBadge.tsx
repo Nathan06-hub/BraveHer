@@ -89,7 +89,7 @@ export const NetworkStatusBadge: React.FC<NetworkStatusBadgeProps> = ({
                 État d'Intégration & Résilience
               </span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">
-                {backendAvailable ? 'API 8080 ONLINE' : 'HYBRID FALLBACK'}
+                {backendAvailable ? 'API CONNECTÉE' : 'API INDISPONIBLE'}
               </span>
             </div>
 
@@ -105,15 +105,15 @@ export const NetworkStatusBadge: React.FC<NetworkStatusBadgeProps> = ({
                 <span className="text-slate-600">Backend Spring Boot :</span>
                 <span className={`font-bold flex items-center gap-1 ${backendAvailable ? 'text-emerald-700' : 'text-[#007599]'}`}>
                   <Zap className="w-3 h-3" />
-                  {backendAvailable ? 'Actif (Port 8080)' : 'Mode Démo Autonome'}
+                  {backendAvailable ? 'API disponible' : 'API indisponible'}
                 </span>
               </div>
             </div>
 
             <p className="text-[11px] text-[#536B70] leading-relaxed mb-3">
-              {backendAvailable
-                ? 'Les requêtes transitent directement vers les RestControllers Spring Boot et la base de données H2.'
-                : 'Le mode "Résilience Hybride" garantit une démonstration 100% fluide avec les données locales et IndexedDB même si Spring Boot n\'est pas encore lancé.'}
+              {backendAvailable && pendingSyncCount === 0
+                ? 'Les requêtes transitent vers le backend Spring Boot et la base de données configurée.'
+                : 'Les actions en attente sont chiffrées (AES-GCM) dans IndexedDB puis rejouées quand l’API est disponible. La clé est conservée dans le profil du navigateur; cela ne protège pas contre un appareil ou une application compromis. Validez le consentement et les règles de conservation avant un pilote réel.'}
             </p>
 
             <div className="space-y-2 pt-1 border-t border-[#EEF5F5]">

@@ -9,7 +9,7 @@ export interface MobileNavTopbarProps {
 
 export const MobileNavTopbar: React.FC<MobileNavTopbarProps> = ({
   onOpenMenu,
-  brandTitle = 'Soutien Rose',
+  brandTitle = 'Brave_her',
   brandSubtitle = 'Burkina Faso',
 }) => {
   return (

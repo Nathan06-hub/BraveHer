@@ -1,7 +1,7 @@
 /**
  * Service API Patientes & Dossier Bénéficiaire (Module 2)
  * Connecté au Backend Spring Boot (PostgreSQL)
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';
@@ -127,7 +127,7 @@ export const patientApi = {
   async registerPatiente(patiente: Partial<Beneficiaire>): Promise<Beneficiaire> {
     const fallbackPatiente: Beneficiaire = {
       ...(patiente as any),
-      id: patiente.id || `pat-${Date.now()}`,
+      id: patiente.id || crypto.randomUUID(),
       numeroDossier:
         patiente.numeroDossier ||
         `PAT-BF-2026-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -143,6 +143,7 @@ export const patientApi = {
     const isPdi = patiente.statutVulnerabilite === 'PDI';
 
     const payload = {
+      id: isUuid(fallbackPatiente.id) ? fallbackPatiente.id : undefined,
       nom: patiente.nom || '',
       prenom: patiente.prenom || '',
       age: Number(patiente.age) || 35,
@@ -164,6 +165,7 @@ export const patientApi = {
         typeAction: 'CREATE_PATIENT',
         entiteNom: `${patiente.prenom || ''} ${patiente.nom || ''}`.trim() || 'Nouvelle Patiente',
         description: `Enregistrement patiente - ${patiente.commune || 'Burkina Faso'}`,
+        localEntityId: fallbackPatiente.id,
       },
     });
 

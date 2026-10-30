@@ -102,7 +102,7 @@ export const PatientModalFooter: React.FC<PatientModalFooterProps> = ({
               onClick={onNextToClinical}
             >
               <Stethoscope className="w-4 h-4" />
-              <span>Suivant : Triage Clinique IA</span>
+              <span>Suivant : Triage clinique par règles</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </>

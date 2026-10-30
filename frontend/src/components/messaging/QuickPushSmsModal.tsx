@@ -25,14 +25,14 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
   onClose,
   onSendQuickPush,
 }) => {
-  if (!isOpen) return null;
-
   const [commune, setCommune] = useState('Ouagadougou');
   const [secteur, setSecteur] = useState('Secteur 22');
   const [langue, setLangue] = useState<LanguePatiente>('Mooré');
   const [contenu, setContenu] = useState(
     'Yaa yéelé ! Dépistage gratuit du cancer du sein ce samedi au CSPS. Venez nombreuses protéger votre santé.'
   );
+
+  if (!isOpen) return null;
 
   const handleTemplate = (lang: LanguePatiente) => {
     setLangue(lang);
@@ -50,7 +50,7 @@ export const QuickPushSmsModal: React.FC<QuickPushSmsModalProps> = ({
       );
     } else {
       setContenu(
-        'Alerte Prévention Soutien Rose : Dépistage gratuit et confidentiel du cancer du sein ce week-end dans votre CSPS.'
+        'Alerte Prévention Brave_her : Dépistage gratuit et confidentiel du cancer du sein ce week-end dans votre CSPS.'
       );
     }
   };

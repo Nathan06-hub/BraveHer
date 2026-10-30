@@ -1,7 +1,7 @@
 // Types pour le Module Bénéficiaires & Patientes
-// Module 2 : Triage Intelligent par IA & Diagnostic Assisté
+// Module 2 : Triage clinique par règles déterministes & Diagnostic Assisté
 // Module 3 : Inclusivité & Continuité de Service
-// Soutien Rose Burkina Faso
+// Brave_her Burkina Faso
 
 import type { LanguePatiente } from './campaign';
 import type { Evaluation } from './evaluation';

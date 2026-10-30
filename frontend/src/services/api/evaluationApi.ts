@@ -1,6 +1,6 @@
 /**
- * Service API Évaluations Cliniques & Moteur Score IA (Module 2)
- * Soutien Rose Burkina Faso
+ * Service API Évaluations Cliniques & Moteur Score de triage (Module 2)
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';
@@ -8,7 +8,7 @@ import type { Evaluation } from '../../types/evaluation';
 
 export const evaluationApi = {
   /**
-   * Enregistre une nouvelle évaluation clinique avec score IA (Barème officiel 15 pts)
+   * Enregistre une nouvelle évaluation clinique avec score de triage (Barème officiel 15 pts)
    */
   async createEvaluation(evaluation: Partial<Evaluation>): Promise<Evaluation> {
     const fallbackEvaluation: Evaluation = {

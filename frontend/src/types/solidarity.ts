@@ -1,5 +1,5 @@
 // Types pour le Module 4 : Solidarité et Pilotage Statistique
-// Soutien Rose Burkina Faso
+// Brave_her Burkina Faso
 
 export type StatutAide =
   | 'a_examiner'

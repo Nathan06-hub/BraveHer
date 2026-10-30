@@ -1,5 +1,5 @@
 // Types pour la gestion des Partenaires, Dons et Parrainage des Cas Graves
-// Conforme au Diagramme de Classes Mermaid & Cahier des Charges Soutien Rose BFK (Module 4)
+// Conforme au Diagramme de Classes Mermaid & Cahier des Charges Brave_her BFK (Module 4)
 
 import type { NiveauRisque } from './evaluation';
 

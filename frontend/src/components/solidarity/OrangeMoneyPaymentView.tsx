@@ -100,7 +100,7 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
                 <Smartphone className="w-4 h-4" />
                 Orange Money Burkina
               </span>
-              <span className="modal-eyebrow">PASSERELLE SÉCURISÉE HACKATHON 2026</span>
+              <span className="modal-eyebrow">MODE SIMULATION — AUCUN TRANSFERT RÉEL</span>
             </div>
             <h2 className="text-xl font-bold text-[#17343B] font-serif mt-1">
               Règlement de la Prise en Charge Solidaire — Dossier #{demande.codeDossier}
@@ -111,12 +111,12 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
         {completedTransaction ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
             <CheckCircle2 className="w-4 h-4" />
-            Paiement Orange Money Réussi
+            Simulation de paiement terminée
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-[#C2410C] rounded-full text-xs font-bold">
             <Clock className="w-4 h-4" />
-            En attente de transfert
+            Simulation non exécutée
           </span>
         )}
       </div>
@@ -137,12 +137,12 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
                     Ordre de Virement Mobile Money
                   </h3>
                   <span className="text-xs text-[#64748B]">
-                    Partenariat Orange Burkina Faso & Programme Soutien Rose
+                    Partenariat Orange Burkina Faso & Programme Brave_her
                   </span>
                 </div>
               </div>
               <span className="text-xs font-bold text-[#FF7900] bg-orange-50 px-2.5 py-1 rounded-md">
-                Frais de transfert : 0 FCFA (Pris en charge)
+                Frais affichés en simulation : 0 FCFA
               </span>
             </div>
 
@@ -150,7 +150,7 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                 <span className="text-[#64748B] block mb-1 font-medium">Compte Émetteur</span>
                 <strong className="text-sm text-[#17343B] block">
-                  Fonds de Solidarité Soutien Rose
+                  Fonds de Solidarité Brave_her
                 </strong>
                 <span className="text-[11px] text-[#007599] font-mono mt-0.5 block">
                   OM Entreprise : +226 76 99 88 00
@@ -206,7 +206,7 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
                 <div className="flex items-center gap-2 text-xs text-[#536B70]">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>
-                    Validation par API Orange Money Burkina Faso avec notification SMS instantanée au centre et à la patiente.
+                    Simulation locale. Aucun appel à l’API Orange Money ni SMS réel n’est envoyé.
                   </span>
                 </div>
 
@@ -220,15 +220,15 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
                   <Sparkles className="w-4 h-4" />
                   <span>
                     {isProcessing
-                      ? 'Connexion passerelle Orange Money...'
-                      : `Transférer ${montant.toLocaleString('fr-FR')} FCFA`}
+                      ? 'Simulation en cours…'
+                      : `Simuler un transfert de ${montant.toLocaleString('fr-FR')} FCFA`}
                   </span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* Reçu officiel de paiement en cas de succès */}
+          {/* Reçu de démonstration uniquement */}
           {completedTransaction && (
             <div className="om-receipt-card animate-fadeIn">
               <div className="flex items-start justify-between border-b-2 border-dashed border-[#FED7AA] pb-4 mb-4">
@@ -238,7 +238,7 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
                     Orange Money BF
                   </span>
                   <h4 className="text-base font-bold text-[#17343B] mt-2">
-                    Reçu Officiel de Prise en Charge
+                    Reçu de simulation — sans valeur de paiement
                   </h4>
                   <span className="text-xs text-[#64748B]">
                     Réf Transaction : <strong className="font-mono text-[#17343B]">{completedTransaction.reference}</strong>
@@ -329,7 +329,7 @@ export const OrangeMoneyPaymentView: React.FC<OrangeMoneyPaymentViewProps> = ({
             <div className="flex items-start gap-2 text-xs text-amber-900">
               <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <strong>Traçabilité Hackathon Orange :</strong> Chaque transaction fait l'objet d'un archivage comptable infalsifiable. Les fonds sont prélevés de la dotation globale de 20 000 000 FCFA allouée au programme.
+                <strong>Mode démonstration :</strong> cet écran simule le parcours de paiement. Aucun transfert ni fonds de dotation ne sont configurés ici.
               </div>
             </div>
           </div>

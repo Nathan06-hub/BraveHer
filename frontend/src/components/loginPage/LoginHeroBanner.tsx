@@ -18,7 +18,7 @@ export const LoginHeroBanner: React.FC<LoginHeroBannerProps> = ({
       style={{
         padding: '42px clamp(38px, 6vw, 92px) 38px',
       }}
-      aria-label="Présentation de Soutien Rose BFK"
+      aria-label="Présentation de Brave_her BFK"
     >
       {/* Decorative concentric circles & rose glow matching design system */}
       <div

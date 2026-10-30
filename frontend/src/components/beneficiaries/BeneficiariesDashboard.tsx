@@ -163,7 +163,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
             Dossiers & Suivi des Patientes
           </h2>
           <p className="beneficiaries-subtitle">
-            Triage clinique intelligent par IA, enregistrement mobile en langues locales (Mooré, Dioula, Fulfuldé) et continuité des soins pour les femmes du Burkina Faso.
+            Aide au triage par règles explicables, saisie mobile et continuité des soins pour les femmes au Burkina Faso.
           </p>
         </div>
 
@@ -206,7 +206,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
           value={`${filterCounts.risqueEleve} cas`}
           icon={AlertTriangle}
           variant="rose"
-          subtitle="Orientation mammographie prioritaire sous 72h"
+          subtitle="Repérages à vérifier par un professionnel de santé"
           onClick={() => setActiveTab('risque_eleve')}
         />
 
@@ -268,7 +268,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                 <th>Contact & Langue</th>
                 <th>Situation</th>
                 <th>Centre de Suivi</th>
-                <th>Bilan Clinique & Risque IA</th>
+                <th>Bilan Clinique & Suspicion clinique</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -349,7 +349,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                       )}
                     </td>
 
-                    {/* Bilan Clinique & Triage IA combiné */}
+                    {/* Bilan Clinique & Triage à règles combiné */}
                     <td>
                       {riskLevel || scoreValue !== undefined ? (
                         <div className="space-y-1">
@@ -358,7 +358,7 @@ export const BeneficiariesDashboard: React.FC<BeneficiariesDashboardProps> = ({
                             size="sm"
                           />
                           <div className="text-[10px] text-[#64748B] flex items-center gap-1">
-                            <span>Score IA :</span>
+                            <span>Score de triage :</span>
                             <strong
                               className={`font-mono font-bold ${
                                 (scoreValue ?? 0) >= 70

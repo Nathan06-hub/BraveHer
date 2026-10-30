@@ -50,9 +50,9 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
   // Textes multilingues pré-rédigés
   const [messages, setMessages] = useState({
     moore:
-      'Yaa yéelé {prenom} ! Tɩɩm tũub : segd n waan CSPS tɩ b maan echographie n kɩs sɩd. Soutien Rose be y sʋka.',
+      'Yaa yéelé {prenom} ! Tɩɩm tũub : segd n waan CSPS tɩ b maan echographie n kɩs sɩd. Brave_her be y sʋka.',
     dioula:
-      'Aw bismila {prenom} ! I ka échographie kɛ dɔgɔtɔrɔso la jona jona. Kɛnɛya ye foyi tɛmɛ. Soutien Rose be yɛrɛ la.',
+      'Aw bismila {prenom} ! I ka échographie kɛ dɔgɔtɔrɔso la jona jona. Kɛnɛya ye foyi tɛmɛ. Brave_her be yɛrɛ la.',
     fulfulde:
       'Jam waali {prenom} ! War to CSPS ngam ƴeewtindaade echographie. Cellal maada na heewi nafoore.',
     francais:
@@ -76,9 +76,9 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
     if (type === 'A_ORIENTER') {
       setMessages({
         moore:
-          'Yaa yéelé {prenom} ! Tɩɩm tũub : segd n waan CSPS tɩ b maan echographie n kɩs sɩd. Soutien Rose be y sʋka.',
+          'Yaa yéelé {prenom} ! Tɩɩm tũub : segd n waan CSPS tɩ b maan echographie n kɩs sɩd. Brave_her be y sʋka.',
         dioula:
-          'Aw bismila {prenom} ! I ka échographie kɛ dɔgɔtɔrɔso la jona jona. Kɛnɛya ye foyi tɛmɛ. Soutien Rose be yɛrɛ la.',
+          'Aw bismila {prenom} ! I ka échographie kɛ dɔgɔtɔrɔso la jona jona. Kɛnɛya ye foyi tɛmɛ. Brave_her be yɛrɛ la.',
         fulfulde:
           'Jam waali {prenom} ! War to CSPS ngam ƴeewtindaade echographie. Cellal maada na heewi nafoore.',
         francais:
@@ -98,7 +98,7 @@ export const PostCampaignFollowupModal: React.FC<PostCampaignFollowupModalProps>
     } else {
       setMessages({
         moore:
-          'Yaa yéelé {prenom} ! Campagne de dépistage la keta. Sõng-y y taaba n wa CSPS. Soutien Rose Burkina Faso.',
+          'Yaa yéelé {prenom} ! Campagne de dépistage la keta. Sõng-y y taaba n wa CSPS. Brave_her Burkina Faso.',
         dioula:
           'Aw bismila {prenom} ! Dépistage bɛ ka taa fɛ. Aw ka na dɔgɔtɔrɔso la. Kɛnɛya ye foyi tɛmɛ.',
         fulfulde:

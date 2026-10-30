@@ -7,7 +7,7 @@ interface DashboardFooterProps {
 
 export const DashboardFooter: React.FC<DashboardFooterProps> = ({
   lastUpdatedTime = '09:42',
-  tagline = 'Soutien Rose · Ensemble pour la santé des femmes',
+  tagline = 'Brave_her · Ensemble pour la santé des femmes',
 }) => {
   return (
     <footer className="dashboard-footer">

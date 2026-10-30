@@ -1,5 +1,5 @@
-// Types pour l'entité Evaluation & Triage IA
-// Conforme au Diagramme de Classes Mermaid & Cahier des Charges Soutien Rose Burkina Faso
+// Types pour l'entité Evaluation & Triage à règles
+// Conforme au Diagramme de Classes Mermaid & Cahier des Charges Brave_her Burkina Faso
 
 export type NiveauRisque = 'FAIBLE' | 'MODERE' | 'ELEVE';
 
@@ -43,7 +43,7 @@ export interface Evaluation {
   // Métadonnées & liaisons du diagramme
   bonSanteDeclenche?: boolean;
   dicteeVocaleUtilisee?: boolean;
-  pointsObtenus?: number; // 0 à 15 points de la grille officielle
+  pointsObtenus?: number; // 0 à 15 points de la barème configuré
   pointsMax?: number; // 15
 }
 
@@ -74,7 +74,7 @@ export interface ResultatScoreEvaluation {
 
 /**
  * Méthode métier calculerScore() du diagramme Mermaid pour Evaluation
- * Conforme STRICTEMENT à la Grille Officielle Médicale (WhatsApp Image 2026-10-15) :
+ * Description du barème de triage configuré (WhatsApp Image 2026-10-15) :
  * 1. Nodule au sein : +3 pts (Signe majeur suspect)
  * 2. Peau d'orange ou rétraction : +3 pts (Signe fort d'invasion cutanée)
  * 3. Écoulement mamelonnaire : +2 pts (Écoulement séreux ou hémorragique suspect)
@@ -173,7 +173,7 @@ export function calculerScoreEvaluation(
   );
   const pointsMax = 15;
 
-  // Calcul du score IA normalisé en pourcentage (0 - 100%)
+  // Calcul du score de triage normalisé en pourcentage (0 - 100%)
   const scoreIA = Math.min(100, Math.round((pointsObtenus / pointsMax) * 100));
 
   // Décision clinique sénologique selon le barème officiel :
@@ -187,7 +187,7 @@ export function calculerScoreEvaluation(
       scoreIA: Math.max(scoreIA, 70), // Affichage >= 70% pour concordance avec le seuil d'urgence
       niveauRisque: 'ELEVE',
       conduiteATenir:
-        'Forte suspicion clinique (équivalent ACR 4/5). Mammographie diagnostique urgente sous 72h avec échographie et orientation prioritaire au CHU.',
+        'Alerte de priorité élevée générée par une règle logicielle non validée. Évaluation rapide par un professionnel selon le protocole national en vigueur. Ce résultat n’est ni un diagnostic ni une décision de prise en charge.',
       alerteBonSante: true,
       detailsBareme,
     };
@@ -198,7 +198,7 @@ export function calculerScoreEvaluation(
       scoreIA: Math.max(Math.min(scoreIA, 68), 35), // Plage 35-68% pour MODERE
       niveauRisque: 'MODERE',
       conduiteATenir:
-        'Lésion suspecte ou nodule d’allure bénigne avec facteurs de risque (équivalent ACR 3). Échographie mammaire et bilan de contrôle sous 15 à 30 jours.',
+        'Alerte de suivi générée par une règle logicielle non validée. Faire revoir les signes par un professionnel selon le protocole national en vigueur. Ce résultat n’est pas un diagnostic.',
       alerteBonSante: false,
       detailsBareme,
     };
@@ -209,7 +209,7 @@ export function calculerScoreEvaluation(
       scoreIA: Math.min(scoreIA, 30), // Plage 0-30% pour FAIBLE
       niveauRisque: 'FAIBLE',
       conduiteATenir:
-        'Examen clinique rassurant (équivalent ACR 1/2). Poursuite de l’auto-palpation mensuelle et contrôle clinique de routine l’année prochaine.',
+        'Peu d’indicateurs sélectionnés dans ce formulaire; cela n’exclut pas une maladie. Ce résultat n’est pas un diagnostic; toute inquiétude doit être évaluée par un professionnel de santé.',
       alerteBonSante: false,
       detailsBareme,
     };

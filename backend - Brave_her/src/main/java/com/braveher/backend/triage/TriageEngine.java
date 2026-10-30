@@ -16,7 +16,8 @@ public class TriageEngine {
 
     public ResultatTriage evaluer(IndicateursCliniques indicateurs, Integer age) {
         if (indicateurs == null) {
-            return new ResultatTriage(0, NiveauSuspicion.FAIBLE, "Examen sans anomalie signalée. Sensibilisation à l'auto-palpation.");
+            return new ResultatTriage(0, NiveauSuspicion.FAIBLE,
+                    "Aucun indicateur renseigné. Cette aide au repérage ne constitue pas un diagnostic; faire interpréter les données par un professionnel de santé.");
         }
 
         int score = 0;
@@ -30,7 +31,7 @@ public class TriageEngine {
         if (indicateurs.isAge40Plus() || (age != null && age >= 40)) score += 1;
         if (indicateurs.isDouleurPersistante()) score += 1;
 
-        // Règle d'alerte immédiate : nodule + rétraction ou peau d'orange
+        // Règle logicielle de priorisation; elle ne remplace pas un protocole validé ni l'avis clinique.
         boolean alerteMajeure = indicateurs.isNoduleSein() && (indicateurs.isPeauOrange() || indicateurs.isRetractionMamelon());
 
         NiveauSuspicion niveau;
@@ -38,13 +39,13 @@ public class TriageEngine {
 
         if (alerteMajeure || score >= 6) {
             niveau = NiveauSuspicion.ELEVE;
-            recommandation = "Suspicion ÉLEVÉE : Référence urgente vers un CMA ou CHU pour mammographie, échographie et biopsie. Éligible bon de prise en charge.";
+            recommandation = "Alerte de priorité élevée générée par une règle logicielle non validée. Évaluation clinique rapide par un professionnel selon le protocole national en vigueur; ce résultat n'est pas un diagnostic et ne déclenche pas automatiquement une aide financière.";
         } else if (score >= 3) {
             niveau = NiveauSuspicion.MODERE;
-            recommandation = "Suspicion MODÉRÉE : Consultation médicale de contrôle au CSPS/CMA sous 15 jours. Examen clinique sénologique approfondi.";
+            recommandation = "Alerte de suivi générée par une règle logicielle non validée. Faire revoir les signes par un professionnel de santé selon le protocole national en vigueur; ce résultat n'est pas un diagnostic.";
         } else {
             niveau = NiveauSuspicion.FAIBLE;
-            recommandation = "Risque FAIBLE : Sensibilisation à l'auto-palpation mensuelle et contrôle annuel de routine.";
+            recommandation = "Peu d'indicateurs sélectionnés dans ce formulaire; cela n'exclut pas une maladie. Ce résultat n'est pas un diagnostic; toute inquiétude doit être évaluée par un professionnel de santé.";
         }
 
         return new ResultatTriage(score, niveau, recommandation);

@@ -351,7 +351,7 @@ export function App() {
       nombreAidesAttribuees: prev.nombreAidesAttribuees + 1,
     }));
     showToast(
-      `Paiement Orange Money de ${updatedDemande.montantAccorde.toLocaleString('fr-FR')} FCFA transféré ! Reçu officiel disponible.`
+      `Simulation terminée pour ${updatedDemande.montantAccorde.toLocaleString('fr-FR')} FCFA. Aucun transfert réel n’a été effectué.`
     );
   };
 
@@ -516,80 +516,17 @@ export function App() {
     };
   }, [currentUser]);
 
-  // Émission et envoi automatique d'une demande de don solidaire (25 000 FCFA) en cas de priorité urgente
-  const autoSendUrgentAidRequest = (patient: Beneficiaire): DemandeAide => {
-    const codeDossier = `MAMMO-BF-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const motif =
-      patient.dernierTriage?.conduiteATenir ||
-      patient.dernierTriage?.observationsVocales ||
-      patient.derniereEvaluation?.conduiteATenir ||
-      'Priorité URGENTE détectée lors du dépistage : Forte suspicion clinique (Score >= 70). Prise en charge échomammographique sous 72h via le Fonds de Solidarité Orange Money.';
-
-    const autoDemande: DemandeAide = {
-      id: `aide-${Date.now()}`,
-      codeDossier,
-      patienteId: patient.id,
-      patienteNom: patient.nom,
-      patientePrenom: patient.prenom,
-      patienteAge: patient.age,
-      patienteTelephone: patient.telephone,
-      patienteLangue: patient.languePreferee || 'Mooré',
-      commune: patient.commune || 'Ouagadougou',
-      secteur: patient.secteur || 'Centre',
-      centreDemandeurId: patient.centreSuiviId || 'centre-1',
-      centreDemandeurNom: patient.centreSuiviNom || currentUser?.centreNom || 'CSPS de Référence',
-      centreImagerieId: 'img-chu-yalgado',
-      centreImagerieNom: 'Service Radiologie & Sénologie — CHU Yalgado Ouédraogo',
-      motifClinique: motif,
-      niveauPriorite: 'urgent',
-      coutEstime: 25000,
-      montantAccorde: 25000,
-      statut: 'en_attente_decision',
-      dateDemande: new Date().toISOString().split('T')[0],
-      agentDemandeurNom: `${currentUser?.prenom || 'Sage-femme'} ${currentUser?.nom || 'Référente'}`,
-      agentDemandeurId: currentUser?.id || 'agent-1',
-    };
-
-    // Transmission automatique vers l'API Solidarité
-    solidarityApi.createDemandeAide(autoDemande).catch(console.warn);
-
-    setDemandesAide((prev) => [autoDemande, ...prev]);
-    setFondsSolidarite((prev) => ({
-      ...prev,
-      nombreDemandesTotal: prev.nombreDemandesTotal + 1,
-      demandesEnAttente: prev.demandesEnAttente + 1,
-    }));
-
-    return autoDemande;
-  };
-
   // Handlers pour les Bénéficiaires
   const handleRegisterNewPatient = (newPatient: Beneficiaire) => {
     let patientToStore = { ...newPatient };
 
-    // Détection de priorité urgente (Score IA >= 70, risque ÉLEVÉ, alerte bon santé ou besoin mammographie urgent)
     const isUrgent =
       newPatient.derniereEvaluation?.niveauRisque === 'ELEVE' ||
-      Boolean(newPatient.derniereEvaluation?.bonSanteDeclenche) ||
-      newPatient.dernierTriage?.niveauSuspicion === 'eleve' ||
-      Boolean(newPatient.dernierTriage?.besoinMammographieUrgence) ||
-      (newPatient.derniereEvaluation?.scoreIA !== undefined && newPatient.derniereEvaluation.scoreIA >= 70) ||
-      (newPatient.dernierTriage?.scoreCalcule !== undefined && newPatient.dernierTriage.scoreCalcule >= 70);
+      newPatient.dernierTriage?.niveauSuspicion === 'eleve';
 
-    if (isUrgent) {
-      const autoDemande = autoSendUrgentAidRequest(patientToStore);
-      patientToStore = {
-        ...patientToStore,
-        demandeAideId: autoDemande.id,
-        demandeAideCode: autoDemande.codeDossier,
-        statutAideFonds: 'EN_ATTENTE',
-      };
+    if (newPatient.derniereEvaluation) {
       showToast(
-        `🚨 Priorité URGENTE (${newPatient.prenom} ${newPatient.nom}) : Demande de don & Bon solidaire ${autoDemande.codeDossier} (25 000 FCFA) envoyée automatiquement !`
-      );
-    } else if (newPatient.derniereEvaluation) {
-      showToast(
-        `Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée · Score IA : ${newPatient.derniereEvaluation.scoreIA}% (${newPatient.derniereEvaluation.niveauRisque})`
+        `Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée · Repérage à faire vérifier par un professionnel de santé`
       );
     } else {
       showToast(`Patiente ${newPatient.nom} ${newPatient.prenom} enregistrée avec succès !`);
@@ -616,37 +553,16 @@ export function App() {
         newPatient.statutVulnerabilite !== 'Standard'
           ? prev.femmesPdiOuVulnerables + 1
           : prev.femmesPdiOuVulnerables,
-      aidesAttribueesCount: isUrgent ? prev.aidesAttribueesCount + 1 : prev.aidesAttribueesCount,
     }));
   };
 
   const handleSavePatientTriage = (updatedPatient: Beneficiaire) => {
     let finalPatient = { ...updatedPatient };
-
-    // Détection de priorité urgente
-    const isUrgent =
-      updatedPatient.dernierTriage?.niveauSuspicion === 'eleve' ||
-      Boolean(updatedPatient.dernierTriage?.besoinMammographieUrgence) ||
-      updatedPatient.derniereEvaluation?.niveauRisque === 'ELEVE' ||
-      Boolean(updatedPatient.derniereEvaluation?.bonSanteDeclenche) ||
-      (updatedPatient.dernierTriage?.scoreCalcule !== undefined && updatedPatient.dernierTriage.scoreCalcule >= 70);
-
-    if (isUrgent && !finalPatient.demandeAideId) {
-      const autoDemande = autoSendUrgentAidRequest(finalPatient);
-      finalPatient = {
-        ...finalPatient,
-        demandeAideId: autoDemande.id,
-        demandeAideCode: autoDemande.codeDossier,
-        statutAideFonds: 'EN_ATTENTE',
-      };
-      showToast(
-        `🚨 Priorité URGENTE (${finalPatient.prenom} ${finalPatient.nom}) : Demande de don & Bon solidaire ${autoDemande.codeDossier} (25 000 FCFA) envoyée automatiquement !`
-      );
-    } else {
-      showToast(
-        `Triage clinique de ${finalPatient.nom} ${finalPatient.prenom} enregistré (Score : ${finalPatient.dernierTriage?.scoreCalcule || 0}%) !`
-      );
-    }
+    const isUrgent = updatedPatient.derniereEvaluation?.niveauRisque === 'ELEVE' ||
+      updatedPatient.dernierTriage?.niveauSuspicion === 'eleve';
+    showToast(
+      `Repérage enregistré pour ${finalPatient.nom} ${finalPatient.prenom}; vérification par un professionnel requise.`
+    );
 
     // Appel API Patiente & Triage
     patientApi.updatePatiente(finalPatient.id, finalPatient).catch(console.warn);
@@ -658,7 +574,6 @@ export function App() {
       ...prev,
       depistagesEffectues: prev.depistagesEffectues + 1,
       casRisqueEleve: isUrgent ? prev.casRisqueEleve + 1 : prev.casRisqueEleve,
-      aidesAttribueesCount: isUrgent ? prev.aidesAttribueesCount + 1 : prev.aidesAttribueesCount,
     }));
   };
 
@@ -1053,11 +968,11 @@ export function App() {
 
     if (ev?.niveauRisque === 'ELEVE') {
       showToast(
-        `Patiente ${data.prenom} ${data.nom} enregistrée · Score IA : ${ev.scoreIA}% (RISQUE ÉLEVÉ) — Bon de Santé recommandé !`
+        `Patiente ${data.prenom} ${data.nom} enregistrée · Score de triage : ${ev.scoreIA}/100 (RISQUE ÉLEVÉ) — Bon de Santé recommandé !`
       );
     } else if (ev) {
       showToast(
-        `Patiente ${data.prenom} ${data.nom} enregistrée · Score IA : ${ev.scoreIA}% (${ev.niveauRisque})`
+        `Patiente ${data.prenom} ${data.nom} enregistrée · Score de triage : ${ev.scoreIA}/100 (${ev.niveauRisque})`
       );
     } else {
       showToast(
@@ -1177,7 +1092,7 @@ export function App() {
       .catch(console.warn);
 
     showToast(
-      `⚡ Push SMS Orange envoyé avec succès en ${langue} (${targetCamp.secteurCible || targetCamp.commune}) !`
+      `Simulation de diffusion SMS en ${langue} terminée. Aucun SMS réel n’a été envoyé.`
     );
   };
 
@@ -1428,7 +1343,7 @@ export function App() {
               <div className="flex items-center gap-2.5">
                 <span className="text-lg">📡</span>
                 <div>
-                  <strong>Mode Mission Rurale Déconnectée (Module 3) :</strong> Toutes vos saisies (patientes, évaluations IA, demandes d'aide) sont persistées localement dans IndexedDB.
+                  <strong>Mode Mission Rurale Déconnectée (Module 3) :</strong> Toutes vos saisies (patientes, évaluations cliniques, demandes d'aide) sont persistées localement dans IndexedDB.
                 </div>
               </div>
               <button
@@ -1699,7 +1614,7 @@ export function App() {
                     className="btn-primary-filled"
                     style={{ background: '#007599' }}
                   >
-                    Dossiers Bénéficiaires & Triage IA →
+                    Dossiers Bénéficiaires & Triage à règles →
                   </button>
                   <button
                     type="button"

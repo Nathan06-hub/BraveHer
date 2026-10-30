@@ -157,7 +157,7 @@ export const PushSmsPage: React.FC<PushSmsPageProps> = ({
 
   return (
     <div className="push-sms-page-container">
-      {/* 1. Header harmonisé avec branding Orange Burkina Faso & Palette Soutien Rose */}
+      {/* 1. Header harmonisé avec branding Orange Burkina Faso & Palette Brave_her */}
       <header className="sms-page-header">
         <div className="sms-page-header-content">
           <div className="flex items-center justify-between gap-4 flex-wrap">

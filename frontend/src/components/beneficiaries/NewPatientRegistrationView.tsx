@@ -92,7 +92,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
     if (detected.modificationTailleForme !== undefined) setModificationTailleForme(detected.modificationTailleForme);
   };
 
-  // Calcul dynamique et réactif du Score IA
+  // Calcul dynamique et réactif du Score de triage
   const evalResult = useMemo(() => {
     const autres: AutresIndicateursEvaluation = {
       seinConcerne,
@@ -269,7 +269,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
             <span>Retour aux bénéficiaires</span>
           </button>
           <div>
-            <span className="modal-eyebrow">ENRÔLEMENT CSPS & TRIAGE IA</span>
+            <span className="modal-eyebrow">ENRÔLEMENT CSPS & TRIAGE CLINIQUE</span>
             <h2 className="text-xl font-bold text-[#17343B] font-serif">
               Enregistrer une Nouvelle Patiente avec Évaluation Clinique
             </h2>
@@ -522,7 +522,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
               <Stethoscope className="w-5 h-5 text-[#007599]" />
               <div>
                 <h3 className="text-sm font-bold text-[#17343B] m-0">
-                  3. Évaluation Clinique Initiale de Dépistage & Calcul Score IA
+                  3. Évaluation Clinique Initiale de Dépistage & Calcul Score de triage
                 </h3>
                 <span className="text-[11px] text-[#536B70]">
                   Conforme à l'entité Evaluation du diagramme de classes (Palpation, scoreIA, conduiteATenir)
@@ -930,7 +930,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
                 placeholder="Dictez votre compte-rendu : ex. Palpation d'une masse dure au niveau du quadrant supéro-externe droit avec peau d'orange..."
               />
 
-              {/* Résultat Score IA */}
+              {/* Résultat Score de triage */}
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   evalResult.niveauRisque === 'ELEVE'
@@ -953,7 +953,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
                     />
                     <div>
                       <h4 className="text-sm font-bold text-[#17343B] m-0">
-                        Score IA Clinique : {evalResult.scoreIA}% ({evalResult.pointsObtenus} / {evalResult.pointsMax} pts)
+                        Score de triage clinique : {evalResult.scoreIA}/100 ({evalResult.pointsObtenus} / {evalResult.pointsMax} pts)
                       </h4>
                       <span className="text-[11px] text-[#536B70]">
                         Grille Médicale Officielle (15 pts) · calculerScore() Mermaid
@@ -992,7 +992,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
                         ? 'bg-amber-500'
                         : 'bg-emerald-500'
                     }`}
-                    style={{ width: `${evalResult.scoreIA}%` }}
+                    style={{ width: `${evalResult.scoreIA}/100` }}
                   />
                 </div>
 
@@ -1094,7 +1094,7 @@ export const NewPatientRegistrationView: React.FC<NewPatientRegistrationViewProp
               {isSubmitting
                 ? 'Enregistrement...'
                 : activerEvaluationInitiale
-                ? `Enregistrer avec Évaluation (Score ${evalResult.scoreIA}%)`
+                ? `Enregistrer avec Évaluation (Score ${evalResult.scoreIA}/100)`
                 : 'Enregistrer la patiente'}
             </span>
           </button>

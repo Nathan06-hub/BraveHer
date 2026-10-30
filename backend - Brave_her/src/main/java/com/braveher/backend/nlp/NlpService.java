@@ -6,13 +6,21 @@ import org.springframework.stereotype.Service;
 import com.braveher.backend.model.entity.IndicateursCliniques;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
 public class NlpService {
 
+    private static final Pattern NEGATION_PATTERN = Pattern.compile(
+            "\\b(pas\\s+de|pas\\s+d'|aucun|aucune|sans|absence\\s+de|absence\\s+d'|ni|non|ne\\s+présente\\s+pas\\s+de|ne\\s+presente\\s+pas\\s+de|n'observe\\s+pas\\s+de|ras)\\b.{0,25}$",
+            Pattern.CASE_INSENSITIVE
+    );
+
     /**
-     * Analyse un texte transcrit (médical / dictée) et en extrait automatiquement les signes cliniques.
+     * Analyse un texte transcrit (médical / dictée) et en extrait automatiquement les signes cliniques,
+     * en éliminant les faux positifs dus aux formulations négatives ("aucun nodule", "pas de rétraction", etc.).
      */
     public IndicateursCliniques extraireIndicateurs(String texte) {
         IndicateursCliniques ind = new IndicateursCliniques();
@@ -23,44 +31,37 @@ public class NlpService {
         String lower = texte.toLowerCase(Locale.FRENCH);
 
         // Nodule / masse / boule
-        if (lower.contains("nodule") || lower.contains("masse") || lower.contains("boule")
-                || lower.contains("tuméfaction") || lower.contains("induration")) {
+        if (estAffirme(lower, "nodule", "masse", "boule", "tuméfaction", "tumefaction", "induration")) {
             ind.setNoduleSein(true);
         }
 
         // Rétraction mamelonnaire
-        if (lower.contains("rétraction") || lower.contains("retraction") || lower.contains("ombilication")
-                || lower.contains("mamelon rentré") || lower.contains("mamelon inversé")) {
+        if (estAffirme(lower, "rétraction", "retraction", "ombilication", "mamelon rentré", "mamelon rentre", "mamelon inversé", "mamelon inverse")) {
             ind.setRetractionMamelon(true);
         }
 
         // Peau d'orange
-        if (lower.contains("peau d'orange") || lower.contains("peau d’orange") || lower.contains("capiton")
-                || lower.contains("œdème cutané") || lower.contains("oedeme cutane")) {
+        if (estAffirme(lower, "peau d'orange", "peau d’orange", "capiton", "œdème cutané", "oedeme cutane")) {
             ind.setPeauOrange(true);
         }
 
         // Écoulement mamelonnaire
-        if (lower.contains("écoulement") || lower.contains("ecoulement") || lower.contains("saignement")
-                || lower.contains("sécrétion") || lower.contains("liquide du mamelon")) {
+        if (estAffirme(lower, "écoulement", "ecoulement", "saignement", "sécrétion", "secretion", "liquide du mamelon")) {
             ind.setEcoulementMamelon(true);
         }
 
         // Adénopathie axillaire (ganglion sous l'aisselle)
-        if (lower.contains("adénopathie") || lower.contains("adenopathie") || lower.contains("ganglion")
-                || lower.contains("aisselle") || lower.contains("axillaire")) {
+        if (estAffirme(lower, "adénopathie", "adenopathie", "ganglion", "aisselle", "axillaire")) {
             ind.setAdenopathieAxillaire(true);
         }
 
         // Modification taille ou forme
-        if (lower.contains("asymétrie") || lower.contains("asymetrie") || lower.contains("déformation")
-                || lower.contains("changement de taille") || lower.contains("modification de taille")) {
+        if (estAffirme(lower, "asymétrie", "asymetrie", "déformation", "deformation", "changement de taille", "modification de taille")) {
             ind.setModificationTailleForme(true);
         }
 
         // Antécédents familiaux
-        if (lower.contains("antécédent") || lower.contains("antecedent") || lower.contains("mère")
-                || lower.contains("soeur") || lower.contains("tante") || lower.contains("famille")) {
+        if (estAffirme(lower, "antécédent", "antecedent", "mère", "mere", "soeur", "tante", "famille")) {
             ind.setAntecedentsFamiliaux(true);
         }
 
@@ -71,8 +72,7 @@ public class NlpService {
         }
 
         // Douleur persistante
-        if (lower.contains("douleur") || lower.contains("douloureux") || lower.contains("douloureuse")
-                || lower.contains("mastodynie")) {
+        if (estAffirme(lower, "douleur", "douloureux", "douloureuse", "mastodynie")) {
             ind.setDouleurPersistante(true);
         }
 
@@ -80,5 +80,27 @@ public class NlpService {
                 texte, ind.isNoduleSein(), ind.isPeauOrange(), ind.isAdenopathieAxillaire());
 
         return ind;
+    }
+
+    /**
+     * Vérifie si l'un des termes cibles est mentionné de façon affirmative (non niée).
+     */
+    private boolean estAffirme(String texte, String... termes) {
+        for (String terme : termes) {
+            int index = 0;
+            while ((index = texte.indexOf(terme, index)) != -1) {
+                // Analyse de la fenêtre précédant le terme (jusqu'à 35 caractères)
+                int debutFenetre = Math.max(0, index - 35);
+                String prefixe = texte.substring(debutFenetre, index).trim();
+
+                // Si le préfixe se termine par une négation directe, le terme est nié
+                Matcher m = NEGATION_PATTERN.matcher(prefixe);
+                if (!m.find()) {
+                    return true; // Terme affirmé sans négation
+                }
+                index += terme.length();
+            }
+        }
+        return false;
     }
 }

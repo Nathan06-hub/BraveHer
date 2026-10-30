@@ -42,20 +42,21 @@ public class EvaluationController {
     public Page<EvaluationResponse> lister(
             @RequestParam(required = false) NiveauSuspicion niveau,
             @RequestParam(required = false) UUID centreId,
-            Pageable pageable
+            Pageable pageable,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return evaluationService.lister(niveau, centreId, pageable);
+        return evaluationService.lister(niveau, centreId, pageable, UtilisateurConnecte.from(jwt));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
-    public EvaluationResponse detail(@PathVariable UUID id) {
-        return evaluationService.obtenirParId(id);
+    public EvaluationResponse detail(@PathVariable UUID id, @AuthenticationPrincipal Jwt jwt) {
+        return evaluationService.obtenirParId(id, UtilisateurConnecte.from(jwt));
     }
 
     @GetMapping("/patiente/{patienteId}")
     @PreAuthorize("hasAnyRole('AGENT_SANTE', 'SAGE_FEMME', 'ADMIN')")
-    public List<EvaluationResponse> parPatiente(@PathVariable UUID patienteId) {
-        return evaluationService.parPatiente(patienteId);
+    public List<EvaluationResponse> parPatiente(@PathVariable UUID patienteId, @AuthenticationPrincipal Jwt jwt) {
+        return evaluationService.parPatiente(patienteId, UtilisateurConnecte.from(jwt));
     }
 }

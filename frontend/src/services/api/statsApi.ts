@@ -1,6 +1,6 @@
 /**
  * Service API Statistiques & Pilotage Épidémiologique (Ministère & CSPS)
- * Soutien Rose Burkina Faso
+ * Brave_her Burkina Faso
  */
 
 import { apiFetch } from './httpClient';

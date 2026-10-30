@@ -1,5 +1,5 @@
 # ==========================================
-# Racine Monorepo - Soutien Rose / Brave_her
+# Racine Monorepo - Brave_her
 # ==========================================
 
 # Frontend (Node / Vite / React)
@@ -15,6 +15,9 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
+
+# Temporary local analysis and build tooling
+/work/
 
 # Backend (Java / Spring Boot / Maven)
 **/target/

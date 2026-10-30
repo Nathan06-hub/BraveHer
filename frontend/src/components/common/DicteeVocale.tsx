@@ -26,7 +26,7 @@ interface DicteeVocaleProps {
   helperText?: string;
 }
 
-// Analyse sémantique / NLP médicale autonome et testable
+// Repérage déterministe de mots-clés, testable
 export function extraireIndicateursCliniques(text: string): {
   detected: DetectedIndicators;
   badges: string[];
@@ -155,22 +155,21 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
   observations,
   onObservationsChange,
   onDetectedIndicators,
-  label = 'Dictée Vocale Speech-to-Text & Notes Cliniques',
+  label = 'Dictée vocale et notes cliniques',
   placeholder = 'Parlez ou saisissez les observations : Ex. "Présence d\'un nodule dur adhérent de 2cm au sein droit avec rétraction cutanée et adénopathie axillaire..."',
-  helperText = 'Dictez en français : l\'IA extrait automatiquement les signes d\'alerte (nodule, écoulement, peau d\'orange, ganglions).',
+  helperText = 'Des règles simples proposent des indicateurs à partir de mots-clés. Rien n’est appliqué avant votre confirmation; vérifiez chaque proposition.',
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [detectedBadges, setDetectedBadges] = useState<string[]>([]);
+  const [detectedIndicators, setDetectedIndicators] = useState<DetectedIndicators>({});
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
   const analyzeClinicalText = (text: string) => {
     const { detected, badges } = extraireIndicateursCliniques(text);
     setDetectedBadges(badges);
-    if (onDetectedIndicators && Object.keys(detected).length > 0) {
-      onDetectedIndicators(detected);
-    }
+    setDetectedIndicators(detected);
   };
 
   useEffect(() => {
@@ -198,7 +197,7 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
 
       recog.onerror = () => {
         setIsRecording(false);
-        setFeedbackMsg('Accès micro non autorisé. Utilisez le simulateur vocal ou saisissez le texte.');
+        setFeedbackMsg('Dictée indisponible. Autorisez le microphone ou saisissez les observations.');
       };
 
       recog.onend = () => {
@@ -226,18 +225,17 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
           recognitionRef.current.start();
           setIsRecording(true);
         } catch {
-          // Fallback en cas d'erreur de permission micro
-          triggerSimulatedVoice(1);
+          setFeedbackMsg('La dictée n’a pas démarré. Vérifiez l’autorisation du microphone ou saisissez le texte.');
         }
       } else {
-        triggerSimulatedVoice(1);
+        setFeedbackMsg('La dictée vocale n’est pas prise en charge par ce navigateur. Saisissez le texte ou choisissez un exemple de démonstration.');
       }
     }
   };
 
   const triggerSimulatedVoice = (scenario: 1 | 2) => {
     setIsRecording(true);
-    setFeedbackMsg('Transcription vocale assistée par IA en cours...');
+    setFeedbackMsg('Exemple de démonstration prérempli; aucun audio n’est transcrit.');
 
     setTimeout(() => {
       let sample = '';
@@ -253,7 +251,7 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
       onObservationsChange(updated);
       analyzeClinicalText(updated);
       setIsRecording(false);
-      setFeedbackMsg('Transcription audio terminée et indicateurs cliniques pré-remplis !');
+      setFeedbackMsg('Exemple chargé. Vérifiez et corrigez les indicateurs cliniques.');
       setTimeout(() => setFeedbackMsg(null), 3500);
     }, 1200);
   };
@@ -296,7 +294,7 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
             type="button"
             onClick={() => triggerSimulatedVoice(1)}
             className="text-[11px] font-semibold px-2 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 rounded-md transition-colors"
-            title="Injecter un exemple clinique de nodule dur suspect"
+            title="Charger un exemple de démonstration avec nodule suspect"
           >
             <Volume2 className="w-3 h-3 inline mr-1" />
             Ex. Cas Alerte
@@ -307,7 +305,7 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
             type="button"
             onClick={() => triggerSimulatedVoice(2)}
             className="text-[11px] font-semibold px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md transition-colors"
-            title="Injecter un exemple clinique normal"
+            title="Charger un exemple de démonstration d’examen normal"
           >
             <Check className="w-3 h-3 inline mr-1" />
             Ex. Normal
@@ -319,6 +317,7 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
               onClick={() => {
                 onObservationsChange('');
                 setDetectedBadges([]);
+                setDetectedIndicators({});
               }}
               className="text-[11px] text-slate-500 hover:text-red-600 p-1"
               title="Effacer les notes"
@@ -359,12 +358,12 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
         )}
       </div>
 
-      {/* Badges d'extraction IA instantanée */}
+      {/* Indicateurs repérés par les règles locales */}
       {detectedBadges.length > 0 && (
         <div className="pt-2 border-t border-[#D6E8E8]/70">
           <div className="flex items-center gap-1 text-[11px] font-bold text-[#005c78] mb-1.5">
             <Sparkles className="w-3 h-3 text-[#007599]" />
-            <span>Indicateurs cliniques détectés et appliqués automatiquement :</span>
+            <span>Mots-clés repérés; vérifiez les indicateurs proposés :</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {detectedBadges.map((badge, idx) => (
@@ -377,6 +376,15 @@ export const DicteeVocale: React.FC<DicteeVocaleProps> = ({
               </span>
             ))}
           </div>
+          {onDetectedIndicators && (
+            <button
+              type="button"
+              className="mt-2 text-[11px] font-semibold underline"
+              onClick={() => onDetectedIndicators(detectedIndicators)}
+            >
+              Appliquer ces suggestions aux champs — puis vérifier
+            </button>
+          )}
         </div>
       )}
     </div>
