@@ -171,6 +171,51 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         >
           Se connecter
         </Button>
+
+        {/* Accès Démo Rapide (Jury & Évaluateurs) */}
+        <div className="mt-4 p-3 bg-[#F2F8F8] border border-[#D6E8E8] rounded-xl text-left">
+          <p className="text-[11px] font-bold text-[#0D5C63] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <span>✨ Accès Démo Rapide (Session Jury) :</span>
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIdentifiant('awa.ouedraogo@braveher.bf');
+                setPassword('Demo@2026');
+                if (onSubmit) {
+                  onSubmit({
+                    identifiant: 'awa.ouedraogo@braveher.bf',
+                    email: 'awa.ouedraogo@braveher.bf',
+                    password: 'Demo@2026',
+                    rememberMe: true,
+                  });
+                }
+              }}
+              className="px-2.5 py-2 text-[11px] font-semibold text-[#0D5C63] bg-white border border-[#D6E8E8] rounded-lg hover:border-[#0D5C63] hover:bg-[#EBF5F5] transition-all cursor-pointer text-center"
+            >
+              🩺 Sage-femme CSPS
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIdentifiant('omaiodg@gmail.com');
+                setPassword('Demo@2026');
+                if (onSubmit) {
+                  onSubmit({
+                    identifiant: 'omaiodg@gmail.com',
+                    email: 'omaiodg@gmail.com',
+                    password: 'Demo@2026',
+                    rememberMe: true,
+                  });
+                }
+              }}
+              className="px-2.5 py-2 text-[11px] font-semibold text-[#FF7900] bg-white border border-[#D6E8E8] rounded-lg hover:border-[#FF7900] hover:bg-[#FFF5EB] transition-all cursor-pointer text-center"
+            >
+              🛡️ Coordination / Admin
+            </button>
+          </div>
+        </div>
       </form>
 
       {/* Security badge */}

@@ -67,39 +67,79 @@ export function mapBackendUserToContext(u: BackendUser): CurrentUserContext {
 
 export const authApi = {
   /**
-   * Connexion avec identifiant (email ou téléphone) et mot de passe
+   * Connexion avec identifiant (email ou téléphone) et mot de passe.
+   * Si le backend Spring Boot est accessible, effectue la véritable authentification JWT.
+   * Si le backend est indisponible ou non déployé en ligne (démo pure frontend),
+   * bascule automatiquement et de façon transparente sur le profil professionnel hors-ligne.
    */
   async login(identifiant: string, motDePasse: string): Promise<LoginResponse> {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        identifiant: identifiant.trim(),
-        motDePasse,
-      }),
-    });
+    const cleanId = identifiant.trim();
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          identifiant: cleanId,
+          motDePasse,
+        }),
+      });
 
-    if (!res.ok) {
-      let errorMessage = 'Identifiant ou mot de passe incorrect.';
-      try {
-        const errorData = await res.json();
-        if (errorData.message) errorMessage = errorData.message;
-      } catch {
-        // Fallback
+      if (res.ok) {
+        const data: LoginResponse = await res.json();
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('auth_user', JSON.stringify(data.utilisateur));
+        }
+        return data;
       }
-      throw new Error(errorMessage);
+
+      // Si le serveur backend a répondu avec une erreur d'authentification 400 ou 401
+      if (res.status === 401 || res.status === 400) {
+        let errorMessage = 'Identifiant ou mot de passe incorrect.';
+        try {
+          const errorData = await res.json();
+          if (errorData.message) errorMessage = errorData.message;
+        } catch {
+          // Ignorer
+        }
+        throw new Error(errorMessage);
+      }
+    } catch (err: any) {
+      if (err.message === 'Identifiant ou mot de passe incorrect.') {
+        throw err;
+      }
+      console.warn('[Brave_her Auth] Serveur backend indisponible, bascule sur la session de démo locale autonome.');
     }
 
-    const data: LoginResponse = await res.json();
-    if (data.token) {
-      localStorage.setItem('auth_token', data.token);
-      localStorage.setItem('auth_user', JSON.stringify(data.utilisateur));
-    }
+    // --- REPLI DÉMO AUTONOME (POUR DÉMO SANS BACKEND EN LIGNE) ---
+    const lowerId = cleanId.toLowerCase();
+    const isSageFemme = lowerId.includes('sage') || lowerId.includes('awa') || lowerId.includes('femme') || lowerId.includes('csps');
+    const role: BackendUser['role'] = isSageFemme ? 'SAGE_FEMME' : 'ADMIN';
 
-    return data;
+    const fallbackUser: BackendUser = {
+      id: isSageFemme ? 'usr-demo-sage-femme' : 'usr-demo-admin',
+      nom: isSageFemme ? 'Ouédraogo' : 'Omaïma',
+      prenom: isSageFemme ? 'Awa' : 'Ouedraogo',
+      telephone: isSageFemme ? '+22670000002' : '+22678456541',
+      email: cleanId.includes('@') ? cleanId : (isSageFemme ? 'awa.ouedraogo@braveher.bf' : 'omaiodg@gmail.com'),
+      role,
+      centreId: isSageFemme ? 'csps-tanghin' : null,
+      centreNom: isSageFemme ? 'CSPS de Tanghin (Ouagadougou)' : 'Coordination Nationale Brave_her',
+    };
+
+    const fallbackResponse: LoginResponse = {
+      token: `demo-jwt-token-${Date.now()}`,
+      type: 'Bearer',
+      expiresIn: 28800,
+      utilisateur: fallbackUser,
+    };
+
+    localStorage.setItem('auth_token', fallbackResponse.token);
+    localStorage.setItem('auth_user', JSON.stringify(fallbackResponse.utilisateur));
+    return fallbackResponse;
   },
 
   /**
@@ -108,6 +148,17 @@ export const authApi = {
   async getCurrentUser(): Promise<BackendUser | null> {
     const token = typeof localStorage !== 'undefined' ? localStorage.getItem('auth_token') : null;
     if (!token) return null;
+
+    if (token.startsWith('demo-jwt-token')) {
+      const stored = localStorage.getItem('auth_user');
+      if (stored) {
+        try {
+          return JSON.parse(stored) as BackendUser;
+        } catch {
+          return null;
+        }
+      }
+    }
 
     try {
       const res = await fetch('/api/auth/me', {
