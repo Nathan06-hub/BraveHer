@@ -12,7 +12,7 @@ Ce document regroupe les **textes prêts à copier-coller champ par champ** dans
 
 ### Nom et prénom de la candidate référente *
 ```text
-BOUDA Distelle
+OUEDRAOGO Omaïma
 ```
 
 ### Ville ou commune de résidence *
@@ -24,21 +24,22 @@ Ouagadougou, Burkina Faso
 ```text
 +226 78 45 65 41
 ```
-*(Remplacez si nécessaire par votre numéro d'appel direct principal)*
+*(Indiquez ici le numéro d'appel direct de Omaïma)*
 
 ### Numéro WhatsApp *
 ```text
 +226 78 45 65 41
 ```
+*(Indiquez ici le numéro WhatsApp de Omaïma)*
 
 ### Adresse e-mail *
 ```text
-distellebouda1@gmail.com
+omaiodg@gmail.com
 ```
 
 ### Statut de la candidate *
 ```text
-Étudiante / Développeuse Fullstack & Porteuse de projet EdTech/HealthTech
+Étudiante / Développeuse & Porteuse de projet HealthTech
 ```
 
 ---
@@ -177,12 +178,17 @@ https://github.com/Nathan06-hub/BraveHer.git
 
 ### Si le projet est collectif, précisez les membres et leurs rôles :
 ```text
-1. BOUDA Distelle — Porteuse de Projet & Lead Product / Conception E-Santé :
-   En charge de la vision stratégique, de la coordination fonctionnelle avec les professionnels de santé, de l'architecture générale de la solution et de l'expérience utilisateur des sages-femmes.
+1. OUEDRAOGO Omaïma — Porteuse de Projet & Lead Conception E-Santé :
+   Leadership stratégique, pilotage fonctionnel du projet, coordination avec les acteurs de santé et conception générale de la solution Brave_her.
 
-2. Membres de l'équipe technique d'appui :
-   - Ingénieur Backend & DevOps : Développement de l'API sécurisée Spring Boot 3, passerelles de paiement Orange Money, gestion de la base PostgreSQL et pipelines de déploiement.
-   - Développeur Frontend & Sécurité : Implémentation du moteur de persistance locale IndexedDB avec chiffrement WebCrypto AES-GCM et gestion de la synchronisation hors-ligne.
+2. BOUDA Distelle Aurélia Wendenda — Co-fondatrice, Lead Développement Frontend & Expérience Utilisateur (UI/UX) :
+   Développement de l'interface clinique réactive, intégration du moteur hors-ligne IndexedDB et ergonomie de saisie pour les sages-femmes des CSPS.
+
+3. MARE Stéphane Nathanaël — Ingénieur Test & Assurance Qualité (QA) & Développeur Backend :
+   Responsable des tests automatisés (unitaires, intégration, scénarios offline), fiabilisation des flux API REST et appui au développement des services backend.
+
+4. WAONGO Serge Landry — Ingénieur Backend & Architecture Logicielle :
+   Développement de l'architecture backend Spring Boot 3, sécurisation des flux de données, interfaçage des passerelles Mobile Money (Orange Money) et gestion de la base PostgreSQL.
 ```
 
 ---
