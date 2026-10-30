@@ -142,7 +142,7 @@ Brave_her repose sur un modèle économique hybride garantissant son autonomie f
 
 ### Si oui, partagez le lien de démonstration :
 ```text
-https://github.com/omaiodg-spec/Brave_her.git
+https://github.com/Nathan06-hub/BraveHer.git
 ```
 *(Code complet fonctionnel : Backend Spring Boot 3 sécurisé par JWT/CORS, Frontend React 19 TypeScript avec mode hors-ligne IndexedDB chiffré AES-GCM, moteur de triage conforme OMS et suites de tests automatisés validées)*
 
